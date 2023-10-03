@@ -70,24 +70,6 @@
     })(jQuery); // Vous devez envelopper votre code dans une fonction et la passer à jQuery
 </script>
 
-
-
-
-
-
-                                <!-- <tfoot>
-                                    <tr>
-                                        <th>Employee Name</th>
-                                        <th>PIN</th>
-                                        <th>Leave Type</th>
-                                        <th>Apply Date</th>
-                                        <th>Start Date</th>
-                                        <th>End Date</th>
-                                        <th>Duration</th>
-                                        <th>Leave Status</th>
-                                        <th>Action</th>
-                                    </tr>
-                                </tfoot> -->
                                 <tbody>
                                     <?php foreach($application as $value): ?>
                                     <tr style="vertical-align:top">

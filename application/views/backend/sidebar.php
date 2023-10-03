@@ -18,10 +18,12 @@
                     <div class="profile-text">
                         <h5><?php echo $basicinfo->first_name.' '.$basicinfo->last_name; ?></h5>
                         <?php if($this->session->userdata('user_type')=='EMPLOYEE'){ ?>
+                        
                             <?php } else { ?>
 
                         <a href="<?php echo base_url(); ?>settings/Settings" class="dropdown-toggle u-dropdown" role="button" aria-haspopup="true" aria-expanded="true" title="Paramètres"><i class="mdi mdi-settings"></i></a>
                         <?php } ?>
+
                         <a href="<?php echo base_url(); ?>login/logout" class="" data-toggle="tooltip" title="Deconnexion"><i class="mdi mdi-power"></i></a>
                     </div>
                 </div>
@@ -41,7 +43,7 @@
                         
                         <li> <a class="has-arrow waves-effect waves-dark" href="#" aria-expanded="false"><i class="mdi mdi-rocket"></i><span class="hide-menu">Conge </span></a>
                             <ul aria-expanded="false" class="collapse">
-                                <li><a href="<?php echo base_url(); ?>leave/Holidays"> Holiday </a></li>
+                              
                                 <li><a href="<?php echo base_url(); ?>leave/EmApplication"> Demande de congé </a></li>
                                 <li><a href="<?php echo base_url(); ?>leave/EmLeavesheet"> Leave Sheet </a></li>
                             </ul>
