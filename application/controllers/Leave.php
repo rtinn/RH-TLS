@@ -234,7 +234,7 @@ class Leave extends CI_Controller
             $id           = $this->input->post('id');
             $emid         = $this->input->post('emid');
             $typeid       = $this->input->post('typeid');
-            $applydate    = date('Y-m-d');
+            $applydate    = date('d/m/Y');
             $appstartdate = $this->input->post('startdate');
             $appenddate   = $this->input->post('enddate');
             $hourAmount   = $this->input->post('hourAmount');
@@ -271,18 +271,18 @@ class Leave extends CI_Controller
                     'reason' => $reason,
                     'leave_type' => $type,
                     'leave_duration' => $duration,
-                    'leave_status' => 'Not Approve'
+                    'leave_status' => 'Non Approuvé'
                 );
                 if (empty($id)) {
                     $success = $this->leave_model->Application_Apply($data);
                     #$this->session->set_flashdata('feedback','Successfully Updated');
                     #redirect("leave/Application");
-                    echo "Successfully Added";
+                    echo "Enregistrement Reussi";
                 } else {
                     $success = $this->leave_model->Application_Apply_Update($id, $data);
                     #$this->session->set_flashdata('feedback','Successfully Updated');
                     #redirect("leave/Application");
-                    echo "Successfully Updated";
+                    echo "Enregistrement Reussi";
                 }
                 
             }
@@ -509,7 +509,7 @@ class Leave extends CI_Controller
                 <td>$value->total_duration hours</td>*/
 
                 echo "<tr>
-                        <td>$value->em_code</td>
+                        <td>$value->em_id</td>
                         <td>$value->first_name $value->last_name</td>
                         <td>$value->name</td>
                         <td>$value->leave_duration hours</td>

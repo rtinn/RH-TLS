@@ -250,7 +250,7 @@ class Pointage extends CI_Controller {
 				$sheet = $spreadsheet->getSheet(0);
 				$count_Rows = 0;
 				foreach ($sheet->getRowIterator() as $row) {
-					$em_code = $spreadsheet->getActiveSheet()->getCell('A' . $row->getRowIndex())->getValue();
+					$em_id = $spreadsheet->getActiveSheet()->getCell('A' . $row->getRowIndex())->getValue();
 					$first_name = $spreadsheet->getActiveSheet()->getCell('B' . $row->getRowIndex())->getValue();
 					$last_name = $spreadsheet->getActiveSheet()->getCell('C' . $row->getRowIndex())->getValue();
 					$dep_id = $spreadsheet->getActiveSheet()->getCell('D' . $row->getRowIndex())->getValue();
@@ -262,9 +262,7 @@ class Pointage extends CI_Controller {
 					$em_gender = $spreadsheet->getActiveSheet()->getCell('J' . $row->getRowIndex())->getValue();
 					$em_nid = $spreadsheet->getActiveSheet()->getCell('K' . $row->getRowIndex())->getValue();
 	
-					// Generating employee name based on last name
-					$em_id = substr($last_name, 0, 3) . rand(1000, 2000);
-	
+					
 					// Convertir chaque champ en UTF-8
 					
 					$first_name = mb_convert_encoding($first_name, 'UTF-8', 'auto');
@@ -278,7 +276,7 @@ class Pointage extends CI_Controller {
 				$em_password = md5("123456789");
 	
 					$data = array(
-						'em_code' => $em_code,
+						'em_id' => $em_id,
 						'first_name' => $first_name,
 						'last_name' => $last_name,
 						'dep_id' => $dep_id,
@@ -289,7 +287,7 @@ class Pointage extends CI_Controller {
 						'em_phone' => $em_phone,
 						'em_gender' => $em_gender,
 						'em_nid' => $em_nid,
-						'em_id' => $em_id,
+						
 						'em_password' => $em_password,
 					);
 	

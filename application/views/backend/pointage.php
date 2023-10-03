@@ -17,11 +17,15 @@
             </div>
             <div class="message"></div>
             <div class="container-fluid">
+
+            <?php if($this->session->userdata('user_type')=='EMPLOYEE'){ ?>
+                <?php } else { ?>
                 <div class="row m-b-10"> 
                     <div class="col-12">
                         <button type="button" class="btn btn-info"><i class="fa fa-plus"></i><a data-toggle="modal" data-target="#noticemodel" data-whatever="@getbootstrap" class="text-white "><i class="" aria-hidden="true"></i> Import csv </a></button>
                     </div>
                 </div>
+                <?php } ?>
                 <div class="row">
                     <div class="col-12">
                         <div class="card card-outline-info">
@@ -35,16 +39,19 @@
                             
              <div id="cercle_row">
                 <div id="cercle_row1">
-                <div id="cercle"></div>
-                    <div> Retard + de 10 Minutes</div>
+                
+                   
+                    <button  class="btn btn-info" id="filterSup0"></button>
+                    
                 </div>
                    
                     <div>
-                        <label for="startDate">Date de début:</label>
-                        <input type="text" id="startDate" name="startDate">
-                        <label for="endDate">Date de fin:</label>
-                        <input type="text" id="endDate" name="endDate">
-                      
+                        <label for="startDate"><i class="fa fa-calendar-o" aria-hidden="true"></i></label>
+                        <input type="text"  class="form-dt" id="startDate" name="startDate" placeholder="Date 1">
+                        <label for="endDate"><i class="fa fa-calendar-o" aria-hidden="true"></i></label>
+                        <input type="text"  class="form-dt" id="endDate" name="endDate" placeholder="Date 2">
+                        <button class="btn btn-info" id="resetDates"><i class="fa fa-refresh" aria-hidden="true"></i> Réinitialiser</button>
+
                     </div>
                  </div> 
 
@@ -59,61 +66,55 @@
             <th>Nom</th>
             <th>Date</th>
             <th>H.E Prévu</th>
-            <th>Heure d'entrée</th>
+            <th>H. d'entrée</th>
             <th>Retard</th>
-            <th>Heure de sortie</th>
+            <th>H. de sortie</th>
             <th>Occupation</th>
             <th>Action</th>
         </tr>
     </thead>
     <tbody>
-    <?php foreach ($pointage as $value) : ?>
-        <tr <?php echo (!empty($value->em_entree) && strtotime($value->Time_in) - strtotime($value->em_entree) > 600) ? 'class="text-danger"' : ''; ?>>
-            <td><?php echo $value->sName; ?></td>
-            <td><?php echo $value->des_id; ?></td>
-            <td><?php echo $value->first_name . ' ' . $value->last_name; ?></td>
-            <td><?php echo $value->Date; ?></td>
-            <td><?php echo $value->em_entree; ?></td>
-            <td><?php echo $value->Time_in; ?></td>
-            <td>
-                <?php
-                if (!empty($value->em_entree)) {
-                    $timeIn = strtotime($value->Time_in); // Convertir l'heure en timestamp
-                    $emEntree = strtotime($value->em_entree); // Convertir l'heure d'entrée prévue en timestamp
-                    $retard = $timeIn - $emEntree; // Calculer la différence
-
-                    // Vérifier si le retard est positif avant de l'afficher
-                    if ($retard > 0) {
-                        // Formatter la différence en heures:minutes:secondes
-                        $retardFormatted = sprintf("%02d:%02d:%02d", ($retard / 3600), ($retard % 3600 / 60), ($retard % 60));
-
-                        echo $retardFormatted; // Afficher le retard
-                    } else {
-                        echo "00:00:00";
-                    }
-                } else {
-                    echo ""; // Afficher rien si em_entree est vide
-                }
-                ?>
-            </td>
-            <td><?php echo $value->Time_out; ?></td>
-            <td><?php echo $value->Time_diff; ?></td>
-
-            <td class="jsgrid-align-center">
-                <a href="#" data-toggle="modal" class="btn btn-sm btn-primary waves-effect waves-light" data-target="#editPelanggan<?php echo $value->id ?>"><i class="fa fa-eye" aria-hidden="true"></i></a>
-                <a onclick="return confirm('Voulez-vous vraiment le supprimer?')" href="<?php echo base_url(); ?>employee/DeleteP/<?php echo $value->id; ?>" title="Delete" class="btn btn-sm btn-danger waves-effect waves-light"><i class="fa fa-trash-o"></i></a>
-            </td>
-        </tr>
-    <?php endforeach; ?>
-</tbody>
+   
+    </tbody>
 
 </table>
+
 
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
+
+
+
+
+<!-- Delete -->
+<div class="modal fade" id="delmodal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+               
+                <center><h4 class="modal-title" id="myModalLabel"><i class="fa fa-trash-o"></i> Supprimer pointage</h4></center>
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+            </div>
+            <div class="modal-body">
+				<h4 class="text-center">Voulez-vous vraiment supprimer le pointage du </h4>
+                <h3 id="datename" class="text-center"></h3>
+                <h4 class="text-center">pour le matricule:</h4>
+				<h3 id="delfname" class="text-center"></h3>
+
+			</div>
+            <div class="modal-footer">
+            <button type="button" id="delid" class="btn btn-danger"><span class="glyphicon glyphicon-trash"></span><i class="fa fa-trash-o"></i> Supprimer</button>
+            <button type="button" class="btn btn-default" data-dismiss="modal"><i class="fa fa-ban" aria-hidden="true"></i> Annuler</button>
+            </div>
+			
+        </div>
+    </div>
+</div>
+
+
 
               <!-- /.modalimport --> 
 
@@ -151,137 +152,324 @@
                         <!-- /.modal --> 
 
 <!-- /.modal --> 
-
-<?php
-                foreach ($pointage as $value) {
-            ?>
-            <div class="modal fade" id="editPelanggan<?php echo $value->id ?>" data-backdrop="static" data-keyboard="false" tabindex="-1" aria-labelledby="formEditPelanggan" aria-hidden="true">
-                <div class="modal-dialog modal-lg modal-dialog-centered">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <h5 class="modal-title font-weight-bold text-primary mx-3 mt-3" id="formEditPelangganLabel"><i class="fa fa-info-circle" aria-hidden="true"></i> Information de présence</h5>
-                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                <span aria-hidden="true">&times;</span>
-                            </button>
-                        </div>
-                        <form name="form_add_mahasiswa"  method="post" class="user needs-validation mx-3 mb-4" novalidate>
-                            <div class="modal-body"> 
-                            
-
-                                <div class="form-group">
-                                    <label class="control-label text-secondary" >N° Matricule </label>
-                                    <input type="text" class="form-control" placeholder="Customer ID" autofocus name="id" value="<?php echo $value->sName ?>" readonly>
-                                </div>
-                                <div class="form-group">
-                                    <label class="control-label text-secondary" >Nom et Prénom </label>
-                                    <input type="text" class="form-control" placeholder="Customer ID" autofocus name="id" value="<?php echo $value->first_name . ' ' . $value->last_name ?>" readonly>
-                                </div>
-
-                                <div class="form-group">
-                                    <label class="control-label text-secondary">Date</label>
-                                    <input type="text" class="form-control" placeholder="Customer ID" autofocus name="id" value="<?php echo $value->Date ?>" readonly>
-                                </div>
-                                
-                                <div class="form-group">
-                                    <label class="control-label text-secondary">Heure d'entrée</label>
-                                    <input type="text" class="form-control" placeholder="Customer ID" autofocus name="id" value="<?php echo $value->Time_in ?>" readonly>
-                                </div>
-                                <div class="form-group">
-                                    <label class="control-label text-secondary">Heure de sortie</label>
-                                    <input type="text" class="form-control" placeholder="Customer ID" autofocus name="id" value="<?php echo $value->Time_out ?>" readonly>
-                                </div>
-                                <div class="form-group">
-                                    <label class="control-label text-secondary">Temps de Travail</label>
-                                    <input type="text" class="form-control" placeholder="Customer ID" autofocus name="id" value="<?php echo $value->Time_diff ?>" readonly>
-                                </div>
-                                
-                            </div>
-                            <div class="modal-footer d-flex">
-                                <button type="button" class="flex-fill btn btn-danger btn-user" data-dismiss="modal"><i class="fa fa-times" aria-hidden="true"></i> Fermer</button>
-                                
-                            </div>
-                        </form>
-                    </div>
-                </div>
+<div class="modal fade" id="editmodal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <center><h4 class="modal-title" id="myModalLabel">Détails pointage</h4></center>
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
             </div>
-            <?php
-                }
-            ?>
+            <div class="modal-body">
+			<div class="container-fluid">
+			<form id="editForm">
+				<div class="row">
+					<div class="col-md-3">
+						<label class="control-label" style="position:relative; top:7px;">Matricule:</label>
+					</div>
+					<div class="col-md-9">
+						<input type="text" class="form-control" name="mat" id="mat" readonly>
+					</div>
+				</div>
+				<div style="height:10px;"></div>
+				<div class="row">
+					<div class="col-md-3">
+						<label class="control-label" style="position:relative; top:7px;">Nom:</label>
+					</div>
+					<div class="col-md-9">
+						<input type="text" class="form-control" name="nom" id="nom" readonly>
+					</div>
+				</div>
+                <div style="height:10px;"></div>
+				<div class="row">
+					<div class="col-md-3">
+						<label class="control-label" style="position:relative; top:7px;">Poste:</label>
+					</div>
+					<div class="col-md-9">
+						<input type="text" class="form-control" name="poste" id="poste" readonly>
+					</div>
+				</div>
+				<div style="height:10px;"></div>
+				<div class="row">
+					<div class="col-md-3">
+						<label class="control-label" style="position:relative; top:7px;">Date:</label>
+					</div>
+					<div class="col-md-9">
+						<input type="text" class="form-control" name="date" id="date" readonly>
+					</div>
+				</div>
+                <div style="height:10px;"></div>
+				<div class="row">
+					<div class="col-md-3">
+						<label class="control-label" style="position:relative; top:7px;">H.E Prévue:</label>
+					</div>
+					<div class="col-md-9">
+						<input type="text" class="form-control" name="hp" id="hp" readonly>
+					</div>
+				</div>
+                <div style="height:10px;"></div>
+				<div class="row">
+					<div class="col-md-3">
+						<label class="control-label" style="position:relative; top:7px;">H.Entrée:</label>
+					</div>
+					<div class="col-md-9">
+						<input type="text" class="form-control" name="he" id="he" readonly>
+					</div>
+				</div>
+                <div style="height:10px;"></div>
+				<div class="row">
+					<div class="col-md-3">
+						<label class="control-label" style="position:relative; top:7px;">Retard:</label>
+					</div>
+					<div class="col-md-9">
+						<input type="text" class="form-control" name="retard" id="retard" readonly>
+					</div>
+				</div>
+                <div style="height:10px;"></div>
+				<div class="row">
+					<div class="col-md-3">
+						<label class="control-label" style="position:relative; top:7px;">H.Sortie:</label>
+					</div>
+					<div class="col-md-9">
+                        <input type="text" class="form-control" name="hs" id="hs" readonly>
+					</div>
+				</div>
+                <div style="height:10px;"></div>
+				<div class="row">
+					<div class="col-md-3">
+						<label class="control-label" style="position:relative; top:7px;">Occupation:</label>
+					</div>
+					<div class="col-md-9">
+						<input type="text" class="form-control" name="occ" id="occ" readonly>
+                        
+					</div>
+				</div>
+                
+				<input type="hidden" name="id" id="userid">
+            </div> 
+			</div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal"><span class="glyphicon glyphicon-remove"></span> Fermer</button>
+           </form>
+            </div>
+			
+        </div>
+    </div>
+</div>
+
 
 
 <?php $this->load->view('backend/footer'); ?>
 
+
 <script>
+    (function($) {
+        $(document).ready(function(){
+            var url = '<?php echo base_url(); ?>';
 
-$(document).ready(function() {
+            // Fonction pour initialiser la DataTable
+            function initializeDataTable() {
+                return $('#employees123').DataTable({
+                    "paging": true,
+                    "searching": true,
+                    "ordering": true,
+                    "info": true,
+                    "aaSorting": [[1, 'asc']],
+                    dom: 'Bfrtip',
+                    buttons: ['copy', 'csv', 'excel', 'pdf', 'print']
+                });
+            }
 
-  
-    // Initialisation des datepickers
-    $('#startDate, #endDate').datepicker({
-    dateFormat: 'dd/mm/yy', // Format de la date
-    changeMonth: true,
-    changeYear: true,
-   
-});
-    
-    
-    // Initialisation de la DataTable
-    var table = $('#employees123').DataTable();
-table.destroy(); // Détruit la table DataTable existante
+            var table = initializeDataTable();
 
-// Réinitialisez la table avec les options et les fonctionnalités souhaitées
-table = $('#employees123').DataTable({
-    "paging": true,
-    "searching": true,
-    "ordering": true,
-    "info": true,
-    "aaSorting": [[1,'asc']],
-    dom: 'Bfrtip',
-    buttons: [
-        'copy', 'csv', 'excel', 'pdf', 'print'
-    ]
-});
+            // Initialisation des datepickers
+            $('#startDate, #endDate').datepicker({
+                dateFormat: 'dd/mm/yy', // Format de la date
+                changeMonth: true,
+                changeYear: true,
+            });
 
-    // Gestion du filtre par date
-  
+            // Gestion du filtre par date
+            $('#startDate, #endDate').on('change', function() {
+                table.draw();
+            });
 
-    $('#startDate, #endDate').on('change', function() {
-    var startDate = $('#startDate').val();
-    var endDate = $('#endDate').val();
+            $.fn.dataTable.ext.search.push(function(settings, data, dataIndex) {
+                var startDate = $('#startDate').val();
+                var endDate = $('#endDate').val();
+                var date = data[3]; // L'indice 3 correspond à la colonne "Date" dans votre DataTable
 
-    console.log('startDate:', startDate);
-    console.log('endDate:', endDate);
+                if ((startDate === "" && endDate === "") ||
+                    (moment(startDate, 'DD/MM/YYYY') <= moment(date, 'DD/MM/YYYY') && moment(endDate, 'DD/MM/YYYY') >= moment(date, 'DD/MM/YYYY'))) {
+                    return true;
+                }
 
-    table.draw();
-});
+                return false;
+            });
+
+            // Fonction pour réinitialiser le filtre de retard
+            function resetDelayFilter() {
+                $.fn.dataTable.ext.search.pop(); // Supprimer le filtre de retard
+                table.draw(); // Redessiner la table pour appliquer le changement
+            }
+
+            // Fonction pour appliquer le filtre de retard supérieur à 0
+            function applyDelayFilter() {
+    $.fn.dataTable.ext.search.push(function(settings, data, dataIndex) {
+        var delayStr = data[6]; // Supposons que la colonne des retards est la 7e colonne (index 6)
+
+        // Convertir la chaîne HH:MM:SS en un objet Date JavaScript
+        var delayParts = delayStr.split(":");
+        var delayDate = new Date(0, 0, 0, parseInt(delayParts[0]), parseInt(delayParts[1]), parseInt(delayParts[2]));
+
+        // Créer un objet Date pour 00:10:00 (10 minutes)
+        var tenMinutes = new Date(0, 0, 0, 0, 10, 0);
+
+        // Comparer les retards
+        return delayDate > tenMinutes;
+    });
+
+    table.draw(); // Redessiner la table pour appliquer le filtre
+}
+
+           // Ajoutez une variable pour suivre l'état du filtre et le texte du bouton
+                var isDelayFilterApplied = false;
+
+                // Fonction pour mettre à jour le texte du bouton en fonction de l'état
+                function updateFilterButton() {
+                    var button = $('#filterSup0');
+                    if (isDelayFilterApplied) {
+                        button.html('<i class="fa fa-list" aria-hidden="true"></i> Afficher Tous');
+                        button.removeClass('btn-danger').addClass('btn-info');
+                    } else {
+                        button.html('<i class="fa fa-list" aria-hidden="true"></i> Retard + de 10 Minutes');
+                        button.removeClass('btn-info').addClass('btn-danger');
+                    }
+                }
+
+                    // Attachez le gestionnaire de clic au bouton de filtrage des retards
+                    $('#filterSup0').on('click', function() {
+                        if (isDelayFilterApplied) {
+                            resetDelayFilter();
+                            isDelayFilterApplied = false;
+                        } else {
+                            applyDelayFilter();
+                            isDelayFilterApplied = true;
+                        }
+                        updateFilterButton(); // Mettez à jour le texte du bouton
+                    });
+
+                    // ...
+
+                    // Appelez la fonction pour initialiser le texte du bouton au chargement de la page
+                    updateFilterButton();
 
 
 
-    // Ajoutez une fonction de filtre personnalisée pour DataTables
-    
 
-    $.fn.dataTable.ext.search.push(
-    function(settings, data, dataIndex) {
-        var startDate = $('#startDate').val();
-        var endDate = $('#endDate').val();
-        var date = data[3]; // L'indice 3 correspond à la colonne "Date" dans votre DataTable
-       
-        console.log('startDate in filter function:', startDate);
-        console.log('endDate in filter function:', endDate);
-        console.log('date in filter function:', date);
+            function showTable() {
+                $.ajax({
+                    type: 'POST',
+                    <?php if ($this->session->userdata('user_type') == 'EMPLOYEE') { ?>
+                        url: url + 'employee/GetPointage_em',
+                    <?php } else { ?>
+                    url: url + 'employee/GetPointage',
+                        <?php } ?>
+                    success: function(response) {
+                        // Détruire et recréer la DataTable avec les nouvelles données
+                        if ($.fn.DataTable.isDataTable('#employees123')) {
+                            table.destroy();
+                        }
+                        $('#employees123 tbody').html(response);
+                        table = initializeDataTable();
+                    }
+                });
+            }
 
-        if ((startDate === "" && endDate === "") ||
-            (startDate <= date && endDate >= date)) {
-            return true;
-        }
+            // Appelez showTable au chargement de la page
+            showTable();
 
-        return false;
-    }
-);
+            $(document).on('click', '.delete', function(){
+            var id = $(this).data('id');
+            $.ajax({
+                type: 'POST',
+                url: url + 'employee/getidPointage',
+                dataType: 'json',
+                data: {id: id},
+                success: function(response){
+                    console.log(response);
+                    $('#delfname').html(response.sName);
+                    $('#datename').html(response.Date);
+                    $('#delid').val(response.id);
+                    $('#delmodal').modal('show');
+                }
+            });
+        });
+        $('#delid').click(function(){
+            var id = $(this).val();
+            $.ajax({
+                type: 'POST',
+                url: url + 'employee/deletePointage',
+                data: {id: id},
+                success: function(){
+                    $('#delmodal').modal('hide');
+                    showTable();
+                }
+            });
+        });
+
+
+        // Réinitialisation des champs de date et actualisation du tableau
+            $('#resetDates').on('click', function() {
+                $('#startDate').val('');
+                $('#endDate').val('');
+                table.draw();
+                showTable();
+            });
 
 
 
 
-});
 
+        $(document).on('click', '.edit', function(){
+		var id = $(this).data('id');
+		$.ajax({
+			type: 'POST',
+            url: url + 'employee/getidPointage',
+			dataType: 'json',
+			data: {id: id},
+			success:function(response){
+				console.log(response);
+				$('#mat').val(response.sName);
+                $('#nom').val(response.first_name + ' ' + response.last_name);
+                $('#poste').val(response.des_id);
+                $('#date').val(response.Date);
+                $('#hp').val(response.em_entree);
+                $('#he').val(response.Time_in);
+            // Calcul de la différence entre Time_in et em_entree
+            var timeIn = moment(response.Time_in, 'HH:mm:ss');
+            var emEntree = moment(response.em_entree, 'HH:mm:ss');
+            var retardMinutes = timeIn.diff(emEntree, 'minutes');
+            var retardHours = Math.floor(retardMinutes / 60);
+// Affichage du retard si la différence est positive ou nulle
+if (retardMinutes >= 0) {
+    $('#retard').val(retardHours + ' heures ' + (retardMinutes % 60) + ' minutes');
+} else {
+    // Si la différence est négative, n'affiche rien
+    $('#retard').val('pas de retard');
+}
+
+
+                $('#hs').val(response.Time_out);
+                $('#occ').val(response.Time_diff);
+				
+				$('#editmodal').modal('show');
+			}
+		});
+	});
+
+ 
+
+        });
+    })(jQuery);
 </script>
+

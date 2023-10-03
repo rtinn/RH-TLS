@@ -1,5 +1,29 @@
 <?php $this->load->view('backend/header'); ?>
 <?php $this->load->view('backend/sidebar'); ?>
+
+<?php if($this->session->userdata('user_type')=='EMPLOYEE'){ ?>
+    
+    <div class="page-wrapper">
+            <!-- ============================================================== -->
+            <!-- Bread crumb and right sidebar toggle -->
+            <!-- ============================================================== -->
+            <div class="row page-titles">
+                <div class="col-md-5 align-self-center">
+                    <h3 class="text-themecolor"><i class="fa fa-users" aria-hidden="true"></i> Personnels</h3>
+                </div>
+                <div class="col-md-7 align-self-center">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="javascript:void(0)">Accueil</a></li>
+                        <li class="breadcrumb-item active">Personnel</li>
+                    </ol>
+                </div>
+            </div>
+
+
+    </div>     
+   
+<?php } else { ?>
+
          <div class="page-wrapper">
             <!-- ============================================================== -->
             <!-- Bread crumb and right sidebar toggle -->
@@ -10,7 +34,7 @@
                 </div>
                 <div class="col-md-7 align-self-center">
                     <ol class="breadcrumb">
-                        <li class="breadcrumb-item"><a href="javascript:void(0)">Home</a></li>
+                        <li class="breadcrumb-item"><a href="javascript:void(0)">Accueil</a></li>
                         <li class="breadcrumb-item active">Personnel</li>
                     </ol>
                 </div>
@@ -53,7 +77,7 @@
                                         <tbody>
                                            <?php foreach($employee as $value): ?>
                                             <tr>
-                                            <td><?php echo $value->em_code; ?></td>
+                                            <td><?php echo $value->em_id; ?></td>
                                                 <td title="<?php echo $value->first_name .' '.$value->last_name; ?>"><?php echo $value->first_name .' '.$value->last_name; ?></td>
                                                 <td><?php echo $value->des_id; ?></td>
                                                  <td><?php echo $value->em_phone; ?></td>
@@ -117,7 +141,7 @@
 
 
 
-
+<?php } ?>
 
 <?php $this->load->view('backend/footer'); ?>
 <script>

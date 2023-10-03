@@ -109,7 +109,7 @@
                 (SELECT SUM(`leave_duration`) 
                     FROM emp_leave
                     WHERE  MONTH(start_date) = '$day' AND YEAR(start_date) = '$year') AS `total_duration`,
-                    `employee`.`first_name`,`last_name`,`em_code`,
+                    `employee`.`first_name`,`last_name`,`em_id`,
                     `leave_types`.`name`
                 FROM `emp_leave`
                     LEFT JOIN `leave_types` ON `emp_leave`.`typeid`=`leave_types`.`type_id`
@@ -120,7 +120,7 @@
         $sql = "SELECT `emp_leave`.*, (SELECT SUM(`leave_duration`) 
        FROM emp_leave
        WHERE  `emp_leave`.`em_id` = '$emid' AND MONTH(start_date) = '$day' AND YEAR(start_date) = '$year') AS `total_duration`,
-        `employee`.`first_name`,`last_name`,`em_code`, 
+        `employee`.`first_name`,`last_name`,`em_id`, 
         `leave_types`.`name`
         FROM `emp_leave`
         LEFT JOIN `leave_types` ON `emp_leave`.`typeid`=`leave_types`.`type_id`
@@ -159,7 +159,7 @@
 }
     public function GetLeaveToday($date){
     $sql = "SELECT `emp_leave`.*,
-      `employee`.`em_id`,`first_name`,`last_name`,`em_code`
+      `employee`.`em_id`,`first_name`,`last_name`
       FROM `emp_leave`
       LEFT JOIN `employee` ON `emp_leave`.`em_id`=`employee`.`em_id`
         WHERE `apply_date`='$date'";
@@ -169,7 +169,7 @@
     }
     public function GetLeaveApply($id){
         $sql = "SELECT `emp_leave`.*,
-      `employee`.`em_id`,`first_name`,`last_name`,`em_code`
+      `employee`.`em_id`,`first_name`,`last_name`
       FROM `emp_leave`
       LEFT JOIN `employee` ON `emp_leave`.`em_id`=`employee`.`em_id` 
       WHERE `emp_leave`.`id`='$id'";
@@ -178,7 +178,7 @@
         return $result; 
     }
     public function GetEarnedleaveBalance(){
-        $sql = "SELECT `earned_leave`.*, `employee`.`first_name`,`last_name`,`em_code` FROM `earned_leave` LEFT JOIN `employee` ON `earned_leave`.`em_id`=`employee`.`em_id` WHERE `earned_leave`.`hour` > 0 AND `employee`.`status`='ACTIVE'";
+        $sql = "SELECT `earned_leave`.*, `employee`.`first_name`,`last_name`,`em_id` FROM `earned_leave` LEFT JOIN `employee` ON `earned_leave`.`em_id`=`employee`.`em_id` WHERE `earned_leave`.`hour` > 0 AND `employee`.`status`='ACTIVE'";
         $query = $this->db->query($sql);
         $result = $query->result();
         return $result; 
@@ -191,7 +191,7 @@
     }
     public function GetallApplication($emid){
     $sql = "SELECT `emp_leave`.*,
-      `employee`.`em_id`,`first_name`,`last_name`,`em_code`,
+      `employee`.`em_id`,`first_name`,`last_name`,
       `leave_types`.`type_id`,`name`
       FROM `emp_leave`
       LEFT JOIN `employee` ON `emp_leave`.`em_id`=`employee`.`em_id`
@@ -203,19 +203,19 @@
     }
     public function AllLeaveAPPlication(){
     $sql = "SELECT `emp_leave`.*,
-      `employee`.`em_id`,`first_name`,`last_name`,`em_code`,
+      `employee`.`em_id`,`first_name`,`last_name`,
       `leave_types`.`type_id`,`name`
       FROM `emp_leave`
       LEFT JOIN `employee` ON `emp_leave`.`em_id`=`employee`.`em_id`
       LEFT JOIN `leave_types` ON `emp_leave`.`typeid`=`leave_types`.`type_id`
-      WHERE `emp_leave`.`leave_status`='Not Approve'";
+      WHERE `emp_leave`.`leave_status`='Non Approuvé'";
         $query=$this->db->query($sql);
 		$result = $query->result();
 		return $result; 
     }
     public function EmLeavesheet($emid){
     $sql = "SELECT `assign_leave`.*,
-      `employee`.`em_id`,`first_name`,`last_name`,`em_code`,
+      `employee`.`em_id`,`first_name`,`last_name`,
       `leave_types`.`type_id`,`name`
       FROM `assign_leave`
       LEFT JOIN `employee` ON `assign_leave`.`emp_id`=`employee`.`em_id`

@@ -14,13 +14,12 @@
         </div>
     </div>
     <!-- Container fluid  -->
-    <!-- ============================================================== -->
+    <!-- ==================================================== -->
     <div class="container-fluid">
         <div class="row m-b-10">
             <?php if($this->session->userdata('user_type')=='EMPLOYEE'){ ?>
             <div class="col-12">
                 <button type="button" class="btn btn-info"><i class="fa fa-plus"></i><a data-toggle="modal" data-target="#appmodel" data-whatever="@getbootstrap" class="text-white"><i class="" aria-hidden="true"></i> Add Application </a></button>
-                <button type="button" class="btn btn-primary"><i class="fa fa-bars"></i><a href="<?php echo base_url(); ?>leave/Holidays" class="text-white"><i class="" aria-hidden="true"></i>  Holiday List</a></button>
             </div>
             <?php } ?>
         </div>
@@ -66,7 +65,7 @@
                                     <tr style="vertical-align:top">
                                         <td><?php echo $value->id; ?></td>
                                         <td><mark><?php echo $value->first_name.' '.$value->last_name ?></mark></td>
-                                        <td><?php echo $value->em_code; ?></td>
+                                        <td><?php echo $value->em_id; ?></td>
                                         <td><?php echo $value->name; ?></td>
                                         <td><?php echo date('jS \of F Y',strtotime($value->apply_date)); ?></td>
                                         <td><?php echo $value->start_date; ?></td>
@@ -79,9 +78,9 @@
                                         <td class="jsgrid-align-center">
                                             <?php if($value->leave_status =='Approve'){ ?>
                                             
-                                            <?php } elseif($value->leave_status =='Not Approve'){ ?>
-                                            <a href="" title="Edit" class="btn btn-sm btn-success waves-effect waves-light leaveapproval" data-id="<?php echo $value->id; ?>">Approved</a>
-                                            <a href="" title="Edit" class="btn btn-sm btn-danger waves-effect waves-light  Status" data-id = "<?php echo $value->id; ?>" data-value="Rejected" >Reject</a><br>
+                                            <?php } elseif($value->leave_status =='Non Approuvé'){ ?>
+                                            <a href="" title="Edit" class="btn btn-sm btn-success waves-effect waves-light leaveapproval" data-id="<?php echo $value->id; ?>"><i class="fa fa-check-square" aria-hidden="true"></i></a>
+                                            <a href="" title="Edit" class="btn btn-sm btn-danger waves-effect waves-light  Status" data-id = "<?php echo $value->id; ?>" data-value="Rejected" >pReject</a><br>
                                             <?php } elseif($value->leave_status =='Rejected'){ ?>
                                             <?php } ?>
                                             <a href="" title="Edit" class="btn btn-sm btn-primary waves-effect waves-light leaveapp" data-id="<?php echo $value->id; ?>" ><i class="fa fa-pencil-square-o"></i> Edit</a>

@@ -5,6 +5,7 @@
                         <?php 
                         $id = $this->session->userdata('user_login_id');
                         $basicinfo = $this->employee_model->GetBasic($id); 
+                       
                         ?>                
                 <div class="user-profile">
                     <!-- User profile image -->
@@ -16,8 +17,12 @@
                     <!-- User profile text-->
                     <div class="profile-text">
                         <h5><?php echo $basicinfo->first_name.' '.$basicinfo->last_name; ?></h5>
-                        <a href="<?php echo base_url(); ?>settings/Settings" class="dropdown-toggle u-dropdown" role="button" aria-haspopup="true" aria-expanded="true"><i class="mdi mdi-settings"></i></a>
-                        <a href="<?php echo base_url(); ?>login/logout" class="" data-toggle="tooltip" title="Logout"><i class="mdi mdi-power"></i></a>
+                        <?php if($this->session->userdata('user_type')=='EMPLOYEE'){ ?>
+                            <?php } else { ?>
+
+                        <a href="<?php echo base_url(); ?>settings/Settings" class="dropdown-toggle u-dropdown" role="button" aria-haspopup="true" aria-expanded="true" title="Paramètres"><i class="mdi mdi-settings"></i></a>
+                        <?php } ?>
+                        <a href="<?php echo base_url(); ?>login/logout" class="" data-toggle="tooltip" title="Deconnexion"><i class="mdi mdi-power"></i></a>
                     </div>
                 </div>
                 <!-- End User profile text-->
@@ -27,13 +32,17 @@
                         <li class="nav-devider"></li>
                         <li> <a href="<?php echo base_url(); ?>" ><i class="mdi mdi-gauge"></i><span class="hide-menu">Tableau de bord </span></a></li>
                         <?php if($this->session->userdata('user_type')=='EMPLOYEE'){ ?>
-                        <li> <a class="has-arrow waves-effect waves-dark" href="<?php echo base_url(); ?>employee/view?I=<?php echo base64_encode($basicinfo->em_id); ?>" aria-expanded="false"><i class="mdi mdi-account-multiple"></i><span class="hide-menu">Mon Profil</span></a>
-                        </li>
+
+                            
+                   
+                    <li><a href="<?php echo base_url(); ?>employee/view?I=<?php echo base64_encode($basicinfo->em_id); ?>"><i class="mdi mdi-account-multiple"></i> Mon Profil</a></li>
+                        <li><a href="<?php echo base_url(); ?>employee/Pointage"> <i class="fa fa-qrcode" aria-hidden="true"></i> Pointage</a></li>
+                               
                         
                         <li> <a class="has-arrow waves-effect waves-dark" href="#" aria-expanded="false"><i class="mdi mdi-rocket"></i><span class="hide-menu">Conge </span></a>
                             <ul aria-expanded="false" class="collapse">
                                 <li><a href="<?php echo base_url(); ?>leave/Holidays"> Holiday </a></li>
-                                <li><a href="<?php echo base_url(); ?>leave/EmApplication"> Leave Application </a></li>
+                                <li><a href="<?php echo base_url(); ?>leave/EmApplication"> Demande de congé </a></li>
                                 <li><a href="<?php echo base_url(); ?>leave/EmLeavesheet"> Leave Sheet </a></li>
                             </ul>
                         </li> 
@@ -81,10 +90,10 @@
                         -->
                         <li> <a class="has-arrow waves-effect waves-dark" href="#" aria-expanded="false"><i class="mdi mdi-account-off"></i><span class="hide-menu">Conge </span></a>
                             <ul aria-expanded="false" class="collapse">
-                                <li><a href="<?php echo base_url(); ?>leave/Holidays"> Holiday </a></li>
-                                <li><a href="<?php echo base_url(); ?>leave/leavetypes"> Leave Type</a></li>
-                                <li><a href="<?php echo base_url(); ?>leave/Application"> Leave Application </a></li>
-                                <li><a href="<?php echo base_url(); ?>leave/Earnedleave"> Earned Leave </a></li>
+                             <!--     <li><a href="<?php echo base_url(); ?>leave/Holidays"> Holiday </a></li>-->
+                                <li><a href="<?php echo base_url(); ?>leave/leavetypes"> Type de congé</a></li>
+                                <li><a href="<?php echo base_url(); ?>leave/Application"> Demande de congé </a></li>
+                                <li><a href="<?php echo base_url(); ?>leave/Earnedleave"> Congé gagné </a></li>
                                 <li><a href="<?php echo base_url(); ?>leave/Leave_report"> Report </a></li>
                             </ul>
                         </li>

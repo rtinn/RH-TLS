@@ -77,7 +77,7 @@
 				                                    
 				                                    <div class="form-group col-md-4 m-t-10">
 				                                        <label>N° Matricule</label>
-				                                        <input type="text" <?php if($this->session->userdata('user_type')=='EMPLOYEE'){ ?> readonly <?php } ?> class="form-control form-control-line" placeholder="ID" name="eid" value="<?php echo $basic->em_code; ?>" required > 
+				                                        <input type="text" <?php if($this->session->userdata('user_type')=='EMPLOYEE'){ ?> readonly <?php } ?> class="form-control form-control-line" placeholder="ID" name="eid" value="<?php echo $basic->em_id; ?>" required > 
 				                                    </div>
 				                                    <div class="form-group col-md-4 m-t-10">
 				                                        <label>Nom</label>
@@ -475,73 +475,55 @@
                                     </div>
                                 </div>
                                 <div class="tab-pane" id="leave" role="tabpanel">
-                                <div class="row">
-                                    <div class="col-md-6">
-			                        <div class="card">
-			                            <div class="card-body">
-			                                <h4 class="card-title"> Leave</h4>
-                                            <form action="Assign_leave" method="post" enctype="multipart/form-data">
-                                                <div class="form-group">
-                                                <label class="">Leave Type</label>                                 
-                                                 <select name="typeid" <?php if($this->session->userdata('user_type')=='EMPLOYEE'){ ?> readonly <?php } ?> class="select2 form-control custom-select" style="width: 100%" id="" required>
-                                                  <option value="">Select Here...</option>
-                                                   <?php foreach($leavetypes as $value): ?>
-                                                    <option value="<?php echo $value->type_id ?>"><?php echo $value->name ?></option>
-                                                    <?php endforeach; ?>
-                                                </select>          
-                                                </div>
-			                                 <div class="form-group">
-			                                    	<label>Day</label>
-			                                    	<input type="number" <?php if($this->session->userdata('user_type')=='EMPLOYEE'){ ?> readonly <?php } ?> name="noday" class="form-control form-control-line noday" placeholder="Leave Day" required> 
-			                                 </div>
+                                    <div class="card">
+				                        <div class="card-body">
+			                        		<h3 class="card-title">Congé</h3>
+			                                <form class="row" action="conge" method="post" enctype="multipart/form-data">
+			                                   <div class="row"> 
+			                                    <div class="form-group col-md-6 m-t-5">
+			                                        <label>Nbjour</label>
+			                                        <input type="text" name="parcity" class="form-control form-control-line" placeholder="" <?php if($this->session->userdata('user_type')=='EMPLOYEE'){ ?> readonly <?php } ?> value="<?php if(!empty($conge->nb_jour)) echo $conge->nb_jour ?> Jours" minlength="2" required> 
+			                                    </div>
+                                                <div class="form-group col-md-6 m-t-5">
+			                                        <label>Nbjour</label>
+			                                        <input type="text" name="parcity" class="form-control form-control-line" placeholder="" <?php if($this->session->userdata('user_type')=='EMPLOYEE'){ ?> readonly <?php } ?> value="<?php if(!empty($conge->nb_jour)) echo $conge->nb_jour ?>" minlength="2" required> 
+			                                    </div>
+			                                    </div>
+                                                    <?php if($this->session->userdata('user_type')=='EMPLOYEE'){ ?>
+                                                    <?php } else { ?>			                                    
+			                                    <div class="form-actions col-md-12">
+                                                    <input type="hidden" name="emid" value="<?php echo $basic->em_id ?>">
+                                                    <input type="hidden" name="id" value="<?php if(!empty($conge->id)) echo $conge->id  ?>">   
+                                                    <button id="update-conge">Mettre à jour les congés</button>
 
-                                                <div class="form-group">
-                                                <label class="">Year</label>                                 <select name="year" class="select2 form-control custom-select" style="width: 100%" id="" required>
-                                                 <option value="">Select Here...</option>
-                                                  <?php 
-                                                   for ($x = 2016; $x < 3000; $x++){
-                                                    echo '<option value='.$x.'>'.$x.'</option>';            
-                                                   }
-                                                    ?>
-                                                </select>          
-                                                </div>
-                                                <?php if($this->session->userdata('user_type')=='EMPLOYEE'){ ?>
-                                                    <?php } else { ?>                 
-                                            <div class="form-group">
-                                                <div class="col-sm-12">
-                                                    <input type="hidden" name="em_id" value="<?php echo $basic->em_id; ?>">                                                   
-                                                    <button type="submit" class="btn btn-success">Submit</button>
-                                                </div>
-                                            </div>                                                                     <?php } ?>         
-                                            </form>
-			                            </div>
-			                        </div>                                          
+<script>
+    $(document).ready(function() {
+        $("#update-conge").click(function() {
+            $.ajax({
+                type: "POST",
+                url: "<?php echo site_url('employee/updateConge'); ?>",
+                dataType: "json",
+                success: function(response) {
+                    if (response.success) {
+                        alert("Mise à jour réussie !");
+                    } else {
+                        alert("Échec de la mise à jour.");
+                    }
+                }
+            });
+        });
+    });
+</script>
+
+			                                      
+			                                    </div>
+			                                    <?php } ?>			                                    
+			                                    </form>
+			                                    
+			                                    <hr>
+			                                
+				                        </div>
                                     </div>
-                                    <div class="col-md-6">
-			                        <div class="card">
-			                            <div class="card-body">
-			                                <h4 class="card-title"> Leave/<?php echo date('Y') ?></h4>
-                                            <table class="display nowrap table table-hover table-striped table-bordered" width="50%">
-                                                <thead>
-                                                   <tr class="m-t-50">
-                                                    <th>Type</th>
-                                                    <th>Dayout/Day</th>       
-                                                   </tr>
-                                                </thead>
-                                                <tbody>
-                                                   <?php foreach($Leaveinfo as $value): ?>
-                                                    <tr>
-                                                        <td><?php echo $value->name; ?></td>
-                                                        <td><?php echo $value->total_day; ?>/<?php echo $value->day; ?></td>
-                                                    </tr>
-                                                    <?php endforeach; ?>
-                                                </tbody>
-                                            </table>
-			                            </div>
-			                        </div>                                     
-                                    </div>
-                                  
-                                </div>
                                 </div>
                                 <div class="tab-pane" id="password1" role="tabpanel">
                                     <div class="card-body">

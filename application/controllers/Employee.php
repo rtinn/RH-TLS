@@ -49,13 +49,130 @@ class Employee extends CI_Controller {
     }
     public function Pointage(){
         if($this->session->userdata('user_login_access') != False) { 
-        $data['pointage'] = $this->employee_model->pointageselect();
-        $this->load->view('backend/pointage',$data);
+        $this->load->view('backend/pointage');
         }
     else{
 		redirect(base_url() , 'refresh');
 	}        
     }
+
+
+    public function GetPointage(){
+        
+		$data = $this->employee_model->pointageselect();
+		$output = array();
+		foreach($data as $value){
+			?>
+			<tr <?php echo (!empty($value->em_entree) && strtotime($value->Time_in) - strtotime($value->em_entree) > 600) ? 'class="text-danger"' : ''; ?>>
+            <td><?php echo $value->sName; ?></td>
+            <td><?php echo $value->des_id; ?></td>
+            <td><?php echo $value->first_name . ' ' . $value->last_name; ?></td>
+            <td><?php echo $value->Date; ?></td>
+            <td><?php echo $value->em_entree; ?></td>
+            <td><?php echo $value->Time_in; ?></td>
+            <td>
+                <?php
+                if (!empty($value->em_entree)) {
+                    $timeIn = strtotime($value->Time_in); // Convertir l'heure en timestamp
+                    $emEntree = strtotime($value->em_entree); // Convertir l'heure d'entrée prévue en timestamp
+                    $retard = $timeIn - $emEntree; // Calculer la différence
+
+                    // Vérifier si le retard est positif avant de l'afficher
+                    if ($retard > 0) {
+                        // Formatter la différence en heures:minutes:secondes
+                        $retardFormatted = sprintf("%02d:%02d:%02d", ($retard / 3600), ($retard % 3600 / 60), ($retard % 60));
+
+                        echo $retardFormatted; // Afficher le retard
+                    } else {
+                        echo "00:00:00";
+                    }
+                } else {
+                    echo ""; // Afficher rien si em_entree est vide
+                }
+                ?>
+            </td>
+            <td><?php echo $value->Time_out; ?></td>
+            <td><?php echo $value->Time_diff; ?></td>
+
+				<td>
+                	<button class="btn btn-warning edit" data-id="<?php echo $value->id; ?>"><i class="fa fa-eye" aria-hidden="true"></i></button> 
+					<button class="btn btn-danger delete" data-id="<?php echo $value->id; ?>"><i class="fa fa-trash-o"></i></button>
+				</td>
+			</tr>
+			<?php
+		}
+
+
+
+
+	}
+
+    public function GetPointage_em() {
+        if ($this->session->userdata('user_login_access') != 1)
+            redirect(base_url() . 'login', 'refresh');
+        if ($this->session->userdata('user_login_access') == 1)
+          $data= array();
+        $id = $this->session->userdata('user_login_id');
+        $data = $this->employee_model->GetPointageEm($id);
+        $output = array();
+        foreach ($data as $value) {
+            ?>
+            <tr <?php echo (!empty($value->em_entree) && strtotime($value->Time_in) - strtotime($value->em_entree) > 600) ? 'class="text-danger"' : ''; ?>>
+                <td><?php echo $value->sName; ?></td>
+                <td><?php echo $value->des_id; ?></td>
+                <td><?php echo $value->first_name . ' ' . $value->last_name; ?></td>
+                <td><?php echo $value->Date; ?></td>
+                <td><?php echo $value->em_entree; ?></td>
+                <td><?php echo $value->Time_in; ?></td>
+                <td>
+                    <?php
+                    if (!empty($value->em_entree)) {
+                        $timeIn = strtotime($value->Time_in); // Convertir l'heure en timestamp
+                        $emEntree = strtotime($value->em_entree); // Convertir l'heure d'entrée prévue en timestamp
+                        $retard = $timeIn - $emEntree; // Calculer la différence
+    
+                        // Vérifier si le retard est positif avant de l'afficher
+                        if ($retard > 0) {
+                            // Formatter la différence en heures:minutes:secondes
+                            $retardFormatted = sprintf("%02d:%02d:%02d", ($retard / 3600), ($retard % 3600 / 60), ($retard % 60));
+                            echo $retardFormatted; // Afficher le retard
+                        } else {
+                            echo "00:00:00";
+                        }
+                    } else {
+                        echo ""; // Afficher rien si em_entree est vide
+                    }
+                    ?>
+                </td>
+                <td><?php echo $value->Time_out; ?></td>
+                <td><?php echo $value->Time_diff; ?></td>
+                <td>
+                    <button class="btn btn-warning edit" data-id="<?php echo $value->id; ?>"><i class="fa fa-eye" aria-hidden="true"></i></button>
+                </td>
+            </tr>
+            <?php
+        }
+    }
+    
+public function getidPointage(){
+		$id = $_POST['id'];
+		$data = $this->employee_model->getidPointage($id);
+		echo json_encode($data);
+	}
+
+	
+
+	public function deletePointage(){
+		$id = $_POST['id'];
+		$query = $this->employee_model->deleteP($id);
+	}
+
+
+    
+    
+
+
+
     public function filtrerPointage() {
         if ($this->session->userdata('user_login_access') != False) { 
             $date_debut = $this->input->post('date_debut');
@@ -82,6 +199,16 @@ class Employee extends CI_Controller {
 	}            
     }
     
+    public function updateConge() {
+        // Récupérez les données à mettre à jour depuis la requête Ajax
+        $newNbJour = 2.5;
+
+        // Mettez à jour tous les enregistrements dans la table "conge" avec la nouvelle valeur
+        $this->employee_model->updateAllConge($newNbJour);
+
+        // Réponse Ajax
+        echo json_encode(array('success' => true));
+    }
 
 
 
@@ -129,8 +256,7 @@ class Employee extends CI_Controller {
     $id = $this->input->post('emid');    
 	$fname = $this->input->post('fname');
 	$lname = $this->input->post('lname');
-    $emrand = substr($lname,0,3).rand(1000,2000);    
-	$dept = $this->input->post('dept');
+    $dept = $this->input->post('dept');
 	$deg = $this->input->post('deg');
 	$role = $this->input->post('role');
 	$gender = $this->input->post('gender');
@@ -186,8 +312,8 @@ class Employee extends CI_Controller {
                 $img_url = $path['file_name'];
                 $data = array();
                 $data = array(
-                    'em_id' => $emrand,
-                    'em_code' => $eid,
+                   
+                    'em_id' => $eid,
                     'des_id' => $deg,
                     'dep_id' => $dept,
                     'first_name' => $fname,
@@ -220,8 +346,8 @@ class Employee extends CI_Controller {
         } else {
                 $data = array();
                 $data = array(
-                    'em_id' => $emrand,
-                    'em_code' => $eid,
+                    
+                    'em_id' => $eid,
                     'des_id' => $deg,
                     'dep_id' => $dept,
                     'first_name' => $fname,
@@ -325,7 +451,7 @@ class Employee extends CI_Controller {
                 $img_url = $path['file_name'];
                 $data = array();
                 $data = array(
-                    'em_code' => $eid,
+                    'em_id' => $eid,
                     'des_id' => $deg,
                     'dep_id' => $dept,
                     'first_name' => $fname,
@@ -353,7 +479,7 @@ class Employee extends CI_Controller {
         } else {
                 $data = array();
                 $data = array(
-                    'em_code' => $eid,
+                    'em_id' => $eid,
                     'des_id' => $deg,
                     'dep_id' => $dept,
                     'first_name' => $fname,
@@ -394,7 +520,8 @@ class Employee extends CI_Controller {
         $data['bankinfo'] = $this->employee_model->GetBankInfo($id);
         $data['fileinfo'] = $this->employee_model->GetFileInfo($id);
         $data['typevalue'] = $this->payroll_model->GetsalaryType();
-        $data['leavetypes'] = $this->leave_model->GetleavetypeInfo();    
+        $data['conge'] = $this->employee_model->GetConge($id);  
+         
         $data['salaryvalue'] = $this->employee_model->GetsalaryValue($id);
         $data['socialmedia'] = $this->employee_model->GetSocialValue($id);
             $year = date('Y');
@@ -405,40 +532,28 @@ class Employee extends CI_Controller {
 		redirect(base_url() , 'refresh');
 	}         
     }
-    public function Parmanent_Address(){
+
+    public function conge(){
         if($this->session->userdata('user_login_access') != False) {
         $id = $this->input->post('id');
         $em_id = $this->input->post('emid');
-        $paraddress = $this->input->post('paraddress');
-        $parcity = $this->input->post('parcity');
-        $parcountry = $this->input->post('parcountry');
-        $this->load->library('form_validation');
-        $this->form_validation->set_error_delimiters();
-        $this->form_validation->set_rules('paraddress', 'address', 'trim|required|min_length[5]|max_length[100]|xss_clean');
-
-        if ($this->form_validation->run() == FALSE) {
-            echo validation_errors();
-			#redirect("employee/view?I=" .base64_encode($em_id));
-			} else {
+        $nb_jour = $this->input->post('nb_jour');
             $data = array();
                 $data = array(
                     'emp_id' => $em_id,
-                    'city' => $parcity,
-                    'country' => $parcountry,
-                    'address' => $paraddress,
-                    'type' => 'Permanent'
+                    'nb_jour' => $nb_jour
                 );
             if(!empty($id)){
-                $success = $this->employee_model->UpdateParmanent_Address($id,$data);
+                $success = $this->employee_model->UpdateConge($id,$data);
                 $this->session->set_flashdata('feedback','Enregistrement Réussi');
                 echo "Enregistrement Réussi";                
             } else {
-                $success = $this->employee_model->AddParmanent_Address($data);
+                $success = $this->employee_model->AjoutConge($data);
                 $this->session->set_flashdata('feedback','Enregistrement Réussi');
                 echo "Enregistrement Réussi";
             }
                        
-        }
+        
         }
     else{
 		redirect(base_url() , 'refresh');
@@ -826,7 +941,8 @@ class Employee extends CI_Controller {
         $this->load->library('form_validation');
         $this->form_validation->set_error_delimiters();
         $this->form_validation->set_rules('typeid','typeid','trim|required|xss_clean');
-
+        $success = $this->employee_model->Add_Assign_Leave($data);
+        echo "Enregistrement Réussi";
         if ($this->form_validation->run() == FALSE) {
             echo validation_errors();
             #redirect('employee/Designation');

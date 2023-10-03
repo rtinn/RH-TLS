@@ -4,7 +4,7 @@
     <div class="message"></div>
     <div class="row page-titles">
         <div class="col-md-5 align-self-center">
-            <h3 class="text-themecolor"><i class="fa fa-clone" style="color:#1976d2"> </i> Application</h3>
+            <h3 class="text-themecolor"><i class="fa fa-clone" style="color:#1976d2"> </i> Demande de congé</h3>
         </div>
         <div class="col-md-7 align-self-center">
             <ol class="breadcrumb">
@@ -19,8 +19,7 @@
         <div class="row m-b-10">
             <?php // if($this->session->userdata('user_type')=='EMPLOYEE'){ ?> 
                 <div class="col-12">
-                    <button type="button" class="btn btn-info"><i class="fa fa-plus"></i><a data-toggle="modal" data-target="#appmodel" data-whatever="@getbootstrap" class="text-white"><i class="" aria-hidden="true"></i> Add Application </a></button>
-                    <button type="button" class="btn btn-primary"><i class="fa fa-bars"></i><a href="<?php echo base_url(); ?>leave/Holidays" class="text-white"><i class="" aria-hidden="true"></i> Holiday List</a></button>
+                    <button type="button" class="btn btn-info"><i class="fa fa-plus"></i><a data-toggle="modal" data-target="#appmodel" data-whatever="@getbootstrap" class="text-white"><i class="" aria-hidden="true"></i> Ajouter Demande </a></button>
                 </div>                       
             <?php // } ?> 
         </div> 
@@ -36,17 +35,46 @@
                             <table id="example23" class="display nowrap table table-hover table-striped table-bordered" cellspacing="0" width="100%">
                                 <thead>
                                     <tr>
-                                        <th>Employee Name</th>
-                                        <th>PIN</th>
-                                        <th>Leave Type</th>
-                                        <th>Apply Date</th>
-                                        <th>Start Date</th>
-                                        <th>End Date</th>
+                                    <th>N°</th>
+                                        <th>Nom et Prenoms</th>
+                                        <th>Type</th>
+                                        <th>Date demande</th>
+                                        <th>Date debut</th>
+                                        <th>Date fin</th>
                                         <th>Duration</th>
-                                        <th>Leave Status</th>
+                                        <th>Status</th>
                                         <th>Action</th>
                                     </tr>
                                 </thead>
+                                <script>
+    (function($) {
+        $(document).ready(function(){
+            var url = '<?php echo base_url(); ?>';
+
+            // Fonction pour initialiser la DataTable
+            function initializeDataTable() {
+                return $('#example23').DataTable({
+                    "paging": true,
+                    "searching": true,
+                    "ordering": true,
+                    "info": true,
+                    "order": [[1, 'asc']], // Utilisez "order" au lieu de "aaSorting"
+                    dom: 'Bfrtip',
+                    buttons: ['copy', 'csv', 'excel', 'pdf', 'print']
+                });
+            }
+
+            // Appelez la fonction pour initialiser la DataTable
+            var dataTable = initializeDataTable();
+        });
+    })(jQuery); // Vous devez envelopper votre code dans une fonction et la passer à jQuery
+</script>
+
+
+
+
+
+
                                 <!-- <tfoot>
                                     <tr>
                                         <th>Employee Name</th>
@@ -63,10 +91,11 @@
                                 <tbody>
                                     <?php foreach($application as $value): ?>
                                     <tr style="vertical-align:top">
+                                        <td><?php echo $value->em_id; ?></td>
                                         <td><span><?php echo $value->first_name.' '.$value->last_name ?></span></td>
-                                        <td><?php echo $value->em_code; ?></td>
-                                        <td><?php echo $value->name; ?></td>
-                                        <td><?php echo date('jS \of F Y',strtotime($value->apply_date)); ?></td>
+                                       <td><?php echo $value->name; ?></td>
+                                       <!-- <td><?php echo date('jS \of F Y',strtotime($value->apply_date)); ?></td>-->
+                                        <td><?php echo $value->apply_date; ?></td>
                                         <td><?php echo $value->start_date; ?></td>
                                         <td><?php echo $value->end_date; ?></td>
                                         <td>
@@ -91,8 +120,8 @@
                                                 }
                                                 
 
-                                                $daysDenom = ($days == 1) ? " day " : " days ";
-                                                $hourDenom = ($hour == 1) ? " hour " : " hours ";
+                                                $daysDenom = ($days == 1) ? " jour " : " jours ";
+                                                $hourDenom = ($hour == 1) ? " jour " : " jours ";
 
                                                 if($days > 0) {
                                                     echo $days . $daysDenom;
@@ -110,14 +139,15 @@
                                             
                                            <?php if($value->leave_status =='Approve'){ ?>
                                            
-                                             <?php } elseif($value->leave_status =='Not Approve'){ ?>
-                                            <a href="" title="Edit" class="btn btn-sm btn-success waves-effect waves-light Status" data-employeeId=<?php echo $value->em_id; ?>  data-id="<?php echo $value->id; ?>" data-value="Approve" data-duration="<?php echo $value->leave_duration; ?>" data-type="<?php echo $value->typeid; ?>">Approve</a>       
-                                            <a href="" title="Edit" class="btn btn-sm btn-danger waves-effect waves-light  Status" data-id = "<?php echo $value->id; ?>" data-value="Rejected" >Reject</a>
-                                            <br> 
+                                             <?php }
+                                              elseif($value->leave_status =='Non Approuvé'){ ?>
+                                            <a href="" title="Approuvé" class="btn btn-sm btn-success waves-effect waves-light Status" data-employeeId=<?php echo $value->em_id; ?>  data-id="<?php echo $value->id; ?>" data-value="Approve" data-duration="<?php echo $value->leave_duration; ?>" data-type="<?php echo $value->typeid; ?>"><i class="fa fa-check-square" aria-hidden="true"></i></a>       
+                                            <a href="" title="Rejété" class="btn btn-sm btn-danger waves-effect waves-light  Status" data-id = "<?php echo $value->id; ?>" data-value="Rejected" ><i class="fa fa-window-close" aria-hidden="true"></i></a>
+                                            
 
                                             <?php } elseif($value->leave_status =='Rejected'){ ?>
                                             <?php } ?>
-                                            <a href="" title="Edit" class="btn btn-sm btn-primary waves-effect waves-light leaveapp" data-id="<?php echo $value->id; ?>" ><i class="fa fa-pencil-square-o"></i></a>
+                                            <a href="" title="Modifier" class="btn btn-sm btn-primary waves-effect waves-light leaveapp" data-id="<?php echo $value->id; ?>" ><i class="fa fa-pencil-square-o"></i></a>
                                             
                                         </td>
                                         <?php } ?>
@@ -149,9 +179,9 @@
                                     </select>
                                 </div>
                                 <div class="form-group">
-                                    <label>Leave Type</label>
+                                    <label>Type de congé</label>
                                     <select class="form-control custom-select assignleave"  tabindex="1" name="typeid" id="leavetype" required>
-                                        <option value="">Select Here..</option>
+                                        <option value="">Selectinner type de congé</option>
                                         <?php foreach($leavetypes as $value): ?>
 
                                         <option value="<?php echo $value->type_id ?>"><?php echo $value->name ?></option>
@@ -167,35 +197,35 @@
                                     <br>
                                 </div>
                                 <div class="form-group">
-                                    <label class="control-label">Leave Duration</label><br>
+                                    <label class="control-label">Durée du congé</label><br>
                                     <input name="type" type="radio" id="radio_1" data-value="Half" class="duration" value="Half Day" checked="">
-                                    <label for="radio_1">Hourly</label>
+                                    <label for="radio_1">Horaire</label>
                                     <input name="type" type="radio" id="radio_2" data-value="Full" class="type" value="Full Day">
-                                    <label for="radio_2">Full Day</label>
+                                    <label for="radio_2">Journée complète</label>
                                     <input name="type" type="radio" class="with-gap duration" id="radio_3" data-value="More" value="More than One day">
-                                    <label for="radio_3">Above a Day</label>
+                                    <label for="radio_3">Au dessus d'un jour</label>
                                 </div>
                                 <div class="form-group">
                                     <label class="control-label" id="hourlyFix">Date</label>
-                                    <input type="text" name="startdate" class="form-control mydatetimepickerFull" id="recipient-name1" required>
+                                    <input type="date" name="startdate" class="form-control mydatetimepickerFull" id="recipient-name1" required>
                                 </div>
                                 <div class="form-group" id="enddate" style="display:none">
-                                    <label class="control-label">End Date</label>
-                                    <input type="text" name="enddate" class="form-control mydatetimepickerFull" id="recipient-name1">
+                                    <label class="control-label">Date de fin</label>
+                                    <input type="date" name="enddate" class="form-control mydatetimepickerFull" id="recipient-name1">
                                 </div>
 
                                 <div class="form-group" id="hourAmount">
-                                    <label>Length</label>
+                                    <label>Durée</label>
                                     <select  id="hourAmountVal" class=" form-control custom-select"  tabindex="1" name="hourAmount" required>
-                                        <option value="">Select Hour</option>
-                                        <option value="1">One hour</option>
-                                        <option value="2">Two hour</option>
-                                        <option value="3">Three hour</option>
-                                        <option value="4">Four hour</option>
-                                        <option value="5">Five hour</option>
-                                        <option value="6">Six hour</option>
-                                        <option value="7">Seven hour</option>
-                                        <option value="8">Eight hour</option>
+                                        <option value="">Selectionner Heure</option>
+                                        <option value="1">Une heure</option>
+                                        <option value="2">Deux heure</option>
+                                        <option value="3">Trois heure</option>
+                                        <option value="4">Quatre heure</option>
+                                        <option value="5">Cinq heure</option>
+                                        <option value="6">Six heure</option>
+                                        <option value="7">Sept heure</option>
+                                        <option value="8">Huite heure</option>
                                     </select>
                                 </div>
 
@@ -204,7 +234,7 @@
                                     <input type="number" name="duration" class="form-control" id="leaveDuration">
                                 </div> --> 
                                 <div class="form-group">
-                                    <label class="control-label">Reason</label>
+                                    <label class="control-label">Raisons</label>
                                     <textarea class="form-control" name="reason" id="message-text1"></textarea>                                                
                                 </div>
                                                                                
@@ -240,8 +270,8 @@
                             </script>
                             <div class="modal-footer">
                                 <input type="hidden" name="id" class="form-control" id="recipient-name1" required> 
-                                <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
-                                <button type="submit" class="btn btn-success">Submit</button>
+                                <button type="button" class="btn btn-danger" data-dismiss="modal">Annuler</button>
+                                <button type="submit" class="btn btn-success">Enregistrer</button>
                             </div>
                             </form>
                         </div>

@@ -33,44 +33,74 @@
     $sql = "SELECT *
             FROM `employee`
             WHERE `status` = 'ACTIF'
-            ORDER BY `em_code` ASC";
+            ORDER BY `em_id` ASC";
     
     $query = $this->db->query($sql);
     $result = $query->result();
     return $result;
 }
 
+public function get_entries()
+    {
+        $query = $this->db->get('pointage');
+        return $query->result();
+       
+    }
 
 
   public function pointageselect(){
     $sql = "SELECT `pointage`.*,
-    `employee`.`first_name`,`last_name`,`em_code`,`des_id`,`em_entree`
+    `employee`.`first_name`, `employee`.`last_name`, `employee`.`em_id`, `employee`.`des_id`, `employee`.`em_entree`
      FROM `pointage`
-     LEFT JOIN `employee` ON `pointage`.`sName`=`employee`.`em_code`";
-    $query=$this->db->query($sql);
-  	$result = $query->result();
-  	return $result;
-	}
-  public function deletePerso($id){
-    $this->db->delete('pointage',array('id' => $id ));
-  }
-
-
-
-  public function Getpointageid($id){
-
-    $sql = "SELECT `pointage`.*`sName`,`Date`,
-    MAX(CASE WHEN `Time`<'12:00' THEN `Time` ELSE NULL END) AS `Time_in`,
-    MAX(CASE WHEN `Time`>'12:00' THEN `Time` ELSE NULL END) AS `Time_out`,
-    `employee`.`first_name`,`last_name`,`em_code`,`des_id`
-    FROM `pointage`
-    LEFT JOIN `employee` ON `pointage`.`sName`=`employee`.`em_code`
-    WHERE `pointage`.`sName`='$id'
-    GROUP BY `sName`,`Date`";
-   $query = $this->db->query($sql);
-    $result = $query->row();
-    return $result; 
+     LEFT JOIN `employee` ON `pointage`.`sName` = `employee`.`em_id`";
+    $query = $this->db->query($sql);
+    $result = $query->result();
+    
+    return $result;
 }
+
+public function getidPointage($id){
+  $sql = "SELECT `pointage`.*,
+  `employee`.`first_name`, `employee`.`last_name`, `employee`.`em_id`, `employee`.`des_id`, `employee`.`em_entree`
+   FROM `pointage`
+   LEFT JOIN `employee` ON `pointage`.`sName` = `employee`.`em_id`
+   WHERE `pointage`.`id` = ?";
+   
+  $query = $this->db->query($sql, array($id));
+  return $query->row_array();
+}
+
+
+
+public function GetPointageEm($id){
+  $sql = "SELECT `pointage`.*,
+  `employee`.`first_name`, `employee`.`last_name`, `employee`.`em_id`, `employee`.`des_id`, `employee`.`em_entree`,`employee`.`em_id`
+   FROM `pointage`
+   LEFT JOIN `employee` ON `pointage`.`sName` = `employee`.`em_id`
+  WHERE `em_id`='$id'";
+  $query = $this->db->query($sql);
+  $result = $query->result(); // Utilisez $query->result() pour obtenir un tableau d'objets
+  return $result;          
+}
+
+public function updateAllConge($newNbJour) {
+
+ $this->db->set('nb_jour', 'nb_jour + 2.5', FALSE);
+        
+ // Mettez à jour tous les enregistrements dans la table "conge" avec la nouvelle valeur
+ $this->db->update('conge_mois');
+
+  // Vous pouvez également ajouter une condition WHERE si nécessaire pour filtrer les enregistrements à mettre à jour.
+  // $this->db->where('em_id', $em_id);
+}
+
+
+public function deleteP($id){
+  $this->db->where('pointage.id', $id);
+  return $this->db->delete('pointage');
+}
+
+
 
 /*
   public function pointageselect(){
@@ -104,7 +134,7 @@
 	}
     public function emselectByCode($emid){
     $sql = "SELECT * FROM `employee`
-      WHERE `em_code`='$emid'";
+      WHERE `em_id`='$emid'";
     $query=$this->db->query($sql);
 	$result = $query->row();
 	return $result;
@@ -142,6 +172,16 @@
 		$result = $query->row();
 		return $result;          
     }
+
+    public function Getidconge($id){
+      $sql = "SELECT * FROM `conge_mois`
+      WHERE `em_id`='$id'";
+        $query=$this->db->query($sql);
+		$result = $query->row();
+		return $result;          
+    }
+
+   
     public function ProjectEmployee($id){
       $sql = "SELECT `assign_task`.`assign_user`,
       `employee`.`em_id`,`first_name`,`last_name`
@@ -155,6 +195,14 @@
     public function GetperAddress($id){
       $sql = "SELECT * FROM `address`
       WHERE `emp_id`='$id' AND `type`='Permanent'";
+        $query=$this->db->query($sql);
+		$result = $query->row();
+		return $result;          
+    }
+
+    public function GetConge($id){
+      $sql = "SELECT * FROM `conge_mois`
+      WHERE `em_id`='$id'";
         $query=$this->db->query($sql);
 		$result = $query->row();
 		return $result;          
@@ -198,7 +246,7 @@
 
     public function desciplinaryfetch(){
       $sql = "SELECT `desciplinary`.*,
-      `employee`.`em_id`,`first_name`,`last_name`,`em_code`
+      `employee`.`em_id`,`first_name`,`last_name`,`em_id`
       FROM `desciplinary`
       LEFT JOIN `employee` ON `desciplinary`.`em_id`=`employee`.`em_id`";
         $query=$this->db->query($sql);
@@ -245,6 +293,10 @@
 		$this->db->where('id', $id);
 		$this->db->update('address',$data);        
     }
+    public function UpdateConge($id,$data){
+      $this->db->where('id', $id);
+      $this->db->update('conge_mois',$data);        
+      }
     public function Reset_Password($id,$data){
 		$this->db->where('em_id', $id);
 		$this->db->update('employee',$data);        
@@ -276,6 +328,12 @@
     public function AddParmanent_Address($data){
         $this->db->insert('address',$data);
     } 
+    public function AjoutConge($data){
+      $this->db->insert('conge_mois',$data);
+  } 
+
+
+    
     public function Add_education($data){
         $this->db->insert('education',$data);
     }

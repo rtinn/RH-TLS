@@ -9,7 +9,7 @@
         <div class="col-md-7 align-self-center">
             <ol class="breadcrumb">
                 <li class="breadcrumb-item"><a href="javascript:void(0)">Home</a></li>
-                <li class="breadcrumb-item active">Leave</li>
+                <li class="breadcrumb-item active">Congé</li>
             </ol>
         </div>
     </div>
