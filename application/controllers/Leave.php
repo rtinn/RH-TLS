@@ -152,14 +152,65 @@ class Leave extends CI_Controller
     public function Application()
     {
         if ($this->session->userdata('user_login_access') != False) {
-            $data['employee']    = $this->employee_model->emselect(); // gets active employee details
-            $data['leavetypes']  = $this->leave_model->GetleavetypeInfo();
-            $data['application'] = $this->leave_model->AllLeaveAPPlication();
-            $this->load->view('backend/leave_approve', $data);
+            
+            $this->load->view('backend/leave_approve');
         } else {
             redirect(base_url(), 'refresh');
         }
     }
+
+    public function GetApplication() {
+        $data['employee']    = $this->employee_model->emselect(); // obtient les détails des employés actifs
+        $data['leavetypes']  = $this->leave_model->GetleavetypeInfo();
+        $data['application'] = $this->leave_model->AllLeaveAPPlication();
+        $output = array();
+        
+        foreach ($data['application'] as $value) { // Itérez sur les demandes de congé (supposons que les demandes de congé sont dans $data['application'])
+            ?>
+            <tr style="vertical-align: top">
+                <td><?php echo $value->em_id; ?></td>
+                <td><span><?php echo $value->first_name.' '.$value->last_name ?></span></td>
+                <td><?php echo $value->name; ?></td>
+                <td><?php echo $value->apply_date; ?></td>
+                <td><?php echo $value->start_date; ?></td>
+                <td><?php echo $value->end_date; ?></td>
+                <td>
+                    <!-- Votre code pour la durée ici -->
+                </td>
+                <td><?php echo $value->leave_status; ?></td>
+                <?php if ($this->session->userdata('user_type') != 'EMPLOYEE') { ?>
+                    <td class="jsgrid-align-center">
+                        <?php if ($value->leave_status == 'Approve') { ?>
+                            <!-- Votre code ici -->
+                        <?php } elseif ($value->leave_status == 'Non Approuvé') { ?>
+                            <a href="" title="Approuvé" class="btn btn-sm btn-success waves-effect waves-light Status" data-employeeId="<?php echo $value->em_id; ?>"  data-id="<?php echo $value->id; ?>" data-value="Approve" data-duration="<?php echo $value->leave_duration; ?>" data-type="<?php echo $value->typeid; ?>"><i class="fa fa-check-square" aria-hidden="true"></i></a>       
+                            <a href="" title="Rejété" class="btn btn-sm btn-danger waves-effect waves-light  Status" data-id="<?php echo $value->id; ?>" data-value="Rejected"><i class="fa fa-window-close" aria-hidden="true"></i></a>
+                        <?php } elseif ($value->leave_status == 'Rejected') { ?>
+                            <!-- Votre code ici -->
+                        <?php } ?>
+                        <a href="" title="Modifier" class="btn btn-sm btn-primary waves-effect waves-light leaveapp" data-id="<?php echo $value->id; ?>"><i class="fa fa-pencil-square-o"></i></a>
+                    </td>
+                <?php } ?>
+            </tr>
+            <?php
+        }   
+    }
+
+    public function getidconge(){
+		$id = $_POST['id'];
+		$data = $this->leave_model->getidconge($id);
+		echo json_encode($data);
+	}
+
+	
+
+	public function Valideconge(){
+		$id = $_POST['id'];
+		$query = $this->leave_model->deleteP($id);
+	}
+
+
+    
 
     public function EmApplication()
     {

@@ -291,5 +291,14 @@
         $query = $this->db->query($sql);
         return $query->row();
     }
+
+  
+    public function Getidconge($id){
+        $sql = "SELECT * FROM `conge_mois`
+         WHERE `id` = ?";
+        $query = $this->db->query($sql, array($id));
+        return $query->row_array();
+      }
+
     }
 ?>    

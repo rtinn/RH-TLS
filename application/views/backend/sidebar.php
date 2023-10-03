@@ -58,6 +58,7 @@
                         </li>   
                         -->                                                                    
                         <?php } else { ?>
+                            
                         <li> <a class="has-arrow waves-effect waves-dark" href="#" aria-expanded="false"><i class="fa fa-building-o"></i><span class="hide-menu">Organisations </span></a>
                             <ul aria-expanded="false" class="collapse">
                                 <li><a href="<?php echo base_url();?>organization/Department"> <i class="fa fa-circle-o"></i> Departement </a></li>

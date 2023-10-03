@@ -51,29 +51,6 @@
         $(document).ready(function(){
             var url = '<?php echo base_url(); ?>';
 
-
-            function showTable() {
-                $.ajax({
-                    type: 'POST',
-                    <?php if ($this->session->userdata('user_type') == 'EMPLOYEE') { ?>
-                     
-                    <?php } else { ?>
-                    url: url + 'leave/GetApplication',
-                        <?php } ?>
-                    success: function(response) {
-                        
-                        $('#example23 tbody').html(response);
-                     
-                    }
-                });
-            }
-
-            // Appelez showTable au chargement de la page
-            showTable();
-
-
-
-
             // Fonction pour initialiser la DataTable
             function initializeDataTable() {
                 return $('#example23').DataTable({
@@ -89,34 +66,76 @@
 
             // Appelez la fonction pour initialiser la DataTable
             var dataTable = initializeDataTable();
-
-            $(document).on('click', '.valide', function(){
-            var id = $(this).data('id');
-            $.ajax({
-                type: 'POST',
-                url: url + 'leave/getidconge',
-                dataType: 'json',
-                data: {id: id},
-                success: function(response){
-                    console.log(response);
-                    $('#delfname').html(response.sName);
-                    $('#datename').html(response.Date);
-                    $('#delid').val(response.id);
-                    $('#delmodal').modal('show');
-                }
-            });
-        });
-
         });
     })(jQuery); // Vous devez envelopper votre code dans une fonction et la passer à jQuery
 </script>
 
-
-
-
-
-
                                 <tbody>
+                                    <?php foreach($application as $value): ?>
+                                    <tr style="vertical-align:top">
+                                        <td><?php echo $value->em_id; ?></td>
+                                        <td><span><?php echo $value->first_name.' '.$value->last_name ?></span></td>
+                                       <td><?php echo $value->name; ?></td>
+                                       <!-- <td><?php echo date('jS \of F Y',strtotime($value->apply_date)); ?></td>-->
+                                        <td><?php echo $value->apply_date; ?></td>
+                                        <td><?php echo $value->start_date; ?></td>
+                                        <td><?php echo $value->end_date; ?></td>
+                                        <td>
+                                            
+                                            <!-- Duration filtering -->
+                                            <?php
+                                                if($value->leave_duration > 8) {
+                                                    $originalDays = $value->leave_duration;
+                                                    $days = $originalDays / 8;
+                                                    $hour = 0;
+                                                    // 120 / 8 = 15 // 15 day
+                                                    // 13 - (1*8) = 5 hour
+
+                                                    if(is_float($days)) {
+                                                        
+                                                        $days = floor($days); // 1
+                                                        $hour = $value->leave_duration - ($days * 8); // 5
+                                                    }
+                                                } else {
+                                                    $days = 0;
+                                                    $hour = $value->leave_duration;
+                                                }
+                                                
+
+                                                $daysDenom = ($days == 1) ? " jour " : " jours ";
+                                                $hourDenom = ($hour == 1) ? " jour " : " jours ";
+
+                                                if($days > 0) {
+                                                    echo $days . $daysDenom;
+                                                } else {
+                                                    echo $hour . $hourDenom;
+                                                }
+                                            ?>
+                                            
+
+                                        </td>
+                                        <td><?php echo $value->leave_status; ?></td>
+                                        <?php if($this->session->userdata('user_type')=='EMPLOYEE'){ ?> 
+                                        
+                                         <?php } else { ?> 
+                                        <td class="jsgrid-align-center">
+                                            
+                                           <?php if($value->leave_status =='Approve'){ ?>
+                                           
+                                             <?php }
+                                              elseif($value->leave_status =='Non Approuvé'){ ?>
+                                            <a href="" title="Approuvé" class="btn btn-sm btn-success waves-effect waves-light Status" data-employeeId=<?php echo $value->em_id; ?>  data-id="<?php echo $value->id; ?>" data-value="Approve" data-duration="<?php echo $value->leave_duration; ?>" data-type="<?php echo $value->typeid; ?>"><i class="fa fa-check-square" aria-hidden="true"></i></a>       
+                                            <a href="" title="Rejété" class="btn btn-sm btn-danger waves-effect waves-light  Status" data-id = "<?php echo $value->id; ?>" data-value="Rejected" ><i class="fa fa-window-close" aria-hidden="true"></i></a>
+                                            
+
+                                            <?php } elseif($value->leave_status =='Rejected'){ ?>
+                                            <?php } ?>
+                                            <a href="" title="Modifier" class="btn btn-sm btn-primary waves-effect waves-light leaveapp" data-id="<?php echo $value->id; ?>" ><i class="fa fa-pencil-square-o"></i></a>
+                                            
+                                        </td>
+                                        <?php } ?>
+                                    </tr>
+                                    <?php endforeach; ?>
                                 </tbody>
                             </table>
                         </div>

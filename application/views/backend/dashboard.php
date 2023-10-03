@@ -2,7 +2,7 @@
 <?php $this->load->view('backend/sidebar'); ?>
 <?php 
     $id = $this->session->userdata('user_login_id');
-    $nbjour = $this->employee_model->Getidconge($id); 
+    $nbjour = $this->dashboard_model->Getidconge($id); 
                        
 ?> 
       <div class="page-wrapper">

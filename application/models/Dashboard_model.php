@@ -31,6 +31,14 @@
 	public function UpdateTododata($id,$data){
 		$this->db->where('id', $id);
 		$this->db->update('to-do_list',$data);		
-	}        
+	}    
+    
+    public function Getidconge($id){
+        $sql = "SELECT * FROM `conge_mois`
+        WHERE `em_id`='$id'";
+          $query=$this->db->query($sql);
+          $result = $query->row();
+          return $result;          
+    }
     }
 ?>

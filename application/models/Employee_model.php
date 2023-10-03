@@ -173,13 +173,7 @@ public function deleteP($id){
 		return $result;          
     }
 
-    public function Getidconge($id){
-      $sql = "SELECT * FROM `conge_mois`
-      WHERE `em_id`='$id'";
-        $query=$this->db->query($sql);
-		$result = $query->row();
-		return $result;          
-    }
+   
 
    
     public function ProjectEmployee($id){
