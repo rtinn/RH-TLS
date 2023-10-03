@@ -18,8 +18,15 @@
                     </ol>
                 </div>
             </div>
-
-
+            <div class="row">
+                    <div class="col-12">
+                        <div class="card card-outline-info">
+                            <div class="card-header">
+                                <h4 class="m-b-0 text-white"><i class="fa fa-user-o" aria-hidden="true"></i> Liste des personnels</h4>
+                            </div>
+                        </div>
+                    </div>
+             </div>
     </div>     
    
 <?php } else { ?>
