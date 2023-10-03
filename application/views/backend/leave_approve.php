@@ -111,6 +111,7 @@
                                                     echo $hour . $hourDenom;
                                                 }
                                             ?>
+                                            
 
                                         </td>
                                         <td><?php echo $value->leave_status; ?></td>
