@@ -25,6 +25,7 @@ class Csv extends CI_Controller {
 
 
         // If upload failed, display error
+         // If upload failed, display error
         if (!$this->upload->do_upload()) {
             $data['error'] = $this->upload->display_errors();
 
