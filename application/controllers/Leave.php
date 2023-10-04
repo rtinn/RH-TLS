@@ -185,10 +185,10 @@ class Leave extends CI_Controller
                         <?php } elseif ($value->leave_status == 'Non Approuvé') { ?>
                             <button class="btn btn-success valide" data-id="<?php echo $value->id; ?>"><i class="fa fa-calendar-check-o" aria-hidden="true"></i></button>
                             <button class="btn btn-danger rejet" data-id="<?php echo $value->id; ?>"><i class="fa fa-calendar-times-o" aria-hidden="true"></i></button>
-                            <a href="" title="Rejété" class="btn btn-sm btn-danger waves-effect waves-light  Status" data-id="<?php echo $value->id; ?>" data-value="Rejected"><i class="fa fa-window-close" aria-hidden="true"></i></a>
                         <?php } elseif ($value->leave_status == 'Rejected') { ?>
                             <!-- Votre code ici -->
                         <?php } ?>
+                    
                         <a href="" title="Modifier" class="btn btn-sm btn-primary waves-effect waves-light leaveapp" data-id="<?php echo $value->id; ?>"><i class="fa fa-pencil-square-o"></i></a>
                     </td>
                 <?php } ?>

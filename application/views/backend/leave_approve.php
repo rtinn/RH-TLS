@@ -66,7 +66,7 @@
                 <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
             </div>
             <div class="modal-body">
-				<h4 class="text-center">Voulez-vous vraiment validé ce demande de congé </h4>
+				<h4 class="text-center">Voulez-vous vraiment validé le demande de congé </h4>
                 <h3 id="datename" class="text-center"></h3>
                 <h4 class="text-center">pour le matricule:</h4>
 				<h3 id="matr" class="text-center"></h3>
@@ -87,11 +87,11 @@
         <div class="modal-content">
             <div class="modal-header">
                
-                <center><h4 class="modal-title" id="myModalLabel"><i <i class="fa fa-calendar-check-o" aria-hidden="true"></i> Validation congé</h4></center>
+                <center><h4 class="modal-title" id="myModalLabel"><i <i class="fa fa-calendar-check-o" aria-hidden="true"></i> Rejet congé</h4></center>
                 <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
             </div>
             <div class="modal-body">
-				<h4 class="text-center">Voulez-vous vraiment validé ce demande de congé </h4>
+				<h4 class="text-center">Voulez-vous vraiment rejeté le demande de congé </h4>
                 <h3 id="datename" class="text-center"></h3>
                 <h4 class="text-center">pour le matricule:</h4>
 				<h3 id="matri" class="text-center"></h3>
@@ -105,13 +105,10 @@
         </div>
     </div>
 </div>
-<div class="modal fade" id="reussimodal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+<div class="modal fade reussimodal" id="reussimodal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
     <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-
-               <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-            </div>
+        <div class="modal-content reussi_modal">
+           
             <div class="modal-body">
 				
                 <div class="success_img">
@@ -334,6 +331,12 @@
                 data: {id: id},
                 success: function(){
                     $('#validemodal').modal('hide');
+                    $('#reussimodal').modal('show');
+                     
+                    // Ajouter un délai de 3 secondes avant de fermer le modal
+                    setTimeout(function(){
+                        $('#reussimodal').modal('hide');
+                    }, 2000);
                     showTable();
                 }
             });
@@ -348,6 +351,12 @@
                 success: function(){
                     $('#rejetmodal').modal('hide');
                     $('#reussimodal').modal('show');
+                    
+                    // Ajouter un délai de 3 secondes avant de fermer le modal
+                    setTimeout(function(){
+                        $('#reussimodal').modal('hide');
+                    }, 2000);
+
                     showTable();
                 }
             });

@@ -18,14 +18,17 @@
     z-index: 99999;
     background: #fff
 }
-
+.reussi_modal{
+    border-radius: 50px !important;
+    border-bottom: 0px solid #3976d2 !important;
+}
 
 .success_img{
     display: flex;
     justify-content: center;
 }
 .success_img img{
-    width: 30%;
+    width: 12%;
 }
 
 .button:focus, .btn.active:focus, .btn:focus {
