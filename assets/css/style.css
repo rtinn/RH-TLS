@@ -18,6 +18,16 @@
     z-index: 99999;
     background: #fff
 }
+
+
+.success_img{
+    display: flex;
+    justify-content: center;
+}
+.success_img img{
+    width: 30%;
+}
+
 .button:focus, .btn.active:focus, .btn:focus {
     outline: 0 !important;
     outline: 0 !important;

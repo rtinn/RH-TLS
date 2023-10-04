@@ -87,20 +87,38 @@
         <div class="modal-content">
             <div class="modal-header">
                
-                <center><h4 class="modal-title" id="myModalLabel"><i <i class="fa fa-calendar-check-o" aria-hidden="true"></i> Rejet congé</h4></center>
+                <center><h4 class="modal-title" id="myModalLabel"><i <i class="fa fa-calendar-check-o" aria-hidden="true"></i> Validation congé</h4></center>
                 <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
             </div>
             <div class="modal-body">
 				<h4 class="text-center">Voulez-vous vraiment validé ce demande de congé </h4>
                 <h3 id="datename" class="text-center"></h3>
                 <h4 class="text-center">pour le matricule:</h4>
-				<h3 id="matr" class="text-center"></h3>
+				<h3 id="matri" class="text-center"></h3>
 
 			</div>
             <div class="modal-footer">
-            <button type="button" id="valid_id" class="btn btn-danger"><span class="glyphicon glyphicon-trash"></span><i class="fa fa-check" aria-hidden="true"></i> Validé</button>
+            <button type="button" id="rejet_id" class="btn btn-danger"><span class="glyphicon glyphicon-trash"></span><i class="fa fa-check" aria-hidden="true"></i> Validé</button>
             <button type="button" class="btn btn-default" data-dismiss="modal"><i class="fa fa-ban" aria-hidden="true"></i> Fermer</button>
             </div>
+			
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="reussimodal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+
+               <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+            </div>
+            <div class="modal-body">
+				
+                <div class="success_img">
+                <img src="https://media.tenor.com/bm8Q6yAlsPsAAAAi/verified.gif" alt="">
+                </div>
+			</div>
+            
 			
         </div>
     </div>
@@ -288,6 +306,24 @@
             
 
         });
+        $(document).on('click', '.rejet', function(){
+            var id = $(this).data('id');
+            $.ajax({
+                type: 'POST',
+                url: url + 'leave/getidconge',
+                dataType: 'json',
+                data: {id: id},
+                success: function(response){
+                    console.log(response);
+                    $('#matri').html(response.em_id);
+                   
+                    $('#rejet_id').val(response.id);
+                    $('#rejetmodal').modal('show');
+                }
+            });
+            
+
+        });
 
         
         $('#valid_id').click(function(){
@@ -298,6 +334,20 @@
                 data: {id: id},
                 success: function(){
                     $('#validemodal').modal('hide');
+                    showTable();
+                }
+            });
+        });
+
+        $('#rejet_id').click(function(){
+            var id = $(this).val();
+            $.ajax({
+                type: 'POST',
+                url: url + 'leave/rejetconge',
+                data: {id: id},
+                success: function(){
+                    $('#rejetmodal').modal('hide');
+                    $('#reussimodal').modal('show');
                     showTable();
                 }
             });
