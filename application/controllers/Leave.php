@@ -183,7 +183,8 @@ class Leave extends CI_Controller
                         <?php if ($value->leave_status == 'Approve') { ?>
                             <!-- Votre code ici -->
                         <?php } elseif ($value->leave_status == 'Non Approuvé') { ?>
-                            <a href="" title="Approuvé" class="btn btn-sm btn-success waves-effect waves-light Status" data-employeeId="<?php echo $value->em_id; ?>"  data-id="<?php echo $value->id; ?>" data-value="Approve" data-duration="<?php echo $value->leave_duration; ?>" data-type="<?php echo $value->typeid; ?>"><i class="fa fa-check-square" aria-hidden="true"></i></a>       
+                            <button class="btn btn-success valide" data-id="<?php echo $value->id; ?>"><i class="fa fa-calendar-check-o" aria-hidden="true"></i></button>
+                            <button class="btn btn-danger rejeté" data-id="<?php echo $value->id; ?>"><i class="fa fa-calendar-times-o" aria-hidden="true"></i></button>
                             <a href="" title="Rejété" class="btn btn-sm btn-danger waves-effect waves-light  Status" data-id="<?php echo $value->id; ?>" data-value="Rejected"><i class="fa fa-window-close" aria-hidden="true"></i></a>
                         <?php } elseif ($value->leave_status == 'Rejected') { ?>
                             <!-- Votre code ici -->
@@ -201,14 +202,29 @@ class Leave extends CI_Controller
 		$data = $this->leave_model->getidconge($id);
 		echo json_encode($data);
 	}
+    public function getidcongez(){
+		$id = $_POST['id'];
+		$data = $this->leave_model->getidconge($id);
+		echo json_encode($data);
+	}
 
 	
 
-	public function Valideconge(){
-		$id = $_POST['id'];
-		$query = $this->leave_model->deleteP($id);
-	}
-
+    public function Valideconge(){
+        $id = $_POST['id'];
+        $newStatus = 'Approve'; // Remplacez 'NouveauStatut' par la valeur de statut souhaitée
+    
+        // Appeler la méthode pour mettre à jour le statut
+        $query = $this->leave_model->updateStatus($id, $newStatus);
+    
+        // Vous pouvez également vérifier si la mise à jour s'est bien passée ici
+        if ($query) {
+            echo "Mise à jour du statut réussie.";
+        } else {
+            echo "Échec de la mise à jour du statut.";
+        }
+    }
+    
 
     
 

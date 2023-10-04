@@ -159,9 +159,6 @@ public function getidPointage(){
 		$data = $this->employee_model->getidPointage($id);
 		echo json_encode($data);
 	}
-
-	
-
 	public function deletePointage(){
 		$id = $_POST['id'];
 		$query = $this->employee_model->deleteP($id);

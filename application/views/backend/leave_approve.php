@@ -8,8 +8,8 @@
         </div>
         <div class="col-md-7 align-self-center">
             <ol class="breadcrumb">
-                <li class="breadcrumb-item"><a href="javascript:void(0)">Home</a></li>
-                <li class="breadcrumb-item active">Leave Application</li>
+                <li class="breadcrumb-item"><a href="javascript:void(0)">Accueil</a></li>
+                <li class="breadcrumb-item active">Demande de congé</li>
             </ol>
         </div>
     </div>
@@ -27,7 +27,7 @@
             <div class="col-12">
                 <div class="card card-outline-info">
                     <div class="card-header">
-                        <h4 class="m-b-0 text-white"> Application List                        
+                        <h4 class="m-b-0 text-white">   Liste des demandes de congé                     
                         </h4>
                     </div>
                     <div class="card-body">
@@ -46,76 +46,7 @@
                                         <th>Action</th>
                                     </tr>
                                 </thead>
-                                <script>
-    (function($) {
-        $(document).ready(function(){
-            var url = '<?php echo base_url(); ?>';
-
-
-            function showTable() {
-                $.ajax({
-                    type: 'POST',
-                    <?php if ($this->session->userdata('user_type') == 'EMPLOYEE') { ?>
-                     
-                    <?php } else { ?>
-                    url: url + 'leave/GetApplication',
-                        <?php } ?>
-                    success: function(response) {
                         
-                        $('#example23 tbody').html(response);
-                     
-                    }
-                });
-            }
-
-            // Appelez showTable au chargement de la page
-            showTable();
-
-
-
-
-            // Fonction pour initialiser la DataTable
-            function initializeDataTable() {
-                return $('#example23').DataTable({
-                    "paging": true,
-                    "searching": true,
-                    "ordering": true,
-                    "info": true,
-                    "order": [[1, 'asc']], // Utilisez "order" au lieu de "aaSorting"
-                    dom: 'Bfrtip',
-                    buttons: ['copy', 'csv', 'excel', 'pdf', 'print']
-                });
-            }
-
-            // Appelez la fonction pour initialiser la DataTable
-            var dataTable = initializeDataTable();
-
-            $(document).on('click', '.valide', function(){
-            var id = $(this).data('id');
-            $.ajax({
-                type: 'POST',
-                url: url + 'leave/getidconge',
-                dataType: 'json',
-                data: {id: id},
-                success: function(response){
-                    console.log(response);
-                    $('#delfname').html(response.sName);
-                    $('#datename').html(response.Date);
-                    $('#delid').val(response.id);
-                    $('#delmodal').modal('show');
-                }
-            });
-        });
-
-        });
-    })(jQuery); // Vous devez envelopper votre code dans une fonction et la passer à jQuery
-</script>
-
-
-
-
-
-
                                 <tbody>
                                 </tbody>
                             </table>
@@ -124,6 +55,59 @@
                 </div>
             </div>
         </div>
+
+<!--Modal pour validé congé-->
+        <div class="modal fade" id="validemodal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+               
+                <center><h4 class="modal-title" id="myModalLabel"><i <i class="fa fa-calendar-check-o" aria-hidden="true"></i> Validation congé</h4></center>
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+            </div>
+            <div class="modal-body">
+				<h4 class="text-center">Voulez-vous vraiment validé ce demande de congé </h4>
+                <h3 id="datename" class="text-center"></h3>
+                <h4 class="text-center">pour le matricule:</h4>
+				<h3 id="matr" class="text-center"></h3>
+
+			</div>
+            <div class="modal-footer">
+            <button type="button" id="valid_id" class="btn btn-danger"><span class="glyphicon glyphicon-trash"></span><i class="fa fa-check" aria-hidden="true"></i> Validé</button>
+            <button type="button" class="btn btn-default" data-dismiss="modal"><i class="fa fa-ban" aria-hidden="true"></i> Fermer</button>
+            </div>
+			
+        </div>
+    </div>
+</div>
+
+<!--Modal pour rejété congé-->
+<div class="modal fade" id="rejetmodal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+               
+                <center><h4 class="modal-title" id="myModalLabel"><i <i class="fa fa-calendar-check-o" aria-hidden="true"></i> Rejet congé</h4></center>
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+            </div>
+            <div class="modal-body">
+				<h4 class="text-center">Voulez-vous vraiment validé ce demande de congé </h4>
+                <h3 id="datename" class="text-center"></h3>
+                <h4 class="text-center">pour le matricule:</h4>
+				<h3 id="matr" class="text-center"></h3>
+
+			</div>
+            <div class="modal-footer">
+            <button type="button" id="valid_id" class="btn btn-danger"><span class="glyphicon glyphicon-trash"></span><i class="fa fa-check" aria-hidden="true"></i> Validé</button>
+            <button type="button" class="btn btn-default" data-dismiss="modal"><i class="fa fa-ban" aria-hidden="true"></i> Fermer</button>
+            </div>
+			
+        </div>
+    </div>
+</div>
+
+
+
         <div class="modal fade" id="appmodel" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel1">
                     <div class="modal-dialog" role="document">
                         <div class="modal-content ">
@@ -242,6 +226,87 @@
                     </div>
                 </div>
 
+                <script>
+    (function($) {
+        $(document).ready(function(){
+            var url = '<?php echo base_url(); ?>';
+
+
+            function showTable() {
+                $.ajax({
+                    type: 'POST',
+                    <?php if ($this->session->userdata('user_type') == 'EMPLOYEE') { ?>
+                     
+                    <?php } else { ?>
+                    url: url + 'leave/GetApplication',
+                        <?php } ?>
+                    success: function(response) {
+                        
+                        $('#example23 tbody').html(response);
+                     
+                    }
+                });
+            }
+
+            // Appelez showTable au chargement de la page
+            showTable();
+
+
+
+
+            // Fonction pour initialiser la DataTable
+            function initializeDataTable() {
+                return $('#example23').DataTable({
+                    "paging": true,
+                    "searching": true,
+                    "ordering": true,
+                    "info": true,
+                    "order": [[1, 'asc']], // Utilisez "order" au lieu de "aaSorting"
+                    dom: 'Bfrtip',
+                    buttons: ['copy', 'csv', 'excel', 'pdf', 'print']
+                });
+            }
+
+            // Appelez la fonction pour initialiser la DataTable
+            var dataTable = initializeDataTable();
+
+            $(document).on('click', '.valide', function(){
+            var id = $(this).data('id');
+            $.ajax({
+                type: 'POST',
+                url: url + 'leave/getidconge',
+                dataType: 'json',
+                data: {id: id},
+                success: function(response){
+                    console.log(response);
+                    $('#matr').html(response.em_id);
+                   
+                    $('#valid_id').val(response.id);
+                    $('#validemodal').modal('show');
+                }
+            });
+            
+
+        });
+
+        
+        $('#valid_id').click(function(){
+            var id = $(this).val();
+            $.ajax({
+                type: 'POST',
+                url: url + 'leave/Valideconge',
+                data: {id: id},
+                success: function(){
+                    $('#validemodal').modal('hide');
+                    showTable();
+                }
+            });
+        });
+
+
+        });
+    })(jQuery); // Vous devez envelopper votre code dans une fonction et la passer à jQuery
+</script>
 
 
 <script>

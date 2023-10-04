@@ -294,11 +294,17 @@
 
   
     public function Getidconge($id){
-        $sql = "SELECT * FROM `conge_mois`
+        $sql = "SELECT * FROM `emp_leave`
          WHERE `id` = ?";
         $query = $this->db->query($sql, array($id));
         return $query->row_array();
       }
+
+      public function updateStatus($id, $newStatus){
+        $this->db->where('id', $id);
+        return $this->db->update('emp_leave', array('leave_status' => $newStatus));
+    }
+    
 
     }
 ?>    
