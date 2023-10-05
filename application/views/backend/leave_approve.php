@@ -73,7 +73,7 @@
 
 			</div>
             <div class="modal-footer">
-            <button type="button" id="valid_id" class="btn btn-danger"><span class="glyphicon glyphicon-trash"></span><i class="fa fa-check" aria-hidden="true"></i> Validé</button>
+            <button type="button" id="valid_id" class="btn btn-danger"><span class="glyphicon glyphicon-trash"></span><i class="fa fa-calendar-check-o" aria-hidden="true"></i> Validé</button>
             <button type="button" class="btn btn-default" data-dismiss="modal"><i class="fa fa-ban" aria-hidden="true"></i> Fermer</button>
             </div>
 			
@@ -98,7 +98,7 @@
 
 			</div>
             <div class="modal-footer">
-            <button type="button" id="rejet_id" class="btn btn-danger"><span class="glyphicon glyphicon-trash"></span><i class="fa fa-check" aria-hidden="true"></i> Validé</button>
+            <button type="button" id="rejet_id" class="btn btn-danger"><span class="glyphicon glyphicon-trash"></span><i class="fa fa-calendar-times-o" aria-hidden="true"></i> Rejeté</button>
             <button type="button" class="btn btn-default" data-dismiss="modal"><i class="fa fa-ban" aria-hidden="true"></i> Fermer</button>
             </div>
 			
@@ -129,6 +129,7 @@
                             <div class="modal-header">
                                 <h4 class="modal-title" id="exampleModalLabel1">Leave Application</h4>
                                 <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                                
                             </div>
                             <form method="post" action="Add_Applications" id="leaveapply" enctype="multipart/form-data">
                             <div class="modal-body">
@@ -363,6 +364,54 @@
         });
 
 
+        $(document).ready(function() {
+
+            $(document).on('click', '.leaveapp', function(){
+           
+            var iid = $(this).attr('data-id');
+                    $('#leaveapply').trigger("reset");
+                    $('#appmodel').modal('show');
+                    $.ajax({
+                        url: 'LeaveAppbyid?id=' + iid,
+                        method: 'GET',
+                        data: '',
+                        dataType: 'json',
+                    }).done(function(response) {
+                        // console.log(response);
+                        // Populate the form fields with the data returned from server
+                        $('#leaveapply').find('[name="id"]').val(response.leaveapplyvalue.id).end();
+                        $('#leaveapply').find('[name="emid"]').val(response.leaveapplyvalue.em_id).end();
+                        $('#leaveapply').find('[name="applydate"]').val(response.leaveapplyvalue.apply_date).end();
+                        $('#leaveapply').find('[name="typeid"]').val(response.leaveapplyvalue.typeid).end();
+                        $('#leaveapply').find('[name="startdate"]').val(response.leaveapplyvalue.start_date).end();
+                        $('#leaveapply').find('[name="enddate"]').val(response.leaveapplyvalue.end_date).end();
+                        $('#leaveapply').find('[name="reason"]').val(response.leaveapplyvalue.reason).end();
+                        $('#leaveapply').find('[name="status"]').val(response.leaveapplyvalue.leave_status).end();
+
+                        if(response.leaveapplyvalue.leave_type == 'Half day') {
+                            $('#appmodel').find(':radio[name=type][value="Half Day"]').prop('checked', true).end();
+                            $('#hourAmount').show().end();
+                            $('#enddate').hide().end();
+                        } else if(response.leaveapplyvalue.leave_type == 'Full Day') {
+                            $('#appmodel').find(':radio[name=type][value="Full Day"]').prop('checked', true).end();
+                            $('#hourAmount').hide().end();
+                        } else if(response.leaveapplyvalue.leave_type == 'More than One day'){
+                            $('#appmodel').find(':radio[name=type][value="More than One day"]').prop('checked', true).end();
+                            $('#hourAmount').hide().end();
+                            $('#enddate').show().end();
+                        }
+
+                        $('#hourAmountVal').val(response.leaveapplyvalue.leave_duration).show().end();
+                    });
+                });
+            });
+
+
+
+
+
+
+
         });
     })(jQuery); // Vous devez envelopper votre code dans une fonction et la passer à jQuery
 </script>
@@ -447,47 +496,13 @@
   });           
 </script>
 
+
+
+
+
+
 <script type="text/javascript">
-            $(document).ready(function() {
-                $(".leaveapp").click(function(e) {
-                    e.preventDefault(e);
-                    // Get the record's ID via attribute
-                    var iid = $(this).attr('data-id');
-                    $('#leaveapply').trigger("reset");
-                    $('#appmodel').modal('show');
-                    $.ajax({
-                        url: 'LeaveAppbyid?id=' + iid,
-                        method: 'GET',
-                        data: '',
-                        dataType: 'json',
-                    }).done(function(response) {
-                        // console.log(response);
-                        // Populate the form fields with the data returned from server
-                        $('#leaveapply').find('[name="id"]').val(response.leaveapplyvalue.id).end();
-                        $('#leaveapply').find('[name="emid"]').val(response.leaveapplyvalue.em_id).end();
-                        $('#leaveapply').find('[name="applydate"]').val(response.leaveapplyvalue.apply_date).end();
-                        $('#leaveapply').find('[name="typeid"]').val(response.leaveapplyvalue.typeid).end();
-                        $('#leaveapply').find('[name="startdate"]').val(response.leaveapplyvalue.start_date).end();
-                        $('#leaveapply').find('[name="enddate"]').val(response.leaveapplyvalue.end_date).end();
-                        $('#leaveapply').find('[name="reason"]').val(response.leaveapplyvalue.reason).end();
-                        $('#leaveapply').find('[name="status"]').val(response.leaveapplyvalue.leave_status).end();
 
-                        if(response.leaveapplyvalue.leave_type == 'Half day') {
-                            $('#appmodel').find(':radio[name=type][value="Half Day"]').prop('checked', true).end();
-                            $('#hourAmount').show().end();
-                            $('#enddate').hide().end();
-                        } else if(response.leaveapplyvalue.leave_type == 'Full Day') {
-                            $('#appmodel').find(':radio[name=type][value="Full Day"]').prop('checked', true).end();
-                            $('#hourAmount').hide().end();
-                        } else if(response.leaveapplyvalue.leave_type == 'More than One day'){
-                            $('#appmodel').find(':radio[name=type][value="More than One day"]').prop('checked', true).end();
-                            $('#hourAmount').hide().end();
-                            $('#enddate').show().end();
-                        }
-
-                        $('#hourAmountVal').val(response.leaveapplyvalue.leave_duration).show().end();
-                    });
-                });
-            });
+            
         </script>                     
 <?php $this->load->view('backend/footer'); ?>

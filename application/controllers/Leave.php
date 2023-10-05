@@ -183,13 +183,15 @@ class Leave extends CI_Controller
                         <?php if ($value->leave_status == 'Approve') { ?>
                             <!-- Votre code ici -->
                         <?php } elseif ($value->leave_status == 'Non Approuvé') { ?>
-                            <button class="btn btn-success valide" data-id="<?php echo $value->id; ?>"><i class="fa fa-calendar-check-o" aria-hidden="true"></i></button>
+                           
+                            <button class="btn btn-primary leaveapp" data-id="<?php echo $value->id; ?>"><i class="fa fa-eye" aria-hidden="true"></i></button>
+                        <button class="btn btn-success valide" data-id="<?php echo $value->id; ?>"><i class="fa fa-calendar-check-o" aria-hidden="true"></i></button>
                             <button class="btn btn-danger rejet" data-id="<?php echo $value->id; ?>"><i class="fa fa-calendar-times-o" aria-hidden="true"></i></button>
                         <?php } elseif ($value->leave_status == 'Rejected') { ?>
                             <!-- Votre code ici -->
                         <?php } ?>
-                    
-                        <a href="" title="Modifier" class="btn btn-sm btn-primary waves-effect waves-light leaveapp" data-id="<?php echo $value->id; ?>"><i class="fa fa-pencil-square-o"></i></a>
+                        
+                       
                     </td>
                 <?php } ?>
             </tr>
