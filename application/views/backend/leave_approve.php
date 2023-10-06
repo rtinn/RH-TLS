@@ -32,6 +32,7 @@
                     </div>
                     <div class="card-body">
                         <div class="table-responsive ">
+
                             <table id="example23" class="display nowrap table table-hover table-striped table-bordered" cellspacing="0" width="100%">
                                 <thead>
                                     <tr>
@@ -133,7 +134,14 @@
                             </div>
                             <form method="post" action="Add_Applications" id="leaveapply" enctype="multipart/form-data">
                             <div class="modal-body">
-                                    
+                            <div class="form-group">
+                                    <label>Employee</label>
+                                    <select class=" form-control custom-select selectedEmployeeID"  tabindex="1" name="emid" required>
+                                        <?php foreach($employee as $value): ?>
+                                        <option value="<?php echo $value->em_id ?>"><?php echo $value->first_name.' '.$value->last_name?></option>
+                                        <?php endforeach; ?>
+                                    </select>
+                                </div>
                                 <div class="form-group">
                                     <label>Employee</label>
                                     <select class=" form-control custom-select selectedEmployeeID"  tabindex="1" name="emid" required>
@@ -227,9 +235,7 @@
                                             $('#hourAmount').hide();
                                         }
                                     });
-                                    $('#appmodel').on('hidden.bs.modal', function () {
-                                        location.reload();
-                                    });
+                                   
                                 });                                                          
                             </script>
                             <div class="modal-footer">
@@ -244,47 +250,49 @@
 
                 <script>
     (function($) {
-        $(document).ready(function(){
+        $(document).ready(function() {
             var url = '<?php echo base_url(); ?>';
-
 
             function showTable() {
                 $.ajax({
                     type: 'POST',
                     <?php if ($this->session->userdata('user_type') == 'EMPLOYEE') { ?>
-                     
+                    // Your code for EMPLOYEE user type here
                     <?php } else { ?>
                     url: url + 'leave/GetApplication',
-                        <?php } ?>
+                    <?php } ?>
                     success: function(response) {
-                        
                         $('#example23 tbody').html(response);
-                     
+
+                        // Initialize DataTable after loading data
+                        var dataTable = initializeDataTable();
                     }
                 });
             }
 
-            // Appelez showTable au chargement de la page
+            // Call showTable on page load
             showTable();
 
-
-
-
-            // Fonction pour initialiser la DataTable
+            // Function to initialize the DataTable
             function initializeDataTable() {
                 return $('#example23').DataTable({
                     "paging": true,
                     "searching": true,
                     "ordering": true,
                     "info": true,
-                    "order": [[1, 'asc']], // Utilisez "order" au lieu de "aaSorting"
-                    dom: 'Bfrtip',
-                    buttons: ['copy', 'csv', 'excel', 'pdf', 'print']
+                    "order": [[1, 'asc']],
+                    "dom": 'Bfrtip',
+                    "buttons": ['copy', 'csv', 'excel', 'pdf', 'print']
                 });
             }
 
+
+
+
+
+
             // Appelez la fonction pour initialiser la DataTable
-            var dataTable = initializeDataTable();
+          
 
             $(document).on('click', '.valide', function(){
             var id = $(this).data('id');

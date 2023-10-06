@@ -56,6 +56,15 @@ class Employee extends CI_Controller {
 	}        
     }
 
+    public function Absent(){
+        if($this->session->userdata('user_login_access') != False) { 
+        $this->load->view('backend/absent');
+        }
+    else{
+		redirect(base_url() , 'refresh');
+	}        
+    }
+
 
     public function GetPointage(){
         

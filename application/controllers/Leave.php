@@ -152,8 +152,10 @@ class Leave extends CI_Controller
     public function Application()
     {
         if ($this->session->userdata('user_login_access') != False) {
-            
-            $this->load->view('backend/leave_approve');
+            $data['employee']    = $this->employee_model->emselect(); // obtient les détails des employés actifs
+            $data['leavetypes']  = $this->leave_model->GetleavetypeInfo();
+           
+            $this->load->view('backend/leave_approve', $data);
         } else {
             redirect(base_url(), 'refresh');
         }
@@ -180,14 +182,14 @@ class Leave extends CI_Controller
                 <td><?php echo $value->leave_status; ?></td>
                 <?php if ($this->session->userdata('user_type') != 'EMPLOYEE') { ?>
                     <td class="jsgrid-align-center">
-                        <?php if ($value->leave_status == 'Approve') { ?>
+                        <?php if ($value->leave_status == 'Approuvé') { ?>
                             <!-- Votre code ici -->
                         <?php } elseif ($value->leave_status == 'Non Approuvé') { ?>
                            
                             <button class="btn btn-primary leaveapp" data-id="<?php echo $value->id; ?>"><i class="fa fa-eye" aria-hidden="true"></i></button>
                         <button class="btn btn-success valide" data-id="<?php echo $value->id; ?>"><i class="fa fa-calendar-check-o" aria-hidden="true"></i></button>
                             <button class="btn btn-danger rejet" data-id="<?php echo $value->id; ?>"><i class="fa fa-calendar-times-o" aria-hidden="true"></i></button>
-                        <?php } elseif ($value->leave_status == 'Rejected') { ?>
+                        <?php } elseif ($value->leave_status == 'Rejeté') { ?>
                             <!-- Votre code ici -->
                         <?php } ?>
                         
@@ -209,7 +211,7 @@ class Leave extends CI_Controller
 
     public function Valideconge(){
         $id = $_POST['id'];
-        $newStatus = 'Approve'; // Remplacez 'NouveauStatut' par la valeur de statut souhaitée
+        $newStatus = 'Approuvé'; // Remplacez 'NouveauStatut' par la valeur de statut souhaitée
     
         // Appeler la méthode pour mettre à jour le statut
         $query = $this->leave_model->updateStatus($id, $newStatus);
@@ -223,7 +225,7 @@ class Leave extends CI_Controller
     }
     public function Rejetconge(){
         $id = $_POST['id'];
-        $newStatus = 'Rejected'; // Remplacez 'NouveauStatut' par la valeur de statut souhaitée
+        $newStatus = 'Rejeté'; // Remplacez 'NouveauStatut' par la valeur de statut souhaitée
     
         // Appeler la méthode pour mettre à jour le statut
         $query = $this->leave_model->updateStatus($id, $newStatus);
@@ -274,7 +276,7 @@ class Leave extends CI_Controller
                     'reason' => $reason,
                     /*'leave_type'=>$type,*/
                     'leave_duration' => $duration,
-                    'leave_status' => 'Approve'
+                    'leave_status' => 'Approuvé'
                 );
                 $success = $this->leave_model->Application_Apply_Update($id, $data);
                 #$this->session->set_flashdata('feedback','Successfully Updated');
@@ -333,12 +335,20 @@ class Leave extends CI_Controller
                 #redirect("employee/view?I=" .base64_encode($eid));
             } else {
                 $data = array();
+                $newStartDate = date('d/m/Y', strtotime($appstartdate));
+                
+                $newEndDate = null; // Initialisez $newEndDate avec NULL par défaut
+
+                if (!empty($appenddate)) {
+                 $newEndDate = date('d/m/Y', strtotime($appenddate));
+                }
+
                 $data = array(
                     'em_id' => $emid,
                     'typeid' => $typeid,
                     'apply_date' => $applydate,
-                    'start_date' => $appstartdate,
-                    'end_date' => $appenddate,
+                    'start_date' => $newStartDate,
+                    'end_date' => $newEndDate,
                     'reason' => $reason,
                     'leave_type' => $type,
                     'leave_duration' => $duration,
@@ -376,7 +386,7 @@ class Leave extends CI_Controller
                 'leave_status' => $value
             );
             $success = $this->leave_model->Application_Apply_Update($id, $data);
-            if ($value == 'Approve') {
+            if ($value == 'Approuvé') {
                 $totalday = $this->leave_model->GetTotalDay($type);
                 $total    = $totalday->total_day + $duration;
                 $data     = array();
@@ -610,7 +620,7 @@ class Leave extends CI_Controller
                 'leave_status' => $value
             );
             $success = $this->leave_model->updateAplicationAsResolved($id, $data);
-            if ($value == 'Approve') {
+            if ($value == 'Approuvé') {
                 $determineIfNew = $this->leave_model->determineIfNewLeaveAssign($employeeId, $type);
                 //How much taken
                 $totalHour = $this->leave_model->getLeaveTypeTotal($employeeId, $type);
@@ -648,11 +658,28 @@ class Leave extends CI_Controller
         }
     }
 
+
+    public function LeaveAssign1()
+    {
+        if ($this->session->userdata('user_login_access') != False) {
+            $employeeID = $this->input->get('employeeID');
+            $nbjour = $this->leave_model->GetemassignLeaveType($employeeID, $leaveID);
+            $totalday   = 'Leave Balance: '.($nbjour->nbjour);    
+            echo $totalday;
+        }
+    }
+
+
+
+
+
+
     public function LeaveAssign()
     {
         if ($this->session->userdata('user_login_access') != False) {
             $employeeID = $this->input->get('employeeID');
             $leaveID = $this->input->get('leaveID');
+
             if (!empty($leaveID)) {
                 $year        = date('Y');
                 $daysTaken = $this->leave_model->GetemassignLeaveType($employeeID, $leaveID, $year);

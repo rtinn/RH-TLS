@@ -39,11 +39,11 @@
                             
              <div id="cercle_row">
                 <div id="cercle_row1">
-                <button  class="btn btn-info" id="filterSup0"></button>
-                <button  class="btn btn-info"  id="" style="margin-left: 20px;"><a href="<?php echo base_url(); ?>employee/Absent"  class="text-white"> P. Absent</a></button>
-              
-                </div>
                 
+                   
+                    <button  class="btn btn-info" id="filterSup0"></button>
+                    
+                </div>
                    
                     <div>
                         <label for="startDate"><i class="fa fa-calendar-o" aria-hidden="true"></i></label>
