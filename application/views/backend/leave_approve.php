@@ -135,21 +135,23 @@
                             <form method="post" action="Add_Applications" id="leaveapply" enctype="multipart/form-data">
                             <div class="modal-body">
                             <div class="form-group">
-                                    <label>Employee</label>
-                                    <select class=" form-control custom-select selectedEmployeeID"  tabindex="1" name="emid" required>
-                                        <?php foreach($employee as $value): ?>
-                                        <option value="<?php echo $value->em_id ?>"><?php echo $value->first_name.' '.$value->last_name?></option>
-                                        <?php endforeach; ?>
-                                    </select>
-                                </div>
-                                <div class="form-group">
-                                    <label>Employee</label>
-                                    <select class=" form-control custom-select selectedEmployeeID"  tabindex="1" name="emid" required>
-                                        <?php foreach($employee as $value): ?>
-                                        <option value="<?php echo $value->em_id ?>"><?php echo $value->first_name.' '.$value->last_name?></option>
-                                        <?php endforeach; ?>
-                                    </select>
-                                </div>
+                                <label>N°</label>
+                                <select class="form-control custom-select selectedEmployeeID" tabindex="1" name="emid" id="em_id" required>
+                                    <?php foreach ($employee as $value): ?>
+                                    <option value="<?php echo $value->em_id ?>"><?php echo $value->em_id ?></option>
+                                    <?php endforeach; ?>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Employee</label>
+                                <select class="form-control custom-select selectedEmployeeID" tabindex="1" name="emid" id="employee_name" required>
+                                    <?php foreach ($employee as $value): ?>
+                                    <option value="<?php echo $value->em_id ?>"><?php echo $value->first_name . ' ' . $value->last_name ?></option>
+                                    <?php endforeach; ?>
+                                </select>
+                            </div>
+
+
                                 <div class="form-group">
                                     <label>Type de congé</label>
                                     <select class="form-control custom-select assignleave"  tabindex="1" name="typeid" id="leavetype" required>
@@ -161,6 +163,8 @@
                                         <?php endforeach; ?>
                                     </select>
                                 </div>
+
+
                                 <div class="form-group">
                                     <span style="color:red" id="total"></span>
                                     <div class="span pull-right">
@@ -168,6 +172,8 @@
                                     </div>
                                     <br>
                                 </div>
+                                
+
                                 <div class="form-group">
                                     <label class="control-label">Durée du congé</label><br>
                                     <input name="type" type="radio" id="radio_1" data-value="Half" class="duration" value="Half Day" checked="">
@@ -179,11 +185,11 @@
                                 </div>
                                 <div class="form-group">
                                     <label class="control-label" id="hourlyFix">Date</label>
-                                    <input type="date" name="startdate" class="form-control mydatetimepickerFull" id="recipient-name1" required>
+                                    <input type="date" name="startdate" class="form-control " id="recipient-name1" required>
                                 </div>
                                 <div class="form-group" id="enddate" style="display:none">
                                     <label class="control-label">Date de fin</label>
-                                    <input type="date" name="enddate" class="form-control mydatetimepickerFull" id="recipient-name1">
+                                    <input type="date" name="enddate" class="form-control " id="recipient-name1">
                                 </div>
 
                                 <div class="form-group" id="hourAmount">
@@ -235,7 +241,9 @@
                                             $('#hourAmount').hide();
                                         }
                                     });
-                                   
+                                    $('#appmodel').on('hidden.bs.modal', function () {
+                                        location.reload();
+                                    });
                                 });                                                          
                             </script>
                             <div class="modal-footer">
@@ -262,6 +270,8 @@
                     url: url + 'leave/GetApplication',
                     <?php } ?>
                     success: function(response) {
+                        $('#example23').DataTable().destroy(); // Détruire la DataTable existante
+           
                         $('#example23 tbody').html(response);
 
                         // Initialize DataTable after loading data
@@ -374,6 +384,22 @@
 
         $(document).ready(function() {
 
+            function formatDateToYMD(dateString) {
+    var parts = dateString.split('/');
+    if (parts.length === 3) {
+        // parts[2] contient l'année, parts[1] le mois et parts[0] le jour
+        var year = parts[2];
+        var month = parts[1];
+        var day = parts[0];
+        // Vous pouvez maintenant former la date au format "Y-m-d"
+        return year + '-' + month + '-' + day;
+    }
+    return dateString; // En cas d'erreur ou de format inattendu
+}
+
+
+
+
             $(document).on('click', '.leaveapp', function(){
            
             var iid = $(this).attr('data-id');
@@ -391,8 +417,10 @@
                         $('#leaveapply').find('[name="emid"]').val(response.leaveapplyvalue.em_id).end();
                         $('#leaveapply').find('[name="applydate"]').val(response.leaveapplyvalue.apply_date).end();
                         $('#leaveapply').find('[name="typeid"]').val(response.leaveapplyvalue.typeid).end();
-                        $('#leaveapply').find('[name="startdate"]').val(response.leaveapplyvalue.start_date).end();
-                        $('#leaveapply').find('[name="enddate"]').val(response.leaveapplyvalue.end_date).end();
+                       
+                        $('#leaveapply').find('[name="startdate"]').val(formatDateToYMD(response.leaveapplyvalue.start_date));
+                        $('#leaveapply').find('[name="enddate"]').val(formatDateToYMD(response.leaveapplyvalue.end_date));
+
                         $('#leaveapply').find('[name="reason"]').val(response.leaveapplyvalue.reason).end();
                         $('#leaveapply').find('[name="status"]').val(response.leaveapplyvalue.leave_status).end();
 
@@ -502,6 +530,38 @@
           }
       });
   });           
+</script>
+
+<!-- RECUPERER LA VALEUR OPTION SELECT ID ET NOM PRENOMS-->
+
+<script>
+    // Récupérer les éléments select
+    const emIdSelect = document.getElementById('em_id');
+    const employeeNameSelect = document.getElementById('employee_name');
+
+    // Ajouter un gestionnaire d'événements de changement à emIdSelect
+    emIdSelect.addEventListener('change', function () {
+        // Obtenir la valeur sélectionnée dans emIdSelect
+        const selectedEmId = emIdSelect.value;
+
+        // Trouver l'option correspondante dans employeeNameSelect
+        const employeeNameOption = employeeNameSelect.querySelector(`option[value="${selectedEmId}`);
+
+        // Sélectionner l'option dans employeeNameSelect
+        employeeNameOption.selected = true;
+    });
+
+    // Ajouter un gestionnaire d'événements de changement à employeeNameSelect
+    employeeNameSelect.addEventListener('change', function () {
+        // Obtenir la valeur sélectionnée dans employeeNameSelect
+        const selectedEmployeeName = employeeNameSelect.value;
+
+        // Trouver l'option correspondante dans emIdSelect
+        const emIdOption = emIdSelect.querySelector(`option[value="${selectedEmployeeName}"]`);
+
+        // Sélectionner l'option dans emIdSelect
+        emIdOption.selected = true;
+    });
 </script>
 
 

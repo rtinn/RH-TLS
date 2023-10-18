@@ -20,7 +20,7 @@
     <script src="<?php echo base_url(); ?>assets/plugins/sticky-kit-master/dist/sticky-kit.min.js"></script>
     <!--Custom JavaScript -->
     <script src="<?php echo base_url(); ?>assets/js/custom.min.js"></script>
-
+    <script src=" https://cdn.datatables.net/select/1.7.0/js/dataTables.select.min.js"></script>
     <!-- ============================================================== -->
   <!-- ============================================================== -->
     <!--sparkline JavaScript -->

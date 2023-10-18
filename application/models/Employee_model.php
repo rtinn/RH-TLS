@@ -8,6 +8,9 @@
 	
 	}
 
+
+
+
 	public function getdesignation(){
 	$query = $this->db->get('designation');
 	$result = $query->result();
@@ -32,7 +35,7 @@
   public function emselect(){
     $sql = "SELECT *
             FROM `employee`
-            WHERE `status` = 'ACTIF'
+            WHERE `status` = 'ACTIF' AND `em_id` != 'T0000'
             ORDER BY `em_id` ASC";
     
     $query = $this->db->query($sql);
@@ -47,6 +50,33 @@ public function get_entries()
        
     }
 
+    public function getEmployeesWithoutPointageForAllDates() {
+      // Obtenir toutes les dates uniques de la table "pointage"
+     // $sqlDates = "SELECT DISTINCT Date FROM pointage";
+     $sqlDates = "SELECT DISTINCT Date FROM pointage WHERE DAYOFWEEK(STR_TO_DATE(Date, '%d/%m/%Y')) NOT IN (1, 7)";
+   
+      $queryDates = $this->db->query($sqlDates);
+      $dates = $queryDates->result();
+  
+      // Créer un tableau pour stocker les employés absents pour chaque date
+      $absentEmployees = array();
+  
+      // Pour chaque date, obtenir la liste des employés absents
+      foreach ($dates as $date) {
+        $sqlAbsent = "SELECT p.id, p.em_id, p.first_name, p.last_name, p.des_id, ? AS 'Date'
+        FROM employee p
+        WHERE p.em_id != 'T0000' AND p.em_id NOT IN (SELECT DISTINCT sName FROM pointage WHERE Date = ?)";
+    $queryAbsent = $this->db->query($sqlAbsent, array($date->Date, $date->Date));
+    $absentList = $queryAbsent->result();
+    
+  
+          // Ajouter la liste des employés absents pour cette date au tableau
+          $absentEmployees[$date->Date] = $absentList;
+      }
+  
+      return $absentEmployees;
+  }
+  
 
   public function pointageselect(){
     $sql = "SELECT `pointage`.*,
@@ -58,6 +88,8 @@ public function get_entries()
     
     return $result;
 }
+
+
 
 public function getidPointage($id){
   $sql = "SELECT `pointage`.*,
@@ -146,7 +178,24 @@ public function deleteP($id){
 		$result = $query->result();
 		return $result;
 	}
-    public function Does_email_exists($email) {
+
+
+public function getPlanningid(){
+  $sql = "SELECT `planning`.*,
+  `employee`.`first_name`, `employee`.`last_name`, `employee`.`em_id`, `employee`.`des_id`
+   FROM `planning`
+   LEFT JOIN `employee` ON `planning`.`em_id` = `employee`.`em_id`";
+  $query = $this->db->query($sql);
+  $result = $query->result();
+  
+  return $result;
+}
+
+
+
+
+
+  public function Does_email_exists($email) {
 		$user = $this->db->dbprefix('employee');
         $sql = "SELECT `em_email` FROM $user
 		WHERE `em_email`='$email'";

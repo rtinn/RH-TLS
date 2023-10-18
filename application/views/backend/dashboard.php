@@ -22,69 +22,273 @@
             <!-- ============================================================== -->
             <div class="container-fluid">
                 <!-- ============================================================== -->
-                <!-- Row -->
-                <?php if($this->session->userdata('user_type')=='EMPLOYEE'){ ?>
-                    <div class="row">
-                    <!-- Column -->
-                    <div class="col-lg-3 col-md-6">
-                        <div class="card">
-                            <div class="card-body">
-                                <div class="d-flex flex-row">
-                                    <div class="round align-self-center round-primary"><i class="fa fa-calendar-o" aria-hidden="true"></i></div>
-                                    <div class="m-l-10 align-self-center">
-                                        <h3 class="m-b-0">
-                                            Solde:
-                                    <?php 
-                                       echo $nbjour->nb_jour
-                                    ?> jours</h3>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    </div>
-                <?php } else { ?>
-
-                <div class="row">
-                    <!-- Column -->
-                    <div class="col-lg-3 col-md-6">
-                        <div class="card">
-                            <div class="card-body">
-                                <div class="d-flex flex-row">
-                                    <div class="round align-self-center round-primary"><i class="ti-user"></i></div>
-                                    <div class="m-l-10 align-self-center">
-                                        <h3 class="m-b-0">
-                                    <?php 
-                                        $this->db->where('status','ACTIF');
-                                        $this->db->from("employee");
-                                        echo $this->db->count_all_results();
-                                    ?>  Personnels Actif</h3>
-                                        <a href="<?php echo base_url(); ?>employee/Employees" class="text-muted m-b-0">Afficher Details</a></div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Column -->
-                    <div class="col-lg-3 col-md-6">
-                        <div class="card ">
-                            <div class="card-body">
-                                <div class="d-flex flex-row">
-                                    <div class="round align-self-center round-primary"><i class="ti-user"></i></div>
-                                    <div class="m-l-10 align-self-center">
-                                        <h3 class="m-b-0">
-                                    <?php 
-                                        $this->db->where('status','INACTIF');
-                                        $this->db->from("employee");
-                                        echo $this->db->count_all_results();
-                                    ?>  Personnels Inactif</h3>
-                                        <a href="<?php echo base_url(); ?>employee/Employees" class="text-muted m-b-0">Afficher Details</a></div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
 
 
-                   
+
+
+               
+        <div class="row">
+        <?php if($this->session->userdata('user_type')=='EMPLOYEE'){ ?>
+
+          <div class="col-lg-3 col-6">
+            <!-- small box -->
+            <div class="small-box bg-info">
+              <div class="inner">
+                <h3>
+                <?php 
+                    echo $nbjour->nb_jour
+                ?></h3>
+
+                <p>Jours de congé</p>
+              </div>
+              <div class="icon">
+                <i class="ion ion-calendar"></i>
+              </div>
+              <a href="#" class="small-box-footer">More info <i class="fa fa-arrow-circle-right"></i></a>
+            </div>
+          </div>
+          <!-- ./col -->
+          <?php } else { ?>
+
+            <div class="col-lg-3 col-6">
+            <!-- small box -->
+            <div class="small-box bg-info">
+              <div class="inner">
+                <h3>
+                    <?php 
+                        $this->db->where('status','ACTIF');
+                        $this->db->where('em_id !=', 'T0000');
+                        $this->db->from("employee");
+                        echo $this->db->count_all_results();
+                    ?>
+                </h3>
+
+                <p>Personnels Actif</p>
+              </div>
+              <div class="icon">
+                <i class="ion ion-person-stalker"></i>
+              </div>
+              <a href="<?php echo base_url(); ?>employee/Employees" class="small-box-footer">Details <i class="fa fa-arrow-circle-right"></i></a>
+            </div>
+          </div>
+          <!-- ./col -->
+
+
+
+
+
+          <div class="col-lg-3 col-6">
+            <!-- small box -->
+            <div class="small-box bg-danger">
+              <div class="inner">
+                <h3>
+                <?php 
+                    $this->db->where('status','INACTIF');
+                    $this->db->from("employee");
+                    echo $this->db->count_all_results();
+                ?>
+                </h3>
+
+                <p> Personnels Inactif</p>
+              </div>
+              <div class="icon">
+                <i class="ion ion-person"></i>
+              </div>
+              <a href="<?php echo base_url(); ?>employee/Inactive_Employee" class="small-box-footer">Details <i class="fa fa-arrow-circle-right"></i></a>
+            </div>
+          </div>
+          <!-- ./col -->
+          <div class="col-lg-3 col-6">
+            <!-- small box -->
+            <div class="small-box bg-warning">
+              <div class="inner">
+                <h3>
+                <?php 
+                        $this->db->where('status','ACTIF');
+                        $this->db->where('em_id !=', 'T0000');
+                        $this->db->where('em_gender !=', 'Homme');
+                        $this->db->from("employee");
+                        echo $this->db->count_all_results();
+                    ?>
+                </h3>
+
+                <p>Homme</p>
+              </div>
+              <div class="icon">
+                <i class="ion ion-man "></i>
+              </div>
+              <a href="<?php echo base_url(); ?>employee/Employees" class="small-box-footer">Details <i class="fa fa-arrow-circle-right"></i></a>
+            </div>
+          </div>
+          <!-- ./col -->
+          <div class="col-lg-3 col-6">
+            <!-- small box -->
+            <div class="small-box bg-success">
+              <div class="inner">
+                <h3>
+                <?php 
+                        $this->db->where('status','ACTIF');
+                        $this->db->where('em_id !=', 'T0000');
+                        $this->db->where('em_gender !=', 'Femme');
+                        $this->db->from("employee");
+                        echo $this->db->count_all_results();
+                    ?>
+                </h3>
+
+                <p>Femme</p>
+              </div>
+              <div class="icon">
+                <i class="ion ion-woman"></i>
+              </div>
+              <a href="<?php echo base_url(); ?>employee/Employees" class="small-box-footer">Details <i class="fa fa-arrow-circle-right"></i></a>
+             </div>
+          </div>
+        <!--   ./col -->
+
+          <?php } ?>
+        </div>
+        <?php if($this->session->userdata('user_type')=='EMPLOYEE'){ ?>
+        
+        <?php } else { ?>
+        <div class="row">
+        
+
+          <div class="col-lg-6 col-6">
+            <!-- small box -->
+            <div class="small-box bg-light">
+              <div class="inner">
+              <h4>Personnes present</h4>
+
+
+              <?php
+                // ...
+
+                // Obtenir toutes les dates uniques de la table "pointage"
+                $sqlDates = "SELECT DISTINCT Date FROM pointage";
+                $queryDates = $this->db->query($sqlDates);
+                $dates = $queryDates->result();
+
+                // Commencez un tableau HTML avec DataTables
+                echo '<table border="1" id="Table_absent">';
+                echo '<thead><tr><th>Date</th><th>Nombre des P. Presents</th></tr></thead>';
+                echo '<tbody>';
+
+                foreach ($dates as $date) {
+                    $sqlAbsent = "SELECT sName, ? AS 'Date'
+                        FROM pointage 
+                        WHERE sName != 'T0000' AND Date = ?";
+                    $queryAbsent = $this->db->query($sqlAbsent, array($date->Date, $date->Date));
+                    $absentList = $queryAbsent->result();
+
+                    // Compter le nombre d'employés absents pour cette date
+                    $numberOfAbsentEmployees = count($absentList);
+
+                    // Afficher chaque ligne du tableau
+                    echo '<tr>';
+                    echo "<td>{$date->Date}</td>";
+                    echo "<td>{$numberOfAbsentEmployees}</td>";
+                    echo '</tr>';
+                }
+
+                echo '</tbody>';
+                echo '</table>';
+
+                // ...
+
+                ?>
+
+                <script>
+                $(document).ready(function() {
+                    $('#Table_absent').DataTable();
+                    
+                });
+                </script>
+
+
+
+
+
+             </div>
+              <div class="icon">
+               
+              </div>
+              <a href="#" class="small-box-footer footer1">Details <i class="fa fa-arrow-circle-right"></i></a>
+            </div>
+          </div>
+
+          <div class="col-lg-6 col-6">
+            <!-- small box -->
+            <div class="small-box bg-light">
+              <div class="inner">
+                    <h4>Nombre d'absences</h4>
+
+
+              <?php
+                // ...
+
+                // Obtenir toutes les dates uniques de la table "pointage"
+                 // $sqlDates = "SELECT DISTINCT Date FROM pointage";
+                $sqlDates = "SELECT DISTINCT Date FROM pointage WHERE DAYOFWEEK(STR_TO_DATE(Date, '%d/%m/%Y')) NOT IN (1, 7)";
+   
+                $queryDates = $this->db->query($sqlDates);
+                $dates = $queryDates->result();
+
+                // Commencez un tableau HTML avec DataTables
+                echo '<table border="1" id="Table_absent1">';
+                echo '<thead><tr><th>Date</th><th>Nombre P.Absents</th></tr></thead>';
+                echo '<tbody>';
+
+                foreach ($dates as $date) {
+                    $sqlAbsent = "SELECT p.id, p.em_id, ? AS 'Date'
+
+                        FROM employee p
+                        WHERE p.em_id != 'T0000' AND p.em_id NOT IN (SELECT DISTINCT sName FROM pointage WHERE Date = ?)";
+                    $queryAbsent = $this->db->query($sqlAbsent, array($date->Date, $date->Date));
+                    $absentList = $queryAbsent->result();
+
+                    // Compter le nombre d'employés absents pour cette date
+                    $numberOfAbsentEmployees = count($absentList);
+
+                    // Afficher chaque ligne du tableau
+                    echo '<tr>';
+                    echo "<td>{$date->Date}</td>";
+                    echo "<td>{$numberOfAbsentEmployees}</td>";
+                    echo '</tr>';
+                }
+
+                echo '</tbody>';
+                echo '</table>';
+
+                // ...
+
+                ?>
+
+                <script>
+                $(document).ready(function() {
+                    $('#Table_absent1').DataTable();
+                    
+                });
+                </script>
+
+
+
+
+
+             </div>
+              <div class="icon">
+               
+              </div>
+              <a href="#" class="small-box-footer footer1">Details <i class="fa fa-arrow-circle-right"></i></a>
+            </div>
+          </div>
+        </div>
+
+
+
+        <?php } ?>
+
+
+
 
                     <!-- Column -->
                     <!-- Column
@@ -130,36 +334,11 @@
                             </div>
                         </div>
                     </div>
-                    <!-- Column -->
-                    <!-- Column 
-                    <div class="col-lg-3 col-md-6">
-                        <div class="card">
-                            <div class="card-body">
-                                <div class="d-flex flex-row">
-                                    <div class="round align-self-center round-success"><i class="ti-money"></i></div>
-                                    <div class="m-l-10 align-self-center">
-                                        <h3 class="m-b-0">
-                                         <?php 
-                                                $this->db->where('status','Granted');
-                                                $this->db->from("loan");
-                                                echo $this->db->count_all_results();
-                                            ?> Loan 
-                                        </h3>
-                                        <a href="<?php echo base_url(); ?>Loan/View" class="text-muted m-b-0">View Details</a>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <!-- Column -->
-                </div>
-                <?php } ?>
+                     
+               
 
-                <!-- Row -->
-                <!-- Row 
-                
                 <div class="row ">
-                    <!-- Column 
+                     
                     <div class="col-md-6 col-lg-3 col-xlg-3">
                         <div class="card card-inverse card-info">
                             <div class="box bg-primary text-center">
@@ -174,7 +353,7 @@
                             </div>
                         </div>
                     </div>
-                    <!-- Column 
+                  
                     <div class="col-md-6 col-lg-3 col-xlg-3">
                         <div class="card card-info card-inverse">
                             <div class="box text-center">
@@ -189,7 +368,7 @@
                             </div>
                         </div>
                     </div>
-                    <!-- Column 
+                    
                     <div class="col-md-6 col-lg-3 col-xlg-3">
                         <div class="card card-inverse card-danger">
                             <div class="box text-center">
@@ -204,7 +383,7 @@
                             </div>
                         </div>
                     </div>
-                    <!-- Column 
+                  
                     <div class="col-md-6 col-lg-3 col-xlg-3">
                         <div class="card card-inverse card-success">
                             <div class="box text-center">
@@ -221,7 +400,7 @@
                     </div>
                     <!-- Column -->
                 </div>
-                <!-- ==============================================================
+                <!--
             </div> 
             <div class="container-fluid">
                 <?php $notice = $this->notice_model->GetNoticelimit(); 
@@ -230,7 +409,7 @@
                 $todolist = $this->dashboard_model->GettodoInfo($userid);                 
                 $holiday = $this->dashboard_model->GetHolidayInfo();                 
                 ?>
-                <!-- Row 
+               
                 <div class="row">
                     
                     <div class="col-md-8">
@@ -303,7 +482,7 @@
                         </div>
                     </div>
                 </div>
-                <!-- Row 
+                
                 <div class="row">
                     <div class="col-lg-8">
                         <div class="card">
@@ -364,6 +543,7 @@
                             </div>
                         </div>
                     </div>
+                                          -->
                 </div> 
 <script>
   $(".to-do").on("click", function(){
@@ -385,5 +565,4 @@
       });
   });			
 </script>       
--->                                        
 <?php $this->load->view('backend/footer'); ?>

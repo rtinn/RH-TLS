@@ -24,90 +24,90 @@ class Pointage extends CI_Controller {
             #$data['settingsvalue'] = $this->dashboard_model->GetSettingsValue();
 			$this->load->view('login');
 	}
-    
-
-	public function import()
-	{
+	public function import(){
 		if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-			$upload_status = $this->uploadDoc();
+			$upload_status =  $this->uploadDoc();
 			if ($upload_status != false) {
 				$inputFileName = 'uploads/' . $upload_status;
-				$inputTileType = \PhpOffice\PhpSpreadsheet\IOFactory::identify($inputFileName);
-				$reader = \PhpOffice\PhpSpreadsheet\IOFactory::createReader($inputTileType);
+	
+				
+	
+				$inputFileType = \PhpOffice\PhpSpreadsheet\IOFactory::identify($inputFileName);
+				$reader = \PhpOffice\PhpSpreadsheet\IOFactory::createReader($inputFileType);
 				$spreadsheet = $reader->load($inputFileName);
 				$sheet = $spreadsheet->getSheet(0);
 				$count_Rows = 0;
 				$dataToInsert = []; // Tableau pour stocker les données à insérer
 	
+				// Initialiser un tableau pour suivre les valeurs minimales et maximales d'Idp pour chaque combinaison de sName et Date
+				$idpRanges = [];
+	
+				// Parcourir les lignes pour collecter les plages d'Idp et les valeurs de Time
 				foreach ($sheet->getRowIterator() as $row) {
 					$sName = trim($spreadsheet->getActiveSheet()->getCell('A' . $row->getRowIndex())->getValue());
 					$Date = trim($spreadsheet->getActiveSheet()->getCell('B' . $row->getRowIndex())->getValue());
 					$Time = trim($spreadsheet->getActiveSheet()->getCell('C' . $row->getRowIndex())->getValue());
+					$Idp = (int)trim($spreadsheet->getActiveSheet()->getCell('D' . $row->getRowIndex())->getValue());
 	
-					// Vérifier si la ligne contient des données valides
-					if (!empty($sName) && !empty($Date) && !empty($Time)) {
-						// Analyser l'heure pour déterminer time_in ou time_out
-						$timeParts = explode(':', $Time);
-						$hour = (int) $timeParts[0]; // Récupérer l'heure
-						$minute = (int) $timeParts[1]; // Récupérer les minutes
-	
-						if ($hour < 12) {
-							// Heure avant midi, c'est time_in
-							$dataToInsert[] = [
-								'sName' => $sName,
-								'Date' => $Date,
-								'time_in' => $Time,
-								'time_out' => null, // Initialiser time_out comme null
-							];
-						} else {
-							// Heure après midi, c'est time_out
-							// Vérifier si nous avons déjà une entrée pour la même sName et Date
-							$existingIndex = null;
-							foreach ($dataToInsert as $index => $data) {
-								if ($data['sName'] == $sName && $data['Date'] == $Date) {
-									$existingIndex = $index;
-									break;
-								}
-							}
-	
-							if ($existingIndex !== null) {
-								// Si oui, mettez à jour time_out
-								$dataToInsert[$existingIndex]['time_out'] = $Time;
-							} else {
-								// Sinon, créez une nouvelle entrée
-								$dataToInsert[] = [
-									'sName' => $sName,
-									'Date' => $Date,
-									'time_in' => null, // Initialiser time_in comme null
-									'time_out' => $Time,
-								];
-							}
+					if (!isset($idpRanges[$sName][$Date])) {
+						// Initialiser la plage d'Idp pour une nouvelle combinaison de sName et Date
+						$idpRanges[$sName][$Date] = [
+							'min' => $Idp,
+							'max' => $Idp,
+							'Time_in' => $Time,
+							'Time_out' => $Time,
+						];
+					} else {
+						// Mettre à jour les valeurs minimales et maximales d'Idp
+						if ($Idp < $idpRanges[$sName][$Date]['min']) {
+							$idpRanges[$sName][$Date]['min'] = $Idp;
+							$idpRanges[$sName][$Date]['Time_in'] = $Time;
+						}
+						if ($Idp > $idpRanges[$sName][$Date]['max']) {
+							$idpRanges[$sName][$Date]['max'] = $Idp;
+							$idpRanges[$sName][$Date]['Time_out'] = $Time;
 						}
 					}
 				}
 	
-				// Calculer la différence entre time_in et time_out
-				foreach ($dataToInsert as &$data) {
-					if ($data['time_in'] !== null && $data['time_out'] !== null) {
-						$timeIn = new DateTime($data['time_in']);
-						$timeOut = new DateTime($data['time_out']);
-						$interval = $timeIn->diff($timeOut);
-						$data['time_diff'] = $interval->format('%H:%I:%S');
+				// Vérifier si une entrée avec la même date existe déjà dans la base de données
+				foreach ($idpRanges as $sName => $dateRanges) {
+					foreach ($dateRanges as $Date => $range) {
+						$existingData = $this->db->query("SELECT * FROM pointage WHERE Date = ? LIMIT 1", [$Date])->row();
+						if ($existingData) {
+							echo "Une entrée de la même date existe déjà. Veuillez choisir un autre fichier.";
+							return; // Arrêter le processus d'importation
+						}
+	
+						$timeIn = $range['Time_in'];
+						$timeOut = $range['Time_out'];
+	
+						// Calculez la différence de temps
+						$timeInObj = new DateTime($timeIn);
+						$timeOutObj = new DateTime($timeOut);
+						$diff = $timeInObj->diff($timeOutObj);
+	
+						// Insérer les données dans la base de données
+						$dataToInsert[] = [
+							'sName' => $sName,
+							'Date' => $Date,
+							'Time_in' => $timeIn,
+							'Time_out' => $timeOut,
+							'Time_diff' => $diff->format('%H:%i:%s'), // Format de la différence de temps
+						];
 					}
 				}
 	
-				// Maintenant, insérez les données dans la base de données
+				// Insérer les données dans la base de données
 				foreach ($dataToInsert as $data) {
 					$this->db->insert('pointage', $data);
 				}
+	
 				echo "Fichier importé avec succès";
 			}
 		}
 	}
 	
-
-
-
 
    /*
 	public function import()

@@ -10,6 +10,87 @@
 @import url("https://fonts.googleapis.com/css?family=Poppins:300,400,500,600,700");
 @import url(spinners.css);
 @import url(animate.css);
+
+
+
+@media (min-width: 1200px){
+.col-lg-3 .small-box h3, .col-md-3 .small-box h3, .col-xl-3 .small-box h3 {
+    font-size: 2.2rem;
+    color: white;
+}
+
+}
+@media (min-width: 992px){
+.col-lg-3 .small-box h3, .col-md-3 .small-box h3, .col-xl-3 .small-box h3 {
+    font-size: 1.6rem;
+    color: white;
+}
+}
+.small-box>.inner {
+    padding: 10px;
+}
+.small-box {
+    border-radius: 0.25rem;
+    box-shadow: 0 0 1px rgba(0,0,0,.125), 0 1px 3px rgba(0,0,0,.2);
+    display: block;
+    margin-bottom: 20px;
+    position: relative;
+}
+.small-box .icon {
+    color: rgba(0,0,0,.15);
+    z-index: 0;
+}
+.small-box .icon>i {
+    font-size: 90px;
+    position: absolute;
+    right: 15px;
+    top: 15px;
+    transition: -webkit-transform .3s linear;
+    transition: transform .3s linear;
+    transition: transform .3s linear,-webkit-transform .3s linear;
+}
+.small-box .icon>i.fa, .small-box .icon>i.fab, .small-box .icon>i.fad, .small-box .icon>i.fal, .small-box .icon>i.far, .small-box .icon>i.fas, .small-box .icon>i.ion {
+    font-size: 70px;
+    top: 20px;
+}
+.small-box>.small-box-footer {
+    background-color: rgba(0,0,0,.1);
+    color: rgba(255,255,255,.8);
+    display: block;
+    padding: 3px 0;
+    position: relative;
+    text-align: center;
+    text-decoration: none;
+    z-index: 10;
+}
+.footer1{
+    background-color: rgb(40 167 69 / 98%) !important;
+}
+.small-box h3 {
+    font-size: 2.2rem;
+    font-weight: 700;
+    margin: 0 0 10px;
+    padding: 0;
+    white-space: nowrap;
+}
+.bg-info, .bg-info>a {
+    color: #fff!important;
+}
+.bg-info, .bg-info>h3 {
+    color: #fff!important;
+}
+
+
+
+
+
+
+
+
+
+
+
+
 .preloader {
     width: 100%;
     height: 100%;
@@ -559,23 +640,49 @@ html body .text-themecolor {
 }
 
 .bg-primary {
-    background-color: #5c4ac7!important
+    background-color: #5c4ac7!important;
 }
 
 .bg-success {
-    background-color: #26dad2!important
+    background-color: #28a745!important;
+    color: white;
+   
 }
 
 .bg-info {
-    background-color: #1976d2!important
+    background-color: #1976d2!important;
+    color: white;
+
 }
 
 .bg-warning {
-    background-color: #ffb22b!important
+    background-color: #ffb22b!important;
+    color: white;
 }
 
 .bg-danger {
-    background-color: #ef5350!important
+    background-color: #dc3545!important;
+    color: white;
+}
+#Table_absent{
+    border-collapse: collapse !important;
+    text-align: center !important;
+    width: 100% !important;
+
+}
+#Table_absent_wrapper {
+  
+    margin-bottom: 21px !important;
+}
+#Table_absent1{
+    border-collapse: collapse !important;
+    text-align: center !important;
+    width: 100% !important;
+
+}
+#Table_absent1_wrapper {
+  
+    margin-bottom: 21px !important;
 }
 
 html body .bg-megna {
@@ -8564,7 +8671,7 @@ form p {
 form p:last-child {
     margin-bottom: 0
 }
-
+/*
 [type=checkbox]:checked,
 [type=checkbox]:not(:checked) {
     position: absolute;
@@ -8573,7 +8680,7 @@ form p:last-child {
 }
 
 [type=checkbox] {}
-
+*/
 [type=checkbox]+label {
     position: relative;
     padding-left: 35px;
@@ -10022,7 +10129,10 @@ ul.collapse.in:after {
 }
 */
 .sidebar-nav > ul > li.active > a {
-    background-color: #ececec;
+    color: #4ab362 !important;
+    /* border-color: #5C4AC7; */
+    /* border-color: #3e515a; */
+    background: #f7f7f7 !important;
 }
 ul.collapse.in {
     position: relative;

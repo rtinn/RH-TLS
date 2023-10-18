@@ -494,6 +494,24 @@ class Leave extends CI_Controller
         }
     }
 
+    /*
+    public function LeaveType()
+    {
+        if ($this->session->userdata('user_login_access') != False) {
+            $id          = $this->input->get('id');
+            $year        = date('Y');
+            $leavetype   = $this->leave_model->GetemLeaveType($id, $year);
+            $assignleave = $this->leave_model->GetemassignLeaveType($id, $year);
+            foreach ($leavetype as $value) {
+                echo "<option value='$value->type_id'>$value->name</option>";
+            }
+            $totalday = $assignleave->total_day . '/' . $assignleave->day;
+            echo $totalday;
+        } else {
+            redirect(base_url(), 'refresh');
+        }
+    }
+*/
     public function LeaveType()
     {
         if ($this->session->userdata('user_login_access') != False) {

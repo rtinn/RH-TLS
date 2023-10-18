@@ -56,14 +56,24 @@ class Employee extends CI_Controller {
 	}        
     }
 
-    public function Absent(){
+    public function Absent() {
         if($this->session->userdata('user_login_access') != False) { 
-        $this->load->view('backend/absent');
-        }
-    else{
-		redirect(base_url() , 'refresh');
-	}        
+            $this->load->view('backend/Absent');
+            }
+        else{
+            redirect(base_url() , 'refresh');
+        }     
     }
+   
+   
+    public function GetAbsent() {
+        $data['absentEmployees'] = $this->employee_model->getEmployeesWithoutPointageForAllDates();
+        
+        // Au lieu d'afficher directement les données, nous allons les renvoyer au format JSON
+        echo json_encode($data);
+    }
+
+    
 
 
     public function GetPointage(){
@@ -110,11 +120,57 @@ class Employee extends CI_Controller {
 			</tr>
 			<?php
 		}
-
-
-
-
 	}
+
+    public function Planning() {
+        if ($this->session->userdata('user_login_access') != False) { 
+            $this->load->view('backend/planning');
+        } else {
+            redirect(base_url(), 'refresh');
+        }
+    }
+    
+   
+    public function GetPlanning(){
+        
+		$data = $this->employee_model->getPlanningid();
+		$output = array();
+		foreach($data as $value){
+			?>
+			<tr>
+            <td><?php echo $value->em_id; ?></td>
+            <td><?php echo $value->des_id; ?></td>
+            <td><?php echo $value->first_name . ' ' . $value->last_name; ?></td>
+            <td><?php echo $value->type; ?></td>
+           
+				<td>
+                	<button class="btn btn-warning edit" data-id="<?php echo $value->id; ?>"><i class="fa fa-eye" aria-hidden="true"></i></button> 
+					<button class="btn btn-danger delete" data-id="<?php echo $value->id; ?>"><i class="fa fa-trash-o"></i></button>
+				</td>
+			</tr>
+			<?php
+		}
+	}
+
+    public function GetPlanning_pm(){
+        
+		$data = $this->employee_model->getPlanningid();
+		$output = array();
+		foreach($data as $value){
+			?>
+			<tr>
+            <td><?php echo $value->em_id; ?></td>
+            <td><?php echo $value->type; ?></td>
+           
+				<td>
+                	<button class="btn btn-warning edit" data-id="<?php echo $value->id; ?>"><i class="fa fa-eye" aria-hidden="true"></i></button> 
+					<button class="btn btn-danger delete" data-id="<?php echo $value->id; ?>"><i class="fa fa-trash-o"></i></button>
+				</td>
+			</tr>
+			<?php
+		}
+	}
+
 
     public function GetPointage_em() {
         if ($this->session->userdata('user_login_access') != 1)
@@ -1228,4 +1284,7 @@ public function getidPointage(){
         $data['invalidem'] = $this->employee_model->getInvalidUser();
         $this->load->view('backend/invalid_user',$data);
     }
+   
+
+   
 }

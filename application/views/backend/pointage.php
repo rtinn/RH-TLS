@@ -40,8 +40,10 @@
              <div id="cercle_row">
                 <div id="cercle_row1">
                 <button  class="btn btn-info" id="filterSup0"></button>
+                <?php if($this->session->userdata('user_type')=='EMPLOYEE'){ ?>
+                <?php } else { ?>
                 <button  class="btn btn-info"  id="" style="margin-left: 20px;"><a href="<?php echo base_url(); ?>employee/Absent"  class="text-white"> P. Absent</a></button>
-              
+                <?php } ?>
                 </div>
                 
                    
@@ -256,7 +258,21 @@
     </div>
 </div>
 
-
+<div class="modal fade reussimodal" id="reussimodal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content reussi_modal">
+           
+            <div class="modal-body">
+				
+                <div class="success_img">
+                <img src="https://media.tenor.com/bm8Q6yAlsPsAAAAi/verified.gif" alt="">
+                </div>
+			</div>
+            
+			
+        </div>
+    </div>
+</div>
 
 <?php $this->load->view('backend/footer'); ?>
 
@@ -412,6 +428,12 @@
                 data: {id: id},
                 success: function(){
                     $('#delmodal').modal('hide');
+                    $('#reussimodal').modal('show');
+                     
+                     // Ajouter un délai de 3 secondes avant de fermer le modal
+                     setTimeout(function(){
+                         $('#reussimodal').modal('hide');
+                     }, 2000);
                     showTable();
                 }
             });

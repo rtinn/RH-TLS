@@ -6,12 +6,12 @@
             <!-- ============================================================== -->
             <div class="row page-titles">
                 <div class="col-md-5 align-self-center">
-                    <h3 class="text-themecolor"><i class="fa fa-qrcode" aria-hidden="true"></i> Pointage</h3>
+                    <h3 class="text-themecolor"><i class="fa fa-user-times" aria-hidden="true"></i> Absences</h3>
                 </div>
                 <div class="col-md-7 align-self-center">
                     <ol class="breadcrumb">
                         <li class="breadcrumb-item"><a href="javascript:void(0)">Accuiel</a></li>
-                        <li class="breadcrumb-item active">Pointage</li>
+                        <li class="breadcrumb-item active">Absent</li>
                     </ol>
                 </div>
             </div>
@@ -22,7 +22,7 @@
                 <?php } else { ?>
                 <div class="row m-b-10"> 
                     <div class="col-12">
-                        <button type="button" class="btn btn-info"><i class="fa fa-plus"></i><a data-toggle="modal" data-target="#noticemodel" data-whatever="@getbootstrap" class="text-white "><i class="" aria-hidden="true"></i> Import csv </a></button>
+                    <button type="button" class="btn btn-info"><i class="fa fa-qrcode"></i><a href="<?php echo base_url(); ?>employee/pointage" class="text-white"><i class="" aria-hidden="true"></i> Pointage</a></button>
                     </div>
                 </div>
                 <?php } ?>
@@ -30,7 +30,7 @@
                     <div class="col-12">
                         <div class="card card-outline-info">
                             <div class="card-header">
-                                <h4 class="m-b-0 text-white"><i class="fa fa-user-o" aria-hidden="true"></i> Liste des presences</h4>
+                                <h4 class="m-b-0 text-white"><i class="fa fa-user-times" aria-hidden="true"></i> Liste d' Absences</h4>
                             </div>
                             <div class="card-body">
                             
@@ -41,7 +41,6 @@
                 <div id="cercle_row1">
                 
                    
-                    <button  class="btn btn-info" id="filterSup0"></button>
                     
                 </div>
                    
@@ -55,21 +54,17 @@
                     </div>
                  </div> 
 
+    
 
-                     <div class="table-responsive ">
-                     
-     <table id="employees123" class="display nowrap table table-hover table-striped table-bordered" cellspacing="0" width="100%">
+
+<div class="table-responsive ">
+<table id="employees123" class="display nowrap table table-hover table-striped table-bordered" cellspacing="0" width="100%">
     <thead>
         <tr>
             <th>N°</th>
             <th>Poste</th>
             <th>Nom</th>
             <th>Date</th>
-            <th>H.E Prévu</th>
-            <th>H. d'entrée</th>
-            <th>Retard</th>
-            <th>H. de sortie</th>
-            <th>Occupation</th>
             <th>Action</th>
         </tr>
     </thead>
@@ -78,7 +73,6 @@
     </tbody>
 
 </table>
-
 
                                 </div>
                             </div>
@@ -280,7 +274,7 @@
             }
 
             var table = initializeDataTable();
-
+            
             // Initialisation des datepickers
             $('#startDate, #endDate').datepicker({
                 dateFormat: 'dd/mm/yy', // Format de la date
@@ -306,81 +300,37 @@
                 return false;
             });
 
-            // Fonction pour réinitialiser le filtre de retard
-            function resetDelayFilter() {
-                $.fn.dataTable.ext.search.pop(); // Supprimer le filtre de retard
-                table.draw(); // Redessiner la table pour appliquer le changement
-            }
-
-            // Fonction pour appliquer le filtre de retard supérieur à 0
-            function applyDelayFilter() {
-    $.fn.dataTable.ext.search.push(function(settings, data, dataIndex) {
-        var delayStr = data[6]; // Supposons que la colonne des retards est la 7e colonne (index 6)
-
-        // Convertir la chaîne HH:MM:SS en un objet Date JavaScript
-        var delayParts = delayStr.split(":");
-        var delayDate = new Date(0, 0, 0, parseInt(delayParts[0]), parseInt(delayParts[1]), parseInt(delayParts[2]));
-
-        // Créer un objet Date pour 00:10:00 (10 minutes)
-        var tenMinutes = new Date(0, 0, 0, 0, 10, 0);
-
-        // Comparer les retards
-        return delayDate > tenMinutes;
-    });
-
-    table.draw(); // Redessiner la table pour appliquer le filtre
-}
-
-           // Ajoutez une variable pour suivre l'état du filtre et le texte du bouton
-                var isDelayFilterApplied = false;
-
-                // Fonction pour mettre à jour le texte du bouton en fonction de l'état
-                function updateFilterButton() {
-                    var button = $('#filterSup0');
-                    if (isDelayFilterApplied) {
-                        button.html('<i class="fa fa-list" aria-hidden="true"></i> Afficher Tous');
-                        button.removeClass('btn-danger').addClass('btn-info');
-                    } else {
-                        button.html('<i class="fa fa-list" aria-hidden="true"></i> Retard + de 10 Minutes');
-                        button.removeClass('btn-info').addClass('btn-danger');
-                    }
-                }
-
-                    // Attachez le gestionnaire de clic au bouton de filtrage des retards
-                    $('#filterSup0').on('click', function() {
-                        if (isDelayFilterApplied) {
-                            resetDelayFilter();
-                            isDelayFilterApplied = false;
-                        } else {
-                            applyDelayFilter();
-                            isDelayFilterApplied = true;
-                        }
-                        updateFilterButton(); // Mettez à jour le texte du bouton
-                    });
-
-                    // ...
-
-                    // Appelez la fonction pour initialiser le texte du bouton au chargement de la page
-                    updateFilterButton();
-
-
-
 
             function showTable() {
                 $.ajax({
-                    type: 'POST',
-                    <?php if ($this->session->userdata('user_type') == 'EMPLOYEE') { ?>
-                        url: url + 'employee/GetPointage_em',
-                    <?php } else { ?>
-                    url: url + 'employee/GetPointage',
-                        <?php } ?>
+                    type: 'POST',  
+                    url: url + 'employee/GetAbsent',
+                    dataType: 'json', // Définir le type de données attendu
                     success: function(response) {
                         // Détruire et recréer la DataTable avec les nouvelles données
                         if ($.fn.DataTable.isDataTable('#employees123')) {
                             table.destroy();
                         }
-                        $('#employees123 tbody').html(response);
-                        table = initializeDataTable();
+                        
+                        // Ajouter les données au tableau
+                        var tbody = $('#employees123 tbody');
+                        tbody.empty(); // Effacer le contenu précédent
+
+                        $.each(response.absentEmployees, function(date, employees) {
+                            $.each(employees, function(index, employee) {
+                                var row = '<tr>' +
+                                    '<td>' + employee.em_id + '</td>' +
+                                    '<td>' + employee.des_id + '</td>' +
+                                    '<td>' + employee.first_name + ' ' + employee.last_name +'</td>' +
+                                   
+                                    '<td>' + date + '</td>' +
+                                    '<td>Actions</td>' + // Ajoutez les actions nécessaires ici
+                                    '</tr>';
+                                tbody.append(row);
+                            });
+                        });
+
+                        table = initializeDataTable(); // Réinitialiser la DataTable
                     }
                 });
             }
@@ -388,88 +338,14 @@
             // Appelez showTable au chargement de la page
             showTable();
 
-            $(document).on('click', '.delete', function(){
-            var id = $(this).data('id');
-            $.ajax({
-                type: 'POST',
-                url: url + 'employee/getidPointage',
-                dataType: 'json',
-                data: {id: id},
-                success: function(response){
-                    console.log(response);
-                    $('#delfname').html(response.sName);
-                    $('#datename').html(response.Date);
-                    $('#delid').val(response.id);
-                    $('#delmodal').modal('show');
-                }
-            });
-        });
-        $('#delid').click(function(){
-            var id = $(this).val();
-            $.ajax({
-                type: 'POST',
-                url: url + 'employee/deletePointage',
-                data: {id: id},
-                success: function(){
-                    $('#delmodal').modal('hide');
-                    showTable();
-                }
-            });
-        });
-
-
-        // Réinitialisation des champs de date et actualisation du tableau
-            $('#resetDates').on('click', function() {
+              // Réinitialisation des champs de date et actualisation du tableau
+              $('#resetDates').on('click', function() {
                 $('#startDate').val('');
                 $('#endDate').val('');
                 table.draw();
                 showTable();
             });
 
-
-
-
-
-        $(document).on('click', '.edit', function(){
-		var id = $(this).data('id');
-		$.ajax({
-			type: 'POST',
-            url: url + 'employee/getidPointage',
-			dataType: 'json',
-			data: {id: id},
-			success:function(response){
-				console.log(response);
-				$('#mat').val(response.sName);
-                $('#nom').val(response.first_name + ' ' + response.last_name);
-                $('#poste').val(response.des_id);
-                $('#date').val(response.Date);
-                $('#hp').val(response.em_entree);
-                $('#he').val(response.Time_in);
-            // Calcul de la différence entre Time_in et em_entree
-            var timeIn = moment(response.Time_in, 'HH:mm:ss');
-            var emEntree = moment(response.em_entree, 'HH:mm:ss');
-            var retardMinutes = timeIn.diff(emEntree, 'minutes');
-            var retardHours = Math.floor(retardMinutes / 60);
-// Affichage du retard si la différence est positive ou nulle
-if (retardMinutes >= 0) {
-    $('#retard').val(retardHours + ' heures ' + (retardMinutes % 60) + ' minutes');
-} else {
-    // Si la différence est négative, n'affiche rien
-    $('#retard').val('pas de retard');
-}
-
-
-                $('#hs').val(response.Time_out);
-                $('#occ').val(response.Time_diff);
-				
-				$('#editmodal').modal('show');
-			}
-		});
-	});
-
- 
-
         });
     })(jQuery);
 </script>
-
