@@ -11,6 +11,41 @@
         $this->db->insert('holiday',$data);
     }
 
+    public function getLeaveDays($em_id) {
+        // Remplacez cette requête par la requête SQL pour obtenir le nombre de jours de congé en fonction de l'ID de l'employé et du type de congé (dans ce cas, "Avec solde").
+        $this->db->select('nb_jour');
+        $this->db->from('conge_mois');
+        $this->db->where('em_id', $em_id);
+       
+        $query = $this->db->get();
+
+        if ($query->num_rows() > 0) {
+            $row = $query->row();
+            return $row->nb_jour;
+        } else {
+            return 0; // Retournez 0 ou une autre valeur par défaut si aucune correspondance n'est trouvée.
+        }
+    }
+    public function getMaladie($em_id) {
+        // Remplacez cette requête par la requête SQL pour obtenir le nombre de jours de congé en fonction de l'ID de l'employé et du type de congé (dans ce cas, "Avec solde").
+        $this->db->select('maladie');
+        $this->db->from('conge_mois');
+        $this->db->where('em_id', $em_id);
+       
+        $query = $this->db->get();
+
+        if ($query->num_rows() > 0) {
+            $row = $query->row();
+            return $row->maladie;
+        } else {
+            return 0; // Retournez 0 ou une autre valeur par défaut si aucune correspondance n'est trouvée.
+        }
+    }
+
+
+
+
+
     // Add the application of leave with ID no ID
     public function Application_Apply($data){
         $this->db->insert('emp_leave',$data);

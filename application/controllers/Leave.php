@@ -677,14 +677,23 @@ class Leave extends CI_Controller
     }
 
 
-    public function LeaveAssign1()
-    {
-        if ($this->session->userdata('user_login_access') != False) {
-            $employeeID = $this->input->get('employeeID');
-            $nbjour = $this->leave_model->GetemassignLeaveType($employeeID, $leaveID);
-            $totalday   = 'Leave Balance: '.($nbjour->nbjour);    
-            echo $totalday;
-        }
+    public function getLeaveDays() {
+        $em_id = $this->input->post('em_id');
+        
+        $nb_jour = $this->leave_model->getLeaveDays($em_id);
+
+        $response = array('nb_jour' => $nb_jour);
+        echo json_encode($response);
+    }
+
+
+    public function getMaladieC() {
+        $em_id = $this->input->post('em_id');
+        
+        $nb_maladie = $this->leave_model->getMaladie($em_id);
+
+        $response = array('maladie' => $nb_maladie);
+        echo json_encode($response);
     }
 
 
@@ -692,44 +701,6 @@ class Leave extends CI_Controller
 
 
 
-    public function LeaveAssign()
-    {
-        if ($this->session->userdata('user_login_access') != False) {
-            $employeeID = $this->input->get('employeeID');
-            $leaveID = $this->input->get('leaveID');
-
-            if (!empty($leaveID)) {
-                $year        = date('Y');
-                $daysTaken = $this->leave_model->GetemassignLeaveType($employeeID, $leaveID, $year);
-                //die($daysTaken->hour);
-                $leavetypes = $this->leave_model->GetleavetypeInfoid($leaveID);
-                if(empty($daysTaken->hour)) {
-                    $daysTakenval = '0';
-                } else{
-                    $daysTakenval = $daysTaken->hour / 8;
-                }
-                if($leaveID =='5'){
-                $earnTaken = $this->leave_model->emEarnselectByLeave($employeeID);
-                $totalday   = 'Earned Balance: '.($earnTaken->hour / 8).' Days';
-                echo $totalday;       
-                }else {
-                //$totalday   = $leavetypes->leave_day . '/' . ($daysTaken/8);
-                $totalday   = 'Leave Balance: '.($leavetypes->leave_day - $daysTakenval).' Days Of '.$leavetypes->leave_day;    
-                echo $totalday;
-                }
-
-               /* $daysTaken = $this->leave_model->GetemassignLeaveType('Sah1804', 2, 2018);
-                $leavetypes = $this->leave_model->GetleavetypeInfoid($leaveID);
-                // $totalday   = $leavetypes->leave_day . '/' . $daysTaken['0']->day;
-                echo $daysTaken['0']->day;
-                echo $leavetypes->leave_day;*/
-            } else {
-                echo "Something wrong.";
-            }
-        } else {
-            redirect(base_url(), 'refresh');
-        }
-    }
     public function Earnedleave(){
        if ($this->session->userdata('user_login_access') != False) { 
            $data['employee']    = $this->employee_model->emselect();

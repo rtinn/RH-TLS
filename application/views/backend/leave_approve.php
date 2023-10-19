@@ -128,7 +128,7 @@
                     <div class="modal-dialog" role="document">
                         <div class="modal-content ">
                             <div class="modal-header">
-                                <h4 class="modal-title" id="exampleModalLabel1">Leave Application</h4>
+                                <h4 class="modal-title" id="exampleModalLabel1">Demande congé</h4>
                                 <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
                                 
                             </div>
@@ -136,7 +136,7 @@
                             <div class="modal-body">
                             <div class="form-group">
                                 <label>N°</label>
-                                <select class="form-control custom-select selectedEmployeeID" tabindex="1" name="emid" id="em_id" required>
+                                <select class="form-control custom-select selectedEmployeeID fetchLeaveTotal" tabindex="1" name="emid" id="em_id" required>
                                     <?php foreach ($employee as $value): ?>
                                     <option value="<?php echo $value->em_id ?>"><?php echo $value->em_id ?></option>
                                     <?php endforeach; ?>
@@ -144,7 +144,7 @@
                             </div>
                             <div class="form-group">
                                 <label>Employee</label>
-                                <select class="form-control custom-select selectedEmployeeID" tabindex="1" name="emid" id="employee_name" required>
+                                <select class="form-control custom-select selectedEmployeeName" tabindex="1" name="emid" id="employee_name" required>
                                     <?php foreach ($employee as $value): ?>
                                     <option value="<?php echo $value->em_id ?>"><?php echo $value->first_name . ' ' . $value->last_name ?></option>
                                     <?php endforeach; ?>
@@ -154,7 +154,7 @@
 
                                 <div class="form-group">
                                     <label>Type de congé</label>
-                                    <select class="form-control custom-select assignleave"  tabindex="1" name="typeid" id="leavetype" required>
+                                    <select class="form-control custom-select assignleave fetchLeaveTotal"  tabindex="1" name="typeid" id="leavetype" required>
                                         <option value="">Selectinner type de congé</option>
                                         <?php foreach($leavetypes as $value): ?>
 
@@ -167,9 +167,7 @@
 
                                 <div class="form-group">
                                     <span style="color:red" id="total"></span>
-                                    <div class="span pull-right">
-                                        <button class="btn btn-info fetchLeaveTotal">Fetch Total Leave</button>
-                                    </div>
+                                    
                                     <br>
                                 </div>
                                 
@@ -177,7 +175,7 @@
                                 <div class="form-group">
                                     <label class="control-label">Durée du congé</label><br>
                                     <input name="type" type="radio" id="radio_1" data-value="Half" class="duration" value="Half Day" checked="">
-                                    <label for="radio_1">Horaire</label>
+                                    <label for="radio_1">Demi-journée</label>
                                     <input name="type" type="radio" id="radio_2" data-value="Full" class="type" value="Full Day">
                                     <label for="radio_2">Journée complète</label>
                                     <input name="type" type="radio" class="with-gap duration" id="radio_3" data-value="More" value="More than One day">
@@ -191,26 +189,7 @@
                                     <label class="control-label">Date de fin</label>
                                     <input type="date" name="enddate" class="form-control " id="recipient-name1">
                                 </div>
-
-                                <div class="form-group" id="hourAmount">
-                                    <label>Durée</label>
-                                    <select  id="hourAmountVal" class=" form-control custom-select"  tabindex="1" name="hourAmount" required>
-                                        <option value="">Selectionner Heure</option>
-                                        <option value="1">Une heure</option>
-                                        <option value="2">Deux heure</option>
-                                        <option value="3">Trois heure</option>
-                                        <option value="4">Quatre heure</option>
-                                        <option value="5">Cinq heure</option>
-                                        <option value="6">Six heure</option>
-                                        <option value="7">Sept heure</option>
-                                        <option value="8">Huite heure</option>
-                                    </select>
-                                </div>
-
-                               <!--  <div class="form-group" >
-                                    <label class="control-label">Duration</label>
-                                    <input type="number" name="duration" class="form-control" id="leaveDuration">
-                                </div> --> 
+ 
                                 <div class="form-group">
                                     <label class="control-label">Raisons</label>
                                     <textarea class="form-control" name="reason" id="message-text1"></textarea>                                                
@@ -443,35 +422,50 @@
             });
 
 
+            $('.fetchLeaveTotal').click(function() {
+            
+            var em_id = $('#em_id').val();
+            if (em_id !== "") {
+                
+                $.ajax({
+                    type: 'POST',
+                    url: url + 'leave/getLeaveDays',
+                    data: {
+                        em_id: em_id
+                    },
+                    dataType: 'json',
+                    success: function(data) {
+                        if (data.nb_jour) {
+                            $('#total').text('Nombre de jours de congé : ' + data.nb_jour);
+                        }
+                    }
+
+                });
+            }
+        });
+        
+    
+
 
 
 
 
 
         });
+
+
+
     })(jQuery); // Vous devez envelopper votre code dans une fonction et la passer à jQuery
 </script>
 
 
-<script>
-    $(document).ready(function () {
 
-        $('.fetchLeaveTotal').on('click', function (e) {
-            e.preventDefault();
-            var selectedEmployeeID = $('.selectedEmployeeID').val();
-            var leaveTypeID = $('.assignleave').val();
-            //console.log(selectedEmployeeID, leaveTypeID);
-            $.ajax({
-                url: 'LeaveAssign?leaveID=' + leaveTypeID + '&employeeID=' +selectedEmployeeID,
-                method: 'GET',
-                data: '',
-            }).done(function (response) {
-                //console.log(response);
-                $("#total").html(response);
-            });
-        });
-    });
-</script>
+
+
+
+
+
+
         <script>
         /*DATETIME PICKER*/
           $("#bbbSubmit").on("click", function(event){
