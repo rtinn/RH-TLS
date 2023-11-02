@@ -1,28 +1,33 @@
 <?php $this->load->view('backend/header'); ?>
 <?php $this->load->view('backend/sidebar'); ?>
 
-
-<?php if($this->session->userdata('user_type')== 'EMPLOYEE' || $this->session->userdata('user_type') == 'N+1'){ ?>
+<?php if($this->session->userdata('user_type')=='EMPLOYEE'){ ?>
+    
     <div class="page-wrapper">
-           
-
-             <div class="container-fluid">
-                <div class="row m-b-10"> 
-                    <div class="col-12">
-                    <div class="denied">
-                        <img src="https://www.perthnow.com.au/stories/sent-packing-no-vax-djokovic-has-aussie-visa-cancelled/assets/11.gif" alt="">
-                    </div>    
+            <!-- ============================================================== -->
+            <!-- Bread crumb and right sidebar toggle -->
+            <!-- ============================================================== -->
+            <div class="row page-titles">
+                <div class="col-md-5 align-self-center">
+                    <h3 class="text-themecolor"><i class="fa fa-users" aria-hidden="true"></i> Personnels</h3>
                 </div>
+                <div class="col-md-7 align-self-center">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="javascript:void(0)">Accueil</a></li>
+                        <li class="breadcrumb-item active">Personnel</li>
+                    </ol>
                 </div>
             </div>
-             
-    </div> 
-    
-
-
-
-
-
+            <div class="row">
+                    <div class="col-12">
+                        <div class="card card-outline-info">
+                            <div class="card-header">
+                                <h4 class="m-b-0 text-white"><i class="fa fa-user-o" aria-hidden="true"></i> Liste des personnels</h4>
+                            </div>
+                        </div>
+                    </div>
+             </div>
+    </div>     
    
 <?php } else { ?>
 
@@ -41,13 +46,6 @@
                     </ol>
                 </div>
             </div>
-
-
-
-
-
-
-
             <div class="message"></div>
             <div class="container-fluid">
                 <div class="row m-b-10"> 
@@ -77,8 +75,7 @@
                                                 <th>Contrat </th>
                                                 <th>Date d'embauche </th>
                                                 <th>Ancienneté </th>
-                                               
-                                                
+                            
                                                  <th>Action</th>
                                             </tr>
                                         </thead>
@@ -107,6 +104,9 @@
                                                 </td>
                                             </tr>
                                             <?php endforeach; ?>
+
+
+                                            
                                         </tbody>
                                     </table>
                                 </div>

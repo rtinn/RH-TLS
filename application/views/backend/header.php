@@ -58,7 +58,7 @@ date_default_timezone_set('Asia/Dhaka');
             $y = substr( $year, -2);
             $date = date("m/d/$y");
     #echo $date;
-            $leavetoday = $this->leave_model->GetLeaveToday($date); 
+            $leavetoday = $this->leave_model->GetLeaveToday(); 
         ?>
     <div class="preloader">
         <svg class="circular" viewBox="25 25 50 50">
@@ -91,7 +91,7 @@ date_default_timezone_set('Asia/Dhaka');
                             <div class="dropdown-menu mailbox scale-up-left">
                                 <ul>
                                     <li>
-                                        <div class="drop-title">Notifications</div>
+                                        <div class="drop-title">Notificationss</div>
                                     </li>
                                     <li>
                                         <div class="message-center">
@@ -100,13 +100,13 @@ date_default_timezone_set('Asia/Dhaka');
                                             <a href="#">
                                                 <div class="btn btn-danger btn-circle"><i class="fa fa-link"></i></div>
                                                 <div class="mail-contnet">
-                                                    <h5><?php echo $value->first_name; ?></h5> <span class="mail-desc"><?php echo $value->reason; ?></span> <span class="time"><?php echo $value->start_date; ?></span> </div>
+                                                    <h5><?php echo $value->first_name; ?></h5> <span class="mail-desc"><?php echo $value->reason; ?></span> <span class="time"><?php echo $value->apply_date; ?></span> </div>
                                             </a>
                                             <?php endforeach; ?>
                                         </div>
                                     </li>
-                                    <li>
-                                        <a class="nav-link text-center" href="javascript:void(0);"> <strong>Check all notifications</strong> <i class="fa fa-angle-right"></i> </a>
+                                    <li> 
+                                        <a class="nav-link text-center" href="<?php echo base_url(); ?>leave/Application"> <strong>Check all notifications</strong> <i class="fa fa-angle-right"></i> </a>
                                     </li>
                                 </ul>
                             </div>

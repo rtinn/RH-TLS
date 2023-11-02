@@ -18,7 +18,7 @@
             <div class="message"></div>
             <div class="container-fluid">
 
-            <?php if($this->session->userdata('user_type')=='EMPLOYEE'){ ?>
+            <?php if($this->session->userdata('user_type')== 'EMPLOYEE' || $this->session->userdata('user_type') == 'N+1'){ ?>
                 <?php } else { ?>
                 <div class="row m-b-10"> 
                     <div class="col-12">
@@ -40,7 +40,7 @@
              <div id="cercle_row">
                 <div id="cercle_row1">
                 <button  class="btn btn-info" id="filterSup0"></button>
-                <?php if($this->session->userdata('user_type')=='EMPLOYEE'){ ?>
+                <?php if($this->session->userdata('user_type')== 'EMPLOYEE' || $this->session->userdata('user_type') == 'N+1'){ ?>
                 <?php } else { ?>
                 <button  class="btn btn-info"  id="" style="margin-left: 20px;"><a href="<?php echo base_url(); ?>employee/Absent"  class="text-white"> P. Absent</a></button>
                 <?php } ?>
@@ -385,7 +385,7 @@
             function showTable() {
                 $.ajax({
                     type: 'POST',
-                    <?php if ($this->session->userdata('user_type') == 'EMPLOYEE') { ?>
+                    <?php if($this->session->userdata('user_type')== 'EMPLOYEE' || $this->session->userdata('user_type') == 'N+1'){ ?>
                         url: url + 'employee/GetPointage_em',
                     <?php } else { ?>
                     url: url + 'employee/GetPointage',

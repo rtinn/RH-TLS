@@ -154,16 +154,79 @@ class Leave extends CI_Controller
         if ($this->session->userdata('user_login_access') != False) {
             $data['employee']    = $this->employee_model->emselect(); // obtient les détails des employés actifs
             $data['leavetypes']  = $this->leave_model->GetleavetypeInfo();
-           
             $this->load->view('backend/leave_approve', $data);
         } else {
             redirect(base_url(), 'refresh');
         }
     }
 
+
+    public function EmApplication()
+    {
+        if ($this->session->userdata('user_login_access') != False) {
+            $emid                = $this->session->userdata('user_login_id');
+            $data['employee']    = $this->employee_model->emselectByID($emid);
+            $data['leavetypes']  = $this->leave_model->GetleavetypeInfo();
+            $data['application'] = $this->leave_model->GetallApplication($emid);
+            $this->load->view('backend/leave_apply', $data);
+        } else {
+            redirect(base_url(), 'refresh');
+        }
+    }
+    public function GetEmApplication() {
+        $emid                = $this->session->userdata('user_login_id');
+           
+        $data['application'] = $this->leave_model->GetallApplication($emid);
+        $output = array();
+        
+        foreach ($data['application'] as $value) { // Itérez sur les demandes de congé (supposons que les demandes de congé sont dans $data['application'])
+            ?>
+            <tr style="vertical-align: top">
+                <td><?php echo $value->em_id; ?></td>
+                <td><span><?php echo $value->first_name.' '.$value->last_name ?></span></td>
+                <td><?php echo $value->name; ?></td>
+                <td><?php echo $value->apply_date; ?></td>
+                <td><?php echo $value->start_date; ?></td>
+                <td><?php echo $value->end_date; ?></td>
+                <td>
+                    <!-- Votre code pour la durée ici -->
+                </td>
+                <td><?php echo $value->leave_status; ?></td>
+                <?php if ($this->session->userdata('user_type') != 'EMPLOYEE') { ?>
+                    <td class="jsgrid-align-center">
+                        <?php if ($value->leave_status == 'Approuvé') { ?>
+                            <!-- Votre code ici -->
+                        <?php } elseif ($value->leave_status == 'En attente') { ?>
+                           
+                            <button class="btn btn-primary leaveapp " data-id="<?php echo $value->id; ?>"><i class="fa fa-eye" aria-hidden="true"></i></button>
+                        <button class="btn btn-success valide" data-id="<?php echo $value->id; ?>"><i class="fa fa-calendar-check-o" aria-hidden="true"></i></button>
+                            <button class="btn btn-danger rejet" data-id="<?php echo $value->id; ?>"><i class="fa fa-calendar-times-o" aria-hidden="true"></i></button>
+                        <?php } elseif ($value->leave_status == 'Rejeté') { ?>
+                            <!-- Votre code ici -->
+                        <?php } ?>
+                        
+                       
+                    </td>
+                <?php } ?>
+            </tr>
+            <?php
+        }   
+    }
+
+
+    
+    public function Earnedleave(){
+        if ($this->session->userdata('user_login_access') != False) { 
+         $data['employee']    = $this->employee_model->emselect(); // obtient les détails des employés actifs
+         $data['leavetypes']  = $this->leave_model->GetleavetypeInfo();
+         $this->load->view('backend/earnleave');           
+        } else {
+             redirect(base_url(), 'refresh');
+         }           
+     }
+
+
     public function GetApplication() {
-        $data['employee']    = $this->employee_model->emselect(); // obtient les détails des employés actifs
-        $data['leavetypes']  = $this->leave_model->GetleavetypeInfo();
         $data['application'] = $this->leave_model->AllLeaveAPPlication();
         $output = array();
         
@@ -184,9 +247,9 @@ class Leave extends CI_Controller
                     <td class="jsgrid-align-center">
                         <?php if ($value->leave_status == 'Approuvé') { ?>
                             <!-- Votre code ici -->
-                        <?php } elseif ($value->leave_status == 'Non Approuvé') { ?>
+                        <?php } elseif ($value->leave_status == 'En attente') { ?>
                            
-                            <button class="btn btn-primary leaveapp" data-id="<?php echo $value->id; ?>"><i class="fa fa-eye" aria-hidden="true"></i></button>
+                            <button class="btn btn-primary leaveapp " data-id="<?php echo $value->id; ?>"><i class="fa fa-eye" aria-hidden="true"></i></button>
                         <button class="btn btn-success valide" data-id="<?php echo $value->id; ?>"><i class="fa fa-calendar-check-o" aria-hidden="true"></i></button>
                             <button class="btn btn-danger rejet" data-id="<?php echo $value->id; ?>"><i class="fa fa-calendar-times-o" aria-hidden="true"></i></button>
                         <?php } elseif ($value->leave_status == 'Rejeté') { ?>
@@ -200,6 +263,47 @@ class Leave extends CI_Controller
             <?php
         }   
     }
+
+    public function GetEarnedleave() {
+        $data['application'] = $this->leave_model->AllLeaveAPPlicationok();
+        $output = array();
+        
+        foreach ($data['application'] as $value) { // Itérez sur les demandes de congé (supposons que les demandes de congé sont dans $data['application'])
+            ?>
+            <tr style="vertical-align: top">
+                <td><?php echo $value->em_id; ?></td>
+                <td><span><?php echo $value->first_name.' '.$value->last_name ?></span></td>
+                <td><?php echo $value->name; ?></td>
+                <td><?php echo $value->apply_date; ?></td>
+                <td><?php echo $value->start_date; ?></td>
+                <td><?php echo $value->end_date; ?></td>
+                <td>
+                    <!-- Votre code pour la durée ici -->
+                </td>
+                <td><?php echo $value->leave_status; ?></td>
+                <?php if ($this->session->userdata('user_type') != 'EMPLOYEE') { ?>
+                    <td class="jsgrid-align-center">
+                        <?php if ($value->leave_status == 'En attente') { ?>
+                            <!-- Votre code ici -->
+                        <?php } elseif ($value->leave_status == 'Approuvé') { ?>
+                           
+                            <button class="btn btn-primary leaveapp " data-id="<?php echo $value->id; ?>"><i class="fa fa-eye" aria-hidden="true"></i></button>
+                            <button class="btn btn-success valide" data-id="<?php echo $value->id; ?>"><i class="fa fa-print" aria-hidden="true"></i></button>
+                        <?php } elseif ($value->leave_status == 'Rejeté') { ?>
+                            <!-- Votre code ici -->
+                        <?php } ?>
+                        
+                       
+                    </td>
+                <?php } ?>
+            </tr>
+            <?php
+        }   
+    }
+
+
+
+
 
     public function getidconge(){
 		$id = $_POST['id'];
@@ -234,18 +338,6 @@ class Leave extends CI_Controller
 
     
 
-    public function EmApplication()
-    {
-        if ($this->session->userdata('user_login_access') != False) {
-            $emid                = $this->session->userdata('user_login_id');
-            $data['employee']    = $this->employee_model->emselectByID($emid);
-            $data['leavetypes']  = $this->leave_model->GetleavetypeInfo();
-            $data['application'] = $this->leave_model->GetallApplication($emid);
-            $this->load->view('backend/leave_apply', $data);
-        } else {
-            redirect(base_url(), 'refresh');
-        }
-    }
 
     public function Update_Applications()
     {
@@ -352,7 +444,7 @@ class Leave extends CI_Controller
                     'reason' => $reason,
                     'leave_type' => $type,
                     'leave_duration' => $duration,
-                    'leave_status' => 'Non Approuvé'
+                    'leave_status' => 'En attente'
                 );
                 if (empty($id)) {
                     $success = $this->leave_model->Application_Apply($data);
@@ -677,23 +769,12 @@ class Leave extends CI_Controller
     }
 
 
-    public function getLeaveDays() {
+    public function getLeaveData() {
         $em_id = $this->input->post('em_id');
+        $leaveData = $this->leave_model->getLeaveData($em_id);
         
-        $nb_jour = $this->leave_model->getLeaveDays($em_id);
-
-        $response = array('nb_jour' => $nb_jour);
-        echo json_encode($response);
-    }
-
-
-    public function getMaladieC() {
-        $em_id = $this->input->post('em_id');
-        
-        $nb_maladie = $this->leave_model->getMaladie($em_id);
-
-        $response = array('maladie' => $nb_maladie);
-        echo json_encode($response);
+        // Envoyez les données en réponse Ajax
+        echo json_encode($leaveData);
     }
 
 
@@ -701,15 +782,6 @@ class Leave extends CI_Controller
 
 
 
-    public function Earnedleave(){
-       if ($this->session->userdata('user_login_access') != False) { 
-           $data['employee']    = $this->employee_model->emselect();
-            $data['earnleave'] = $this->leave_model->GetEarnedleaveBalance();
-            $this->load->view('backend/earnleave', $data);           
-       } else {
-            redirect(base_url(), 'refresh');
-        }           
-    }
     public function Update_Earn_Leave(){
         $employee = $this->input->post('emid');
         $start    = $this->input->post('startdate');

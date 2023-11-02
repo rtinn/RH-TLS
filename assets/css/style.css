@@ -8663,6 +8663,12 @@ a.mytooltip {
     border-color: #BDBDBD
 }
 
+.denied {
+    display: flex;
+    justify-content: center;
+}
+
+
 form p {
     margin-bottom: 10px;
     text-align: left

@@ -8,7 +8,7 @@
 	
 	}
 	public function getUserForLogin($credential){			
-    return $this->db->get_where('employee', $credential);
+   	 	return $this->db->get_where('employee', $credential);
 	}
 	public function getdata(){
 	$query =$this->db->get('users');

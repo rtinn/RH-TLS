@@ -43,6 +43,21 @@
     return $result;
 }
 
+
+
+public function nplus_un($dep) {
+  $sql = "SELECT *
+  FROM `employee`
+  WHERE `status` = 'ACTIF' AND `em_id` != 'T0000'  AND `dep_id`='$dep'";
+
+$query = $this->db->query($sql);
+$result = $query->result();
+return $result;
+}
+
+
+
+
 public function get_entries()
     {
         $query = $this->db->get('pointage');

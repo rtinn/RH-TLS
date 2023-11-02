@@ -45,8 +45,25 @@ class Employee extends CI_Controller {
         }
     else{
 		redirect(base_url() , 'refresh');
-	}        
+	}   
+    } 
+  
+
+    public function Nplus_un(){
+        if($this->session->userdata('user_login_access') != False) { 
+        $dep= $this->session->userdata('user_dep');
+        $data['employee'] = $this->employee_model->nplus_un($dep);
+        $this->load->view('backend/nplus_un', $data);
+        }
+        else{
+            redirect(base_url() , 'refresh');
+        }
     }
+    
+
+
+
+
     public function Pointage(){
         if($this->session->userdata('user_login_access') != False) { 
         $this->load->view('backend/pointage');

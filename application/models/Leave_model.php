@@ -11,21 +11,17 @@
         $this->db->insert('holiday',$data);
     }
 
-    public function getLeaveDays($em_id) {
-        // Remplacez cette requête par la requête SQL pour obtenir le nombre de jours de congé en fonction de l'ID de l'employé et du type de congé (dans ce cas, "Avec solde").
-        $this->db->select('nb_jour');
-        $this->db->from('conge_mois');
+    public function getLeaveData($em_id) {
+        // Effectuez une requête pour récupérer les données en fonction de l'em_id et du leavetype
+        $this->db->select('nb_jour, maladie');
         $this->db->where('em_id', $em_id);
-       
-        $query = $this->db->get();
-
-        if ($query->num_rows() > 0) {
-            $row = $query->row();
-            return $row->nb_jour;
-        } else {
-            return 0; // Retournez 0 ou une autre valeur par défaut si aucune correspondance n'est trouvée.
-        }
+        $query = $this->db->get('conge_mois');
+        // Renvoyez les résultats de la requête
+        return $query->row();
     }
+
+
+
     public function getMaladie($em_id) {
         // Remplacez cette requête par la requête SQL pour obtenir le nombre de jours de congé en fonction de l'ID de l'employé et du type de congé (dans ce cas, "Avec solde").
         $this->db->select('maladie');
@@ -192,12 +188,11 @@
     $result = $query->result();
     return $result; 
 }
-    public function GetLeaveToday($date){
+    public function GetLeaveToday(){
     $sql = "SELECT `emp_leave`.*,
       `employee`.`em_id`,`first_name`,`last_name`
       FROM `emp_leave`
-      LEFT JOIN `employee` ON `emp_leave`.`em_id`=`employee`.`em_id`
-        WHERE `apply_date`='$date'";
+      LEFT JOIN `employee` ON `emp_leave`.`em_id`=`employee`.`em_id`";
         $query=$this->db->query($sql);
 		$result = $query->result();
 		return $result; 
@@ -243,11 +238,25 @@
       FROM `emp_leave`
       LEFT JOIN `employee` ON `emp_leave`.`em_id`=`employee`.`em_id`
       LEFT JOIN `leave_types` ON `emp_leave`.`typeid`=`leave_types`.`type_id`
-      WHERE `emp_leave`.`leave_status`='Non Approuvé'";
+      WHERE `emp_leave`.`leave_status`='En attente'";
         $query=$this->db->query($sql);
 		$result = $query->result();
 		return $result; 
     }
+
+    public function AllLeaveAPPlicationok(){
+        $sql = "SELECT `emp_leave`.*,
+          `employee`.`em_id`,`first_name`,`last_name`,
+          `leave_types`.`type_id`,`name`
+          FROM `emp_leave`
+          LEFT JOIN `employee` ON `emp_leave`.`em_id`=`employee`.`em_id`
+          LEFT JOIN `leave_types` ON `emp_leave`.`typeid`=`leave_types`.`type_id`
+          WHERE `emp_leave`.`leave_status`='Approuvé'";
+            $query=$this->db->query($sql);
+            $result = $query->result();
+            return $result; 
+        }
+
     public function EmLeavesheet($emid){
     $sql = "SELECT `assign_leave`.*,
       `employee`.`em_id`,`first_name`,`last_name`,

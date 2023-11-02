@@ -28,7 +28,7 @@
 
                
         <div class="row">
-        <?php if($this->session->userdata('user_type')=='EMPLOYEE'){ ?>
+        <?php if($this->session->userdata('user_type')== 'EMPLOYEE' || $this->session->userdata('user_type') == 'N+1'){ ?>
 
           <div class="col-lg-3 col-6">
             <!-- small box -->
@@ -39,12 +39,12 @@
                     echo $nbjour->nb_jour
                 ?></h3>
 
-                <p>Jours de congé</p>
+                <p>Solde du congé</p>
               </div>
               <div class="icon">
                 <i class="ion ion-calendar"></i>
               </div>
-              <a href="#" class="small-box-footer">More info <i class="fa fa-arrow-circle-right"></i></a>
+             <!-- <a href="#" class="small-box-footer">More info <i class="fa fa-arrow-circle-right"></i></a>-->
             </div>
           </div>
           <!-- ./col -->
@@ -147,7 +147,8 @@
 
           <?php } ?>
         </div>
-        <?php if($this->session->userdata('user_type')=='EMPLOYEE'){ ?>
+        <?php if($this->session->userdata('user_type')== 'EMPLOYEE' || $this->session->userdata('user_type') == 'N+1'){ ?>
+
         
         <?php } else { ?>
         <div class="row">

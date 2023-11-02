@@ -17,9 +17,9 @@
                     <!-- User profile text-->
                     <div class="profile-text">
                         <h5><?php echo $basicinfo->first_name.' '.$basicinfo->last_name; ?></h5>
-                        <?php if($this->session->userdata('user_type')=='EMPLOYEE'){ ?>
-                        
-                            <?php } else { ?>
+                        <?php if($this->session->userdata('user_type')== 'EMPLOYEE' || $this->session->userdata('user_type') == 'N+1'){ ?>
+                         
+                        <?php } else { ?>
 
                         <a href="<?php echo base_url(); ?>settings/Settings" class="dropdown-toggle u-dropdown" role="button" aria-haspopup="true" aria-expanded="true" title="Paramètres"><i class="mdi mdi-settings"></i></a>
                         <?php } ?>
@@ -45,7 +45,7 @@
                             <ul aria-expanded="false" class="collapse">
                               
                                 <li><a href="<?php echo base_url(); ?>leave/EmApplication"> Demande de congé </a></li>
-                                <li><a href="<?php echo base_url(); ?>leave/EmLeavesheet"> Leave Sheet </a></li>
+                                
                             </ul>
                         </li> 
                        <!--
@@ -57,6 +57,25 @@
                             </ul>
                         </li>   
                         -->                                                                    
+                        <?php } else if($this->session->userdata('user_type')=='N+1'){ ?>
+
+                            
+                   
+                        <li><a href="<?php echo base_url(); ?>employee/view?I=<?php echo base64_encode($basicinfo->em_id); ?>"><i class="mdi mdi-account-multiple"></i> Mon Profil</a></li>
+                        <li><a href="<?php echo base_url(); ?>employee/Nplus_un"> <i class="fa fa-qrcode" aria-hidden="true"></i> N+1</a></li>
+                        
+                    
+                        <li><a href="<?php echo base_url(); ?>employee/Pointage"> <i class="fa fa-qrcode" aria-hidden="true"></i> Pointage</a></li>
+                               
+                        
+                        <li> <a class="has-arrow waves-effect waves-dark" href="#" aria-expanded="false"><i class="mdi mdi-rocket"></i><span class="hide-menu">Conge </span></a>
+                            <ul aria-expanded="false" class="collapse">
+                              
+                                <li><a href="<?php echo base_url(); ?>leave/EmApplication"> Demande de congé </a></li>
+                               
+                            </ul>
+                        </li> 
+
                         <?php } else { ?>
                             
                         <li> <a class="has-arrow waves-effect waves-dark" href="#" aria-expanded="false"><i class="fa fa-building-o"></i><span class="hide-menu">Organisations </span></a>

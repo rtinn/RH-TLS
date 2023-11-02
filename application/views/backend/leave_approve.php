@@ -132,6 +132,10 @@
                                 <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
                                 
                             </div>
+                            <div class="form-group">
+                                    <span style="color:red" id="total"></span>
+                            </div>
+                                
                             <form method="post" action="Add_Applications" id="leaveapply" enctype="multipart/form-data">
                             <div class="modal-body">
                             <div class="form-group">
@@ -165,12 +169,7 @@
                                 </div>
 
 
-                                <div class="form-group">
-                                    <span style="color:red" id="total"></span>
-                                    
-                                    <br>
-                                </div>
-                                
+                               
 
                                 <div class="form-group">
                                     <label class="control-label">Durée du congé</label><br>
@@ -390,6 +389,7 @@
                         data: '',
                         dataType: 'json',
                     }).done(function(response) {
+                        fetchLeaveTotal1();
                         // console.log(response);
                         // Populate the form fields with the data returned from server
                         $('#leaveapply').find('[name="id"]').val(response.leaveapplyvalue.id).end();
@@ -415,36 +415,44 @@
                             $('#hourAmount').hide().end();
                             $('#enddate').show().end();
                         }
-
+                      
                         $('#hourAmountVal').val(response.leaveapplyvalue.leave_duration).show().end();
+
                     });
+                   
                 });
             });
-
-
-            $('.fetchLeaveTotal').click(function() {
-            
-            var em_id = $('#em_id').val();
-            if (em_id !== "") {
-                
-                $.ajax({
-                    type: 'POST',
-                    url: url + 'leave/getLeaveDays',
-                    data: {
-                        em_id: em_id
-                    },
-                    dataType: 'json',
-                    success: function(data) {
-                        if (data.nb_jour) {
-                            $('#total').text('Nombre de jours de congé : ' + data.nb_jour);
-                        }
-                    }
-
-                });
-            }
-        });
-        
+  
     
+
+        // Écoutez les changements de sélection du type de congé
+        $('#leavetype').change(function() {
+            var em_id = $('#em_id').val();
+            var leavetype = $(this).val();
+
+            // Effectuez la demande Ajax
+            $.ajax({
+                type: 'POST',
+                url: url + 'leave/getLeaveData',
+                data: { em_id: em_id},
+                success: function(data) {
+                    // Mettez à jour le contenu de #total en fonction de la réponse
+                    var leaveData = JSON.parse(data);
+                    if (leavetype === 'Avec solde') {
+                        $('#total').text('Nombre de jours de congé: ' + leaveData.nb_jour);
+                    } else if (leavetype === 'Maladie') {
+                        $('#total').text('Type de maladie: ' + leaveData.maladie);
+                    } else {
+                        $('#total').text('');
+                    }
+                }
+            });
+        });
+    
+
+
+
+
 
 
 
@@ -457,6 +465,56 @@
 
     })(jQuery); // Vous devez envelopper votre code dans une fonction et la passer à jQuery
 </script>
+
+
+<script>
+$(document).ready(function() {
+    // Obtenez l'URL de base depuis PHP et stockez-la dans une variable
+    var url = '<?php echo base_url(); ?>';
+
+    // Attachez un gestionnaire d'événements au changement de l'élément select avec la classe 'fetchLeaveTotal'
+    $('.fetchLeaveTotal').change(function() {
+        // Récupérez la valeur de l'élément select avec l'ID 'em_id'
+        var em_id = $('#em_id').val();
+        // Récupérez la valeur de l'élément select avec l'ID 'leavetype'
+        var leavetype = $('#leavetype').val();
+
+        // Vérifiez si le type de congé est "Avec solde" ou "Maladie"
+        if (leavetype == "Avec solde" || leavetype == "Maladie") {
+            // Vérifiez si l'identifiant de l'employé n'est pas vide
+            if (em_id !== "") {
+                // Déterminez l'URL de l'endpoint en fonction du type de congé
+                var endpoint = leavetype == "Avec solde" ? 'leave/getLeaveDays' : 'leave/getMaladieC';
+
+                // Effectuez une requête AJAX
+                $.ajax({
+                    type: 'POST',
+                    url: url + endpoint,
+                    data: {
+                        em_id: em_id
+                    },
+                    dataType: 'json',
+                    success: function(data) {
+                        // Si des données sont renvoyées avec succès
+                        if (data.nb_jour || data.nb_maladie) {
+                            var message = leavetype == "Avec solde"
+                                ? 'Solde du congé : ' + data.nb_jour
+                                : 'Solde du congé maladie : ' + data.nb_maladie;
+                            // Mettez à jour le contenu de l'élément avec l'ID 'total' avec le message
+                            $('#total').text(message);
+                        }
+                    },
+                    error: function(xhr, status, error) {
+                        console.log("AJAX Error: " + error);
+                    }
+                });
+            }
+        }
+    });
+});
+</script>
+
+
 
 
 
