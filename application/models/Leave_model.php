@@ -13,7 +13,7 @@
 
     public function getLeaveData($em_id) {
         // Effectuez une requête pour récupérer les données en fonction de l'em_id et du leavetype
-        $this->db->select('nb_jour, maladie');
+        $this->db->select('*');
         $this->db->where('em_id', $em_id);
         $query = $this->db->get('conge_mois');
         // Renvoyez les résultats de la requête
@@ -233,11 +233,9 @@
     }
     public function AllLeaveAPPlication(){
     $sql = "SELECT `emp_leave`.*,
-      `employee`.`em_id`,`first_name`,`last_name`,
-      `leave_types`.`type_id`,`name`
+      `employee`.`em_id`,`first_name`,`last_name`
       FROM `emp_leave`
       LEFT JOIN `employee` ON `emp_leave`.`em_id`=`employee`.`em_id`
-      LEFT JOIN `leave_types` ON `emp_leave`.`typeid`=`leave_types`.`type_id`
       WHERE `emp_leave`.`leave_status`='En attente'";
         $query=$this->db->query($sql);
 		$result = $query->result();

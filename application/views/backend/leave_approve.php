@@ -43,7 +43,8 @@
                                         <th>Date debut</th>
                                         <th>Date fin</th>
                                         <th>Duration</th>
-                                        <th>Status</th>
+                                        <th>N+1</th>
+                                        <th>RH</th>
                                         <th>Action</th>
                                     </tr>
                                 </thead>
@@ -122,9 +123,10 @@
     </div>
 </div>
 
-
+<!--DEBUT MODAL DEMANDE CONGE-->
 
         <div class="modal fade" id="appmodel" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel1">
+
                     <div class="modal-dialog" role="document">
                         <div class="modal-content ">
                             <div class="modal-header">
@@ -132,27 +134,29 @@
                                 <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
                                 
                             </div>
-                            <div class="form-group">
+                            <div class="total">
                                     <span style="color:red" id="total"></span>
                             </div>
                                 
                             <form method="post" action="Add_Applications" id="leaveapply" enctype="multipart/form-data">
                             <div class="modal-body">
+                                <div class="form_emp">
                             <div class="form-group">
-                                <label>N°</label>
-                                <select class="form-control custom-select selectedEmployeeID fetchLeaveTotal" tabindex="1" name="emid" id="em_id" required>
+                                <label>Matricule</label>
+                                <select class="form-control custom-select selectedEmployeeID fetchLeaveTotal" tabindex="1" name="emid" id="em_id"  required>
                                     <?php foreach ($employee as $value): ?>
                                     <option value="<?php echo $value->em_id ?>"><?php echo $value->em_id ?></option>
                                     <?php endforeach; ?>
                                 </select>
                             </div>
                             <div class="form-group">
-                                <label>Employee</label>
+                                <label>Nom-prenoms</label>
                                 <select class="form-control custom-select selectedEmployeeName" tabindex="1" name="emid" id="employee_name" required>
                                     <?php foreach ($employee as $value): ?>
                                     <option value="<?php echo $value->em_id ?>"><?php echo $value->first_name . ' ' . $value->last_name ?></option>
                                     <?php endforeach; ?>
                                 </select>
+                            </div>
                             </div>
 
 
@@ -160,16 +164,14 @@
                                     <label>Type de congé</label>
                                     <select class="form-control custom-select assignleave fetchLeaveTotal"  tabindex="1" name="typeid" id="leavetype" required>
                                         <option value="">Selectinner type de congé</option>
-                                        <?php foreach($leavetypes as $value): ?>
-
-                                        <option value="<?php echo $value->type_id ?>"><?php echo $value->name ?></option>
-
-                                        <?php endforeach; ?>
+                                        <option value="Avec solde">Avec solde</option>
+                                        <option value="Sans solde">Sans solde</option>
+                                        <option value="Maladie">Maladie</option>
+                                        <option value="Maternité">Maternité</option>
+                                        <option value="exceptionnel">exceptionnel</option>
+                                        
                                     </select>
                                 </div>
-
-
-                               
 
                                 <div class="form-group">
                                     <label class="control-label">Durée du congé</label><br>
@@ -184,10 +186,29 @@
                                     <label class="control-label" id="hourlyFix">Date</label>
                                     <input type="date" name="startdate" class="form-control " id="recipient-name1" required>
                                 </div>
+
                                 <div class="form-group" id="enddate" style="display:none">
                                     <label class="control-label">Date de fin</label>
-                                    <input type="date" name="enddate" class="form-control " id="recipient-name1">
+                                    <input type="date" name="enddate" class="form-control " id="recipient-name2">
+                                    <span style="color:red" id="different"></span>
                                 </div>
+                                            
+                                    <script>
+                                        document.getElementById("recipient-name2").addEventListener("change", function () {
+                                            var startDate = new Date(document.getElementById("recipient-name1").value);
+                                            var endDate = new Date(this.value);
+
+                                            if (!isNaN(startDate) && !isNaN(endDate)) {
+                                                var timeDifference = endDate - startDate;
+                                                var daysDifference = timeDifference / (1000 * 60 * 60 * 24);
+
+                                                document.getElementById("different").textContent = daysDifference + " jours";
+                                            }
+                                        });
+                                    </script>
+
+
+
  
                                 <div class="form-group">
                                     <label class="control-label">Raisons</label>
@@ -202,37 +223,183 @@
 
                                         // Get the record's ID via attribute  
                                         var duration = $('input[name=type]:checked', '#leaveapply').attr('data-value');
+                                        var champDate = document.getElementById("recipient-name2");
+                                        
                                         console.log(duration);
 
                                         if(duration =='Half'){
                                             $('#enddate').hide();
                                             $('#hourlyFix').text('Date');
-                                            $('#hourAmount').show();
+                                            champDate.value = "";
+                                            document.getElementById("different").textContent = "";
                                         }
                                         else if(duration =='Full'){
                                             $('#enddate').hide();  
-                                            $('#hourAmount').hide();  
                                             $('#hourlyFix').text('Date');  
+                                            champDate.value = "";
+                                            document.getElementById("different").textContent = "";
                                         }
                                         else if(duration =='More'){
                                             $('#enddate').show();
-                                            $('#hourAmount').hide();
+                                            
                                         }
                                     });
                                     $('#appmodel').on('hidden.bs.modal', function () {
-                                        location.reload();
+                                    //    location.reload();
                                     });
                                 });                                                          
                             </script>
                             <div class="modal-footer">
                                 <input type="hidden" name="id" class="form-control" id="recipient-name1" required> 
-                                <button type="button" class="btn btn-danger" data-dismiss="modal">Annuler</button>
-                                <button type="submit" class="btn btn-success">Enregistrer</button>
+                                <button type="button" class="btn btn-danger" data-dismiss="modal"><i class="fa fa-ban" aria-hidden="true"></i> Annuler</button>
+                                <button type="submit" class="btn btn-success"><i class="fa fa-paper-plane" aria-hidden="true"></i> Envoyer</button>
                             </div>
                             </form>
                         </div>
                     </div>
                 </div>
+
+<!--FIN MODAL DEMANDE CONGE-->
+
+
+<!--DEBUT MODAL MODIF VALID CONGE-->
+
+<div class="modal fade" id="appmodel1" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel1">
+
+<div class="modal-dialog" role="document">
+    <div class="modal-content ">
+        <div class="modal-header">
+            <h4 class="modal-title" id="exampleModalLabel1">Demande congé</h4>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            
+        </div>
+        <div class="total">
+                <span style="color:red" id="total"></span>
+        </div>
+            
+        <form method="post" action="Add_Applications1" id="leaveapply1" enctype="multipart/form-data">
+        <div class="modal-body">
+            <div class="form_emp">
+        <div class="form-group">
+
+            <label>Matricule</label>
+        <input type="text"  class="form-control"  name="emid" id="em_id" readonly>
+            
+        </div>
+        <div class="form-group">
+            <label>Nom-prenoms</label>
+            <select class="form-control custom-select selectedEmployeeName" tabindex="1" name="emid" id="employee_name" required disabled>
+                <?php foreach ($employee as $value): ?>
+                <option value="<?php echo $value->em_id ?>"><?php echo $value->first_name . ' ' . $value->last_name ?></option>
+                <?php endforeach; ?>
+            </select>
+        </div>
+        </div>
+
+
+            <div class="form-group">
+                <label>Type de congé</label>
+                <select class="form-control custom-select assignleave fetchLeaveTotal"  tabindex="1" name="typeid" id="leavetype" required>
+                    <option value="">Selectinner type de congé</option>
+                    <option value="Avec solde">Avec solde</option>
+                    <option value="Sans solde">Sans solde</option>
+                    <option value="Maladie">Maladie</option>
+                    <option value="Maternité">Maternité</option>
+                    <option value="exceptionnel">exceptionnel</option>
+                    
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label class="control-label">Durée du congé</label><br>
+                <input name="type" type="radio" id="radio_1" data-value="Half" class="duration" value="Half Day" checked="">
+                <label for="radio_1">Demi-journée</label>
+                <input name="type" type="radio" id="radio_2" data-value="Full" class="type" value="Full Day">
+                <label for="radio_2">Journée complète</label>
+                <input name="type" type="radio" class="with-gap duration" id="radio_3" data-value="More" value="More than One day">
+                <label for="radio_3">Au dessus d'un jour</label>
+            </div>
+            <div class="form-group">
+                <label class="control-label" id="hourlyFix">Date</label>
+                <input type="date" name="startdate" class="form-control " id="recipient-name1" required>
+            </div>
+
+            <div class="form-group" id="enddate" style="display:none">
+                <label class="control-label">Date de fin</label>
+                <input type="date" name="enddate" class="form-control " id="recipient-name2">
+                <span style="color:red" id="different"></span>
+            </div>
+                        
+                <script>
+                    document.getElementById("recipient-name2").addEventListener("change", function () {
+                        var startDate = new Date(document.getElementById("recipient-name1").value);
+                        var endDate = new Date(this.value);
+
+                        if (!isNaN(startDate) && !isNaN(endDate)) {
+                            var timeDifference = endDate - startDate;
+                            var daysDifference = timeDifference / (1000 * 60 * 60 * 24);
+
+                            document.getElementById("different").textContent = daysDifference + " jours";
+                        }
+                    });
+                </script>
+
+
+
+
+            <div class="form-group">
+                <label class="control-label">Raisons</label>
+                <textarea class="form-control" name="reason" id="message-text1"></textarea>                                                
+            </div>
+                                                           
+        </div>
+        <script>
+            $(document).ready(function () {
+                $('#leaveapply1 input').on('change', function(e) {
+                    e.preventDefault(e);
+
+                    // Get the record's ID via attribute  
+                    var duration = $('input[name=type]:checked', '#leaveapply1').attr('data-value');
+                    var champDate = document.getElementById("recipient-name2");
+                    
+                    console.log(duration);
+
+                    if(duration =='Half'){
+                        $('#enddate').hide();
+                        $('#hourlyFix').text('Date');
+                        champDate.value = "";
+                        document.getElementById("different").textContent = "";
+                    }
+                    else if(duration =='Full'){
+                        $('#enddate').hide();  
+                        $('#hourlyFix').text('Date');  
+                        champDate.value = "";
+                        document.getElementById("different").textContent = "";
+                    }
+                    else if(duration =='More'){
+                        $('#enddate').show();
+                        
+                    }
+                });
+                $('#appmodel1').on('hidden.bs.modal', function () {
+                //    location.reload();
+                });
+            });                                                          
+        </script>
+        <div class="modal-footer">
+            <input type="hidden" name="id" class="form-control" id="recipient-name1" required> 
+            <button type="button" class="btn btn-danger" data-dismiss="modal"><i class="fa fa-ban" aria-hidden="true"></i> Annuler</button>
+            <button type="submit" class="btn btn-success"><i class="fa fa-paper-plane" aria-hidden="true"></i> Envoyer</button>
+        </div>
+        </form>
+    </div>
+</div>
+</div>
+
+<!--FIN MODAL MODIF VALID CONGE-->
+
+
+                
 
                 <script>
     (function($) {
@@ -273,12 +440,6 @@
                     "buttons": ['copy', 'csv', 'excel', 'pdf', 'print']
                 });
             }
-
-
-
-
-
-
             // Appelez la fonction pour initialiser la DataTable
           
 
@@ -292,7 +453,6 @@
                 success: function(response){
                     console.log(response);
                     $('#matr').html(response.em_id);
-                   
                     $('#valid_id').val(response.id);
                     $('#validemodal').modal('show');
                 }
@@ -300,6 +460,35 @@
             
 
         });
+
+
+        // PARAMETRE DEMANDE DE CONGE 5 JOURS
+        var dateInput = document.getElementById('recipient-name1');
+
+// Écoutez l'événement "change" lorsque la date est modifiée
+dateInput.addEventListener('change', function () {
+    // Obtenez la date actuelle
+    var currentDate = new Date();
+    
+    // Obtenez la date sélectionnée dans l'élément d'entrée
+    var selectedDate = new Date(dateInput.value);
+
+    // Calculez la différence en jours entre les deux dates
+    var timeDiff = selectedDate - currentDate;
+    var dayDiff = Math.ceil(timeDiff / (1000 * 3600 * 24));
+
+    if (dayDiff < 5) {
+      
+        alert("vous devez envoyer 5 jours avant");
+        dateInput.value = ''; // Vide le champ de date
+    }
+        });
+
+
+
+
+
+
         $(document).on('click', '.rejet', function(){
             var id = $(this).data('id');
             $.ajax({
@@ -381,37 +570,37 @@
             $(document).on('click', '.leaveapp', function(){
            
             var iid = $(this).attr('data-id');
-                    $('#leaveapply').trigger("reset");
-                    $('#appmodel').modal('show');
+                    $('#leaveapply1').trigger("reset");
+                    $('#appmodel1').modal('show');
                     $.ajax({
                         url: 'LeaveAppbyid?id=' + iid,
                         method: 'GET',
                         data: '',
                         dataType: 'json',
                     }).done(function(response) {
-                        fetchLeaveTotal1();
+                       
                         // console.log(response);
                         // Populate the form fields with the data returned from server
-                        $('#leaveapply').find('[name="id"]').val(response.leaveapplyvalue.id).end();
-                        $('#leaveapply').find('[name="emid"]').val(response.leaveapplyvalue.em_id).end();
-                        $('#leaveapply').find('[name="applydate"]').val(response.leaveapplyvalue.apply_date).end();
-                        $('#leaveapply').find('[name="typeid"]').val(response.leaveapplyvalue.typeid).end();
+                        $('#leaveapply1').find('[name="id"]').val(response.leaveapplyvalue.id).end();
+                        $('#leaveapply1').find('[name="emid"]').val(response.leaveapplyvalue.em_id).end();
+                        $('#leaveapply1').find('[name="applydate"]').val(response.leaveapplyvalue.apply_date).end();
+                        $('#leaveapply1').find('[name="typeid"]').val(response.leaveapplyvalue.typeid).end();
                        
-                        $('#leaveapply').find('[name="startdate"]').val(formatDateToYMD(response.leaveapplyvalue.start_date));
-                        $('#leaveapply').find('[name="enddate"]').val(formatDateToYMD(response.leaveapplyvalue.end_date));
+                        $('#leaveapply1').find('[name="startdate"]').val(formatDateToYMD(response.leaveapplyvalue.start_date));
+                        $('#leaveapply1').find('[name="enddate"]').val(formatDateToYMD(response.leaveapplyvalue.end_date));
 
-                        $('#leaveapply').find('[name="reason"]').val(response.leaveapplyvalue.reason).end();
-                        $('#leaveapply').find('[name="status"]').val(response.leaveapplyvalue.leave_status).end();
+                        $('#leaveapply1').find('[name="reason"]').val(response.leaveapplyvalue.reason).end();
+                        $('#leaveapply1').find('[name="status"]').val(response.leaveapplyvalue.leave_status).end();
 
                         if(response.leaveapplyvalue.leave_type == 'Half day') {
-                            $('#appmodel').find(':radio[name=type][value="Half Day"]').prop('checked', true).end();
+                            $('#appmodel1').find(':radio[name=type][value="Half Day"]').prop('checked', true).end();
                             $('#hourAmount').show().end();
                             $('#enddate').hide().end();
                         } else if(response.leaveapplyvalue.leave_type == 'Full Day') {
-                            $('#appmodel').find(':radio[name=type][value="Full Day"]').prop('checked', true).end();
+                            $('#appmodel1').find(':radio[name=type][value="Full Day"]').prop('checked', true).end();
                             $('#hourAmount').hide().end();
                         } else if(response.leaveapplyvalue.leave_type == 'More than One day'){
-                            $('#appmodel').find(':radio[name=type][value="More than One day"]').prop('checked', true).end();
+                            $('#appmodel1').find(':radio[name=type][value="More than One day"]').prop('checked', true).end();
                             $('#hourAmount').hide().end();
                             $('#enddate').show().end();
                         }
@@ -426,7 +615,8 @@
     
 
         // Écoutez les changements de sélection du type de congé
-        $('#leavetype').change(function() {
+        // // $('.fetchLeaveTotal').change(function() {
+            $(".fetchLeaveTotal").on("click", function(event) {
             var em_id = $('#em_id').val();
             var leavetype = $(this).val();
 
@@ -437,82 +627,46 @@
                 data: { em_id: em_id},
                 success: function(data) {
                     // Mettez à jour le contenu de #total en fonction de la réponse
-                    var leaveData = JSON.parse(data);
-                    if (leavetype === 'Avec solde') {
-                        $('#total').text('Nombre de jours de congé: ' + leaveData.nb_jour);
-                    } else if (leavetype === 'Maladie') {
-                        $('#total').text('Type de maladie: ' + leaveData.maladie);
-                    } else {
-                        $('#total').text('');
-                    }
+            var leaveData = JSON.parse(data);
+            if (leavetype === 'Avec solde') {
+                if (leaveData.nb_jour === null || leaveData.nb_jour === '') {
+                    $('#total').text('Vous n\'avez pas de solde');
+                } else {
+                    $('#total').text('Solde congé: ' + leaveData.nb_jour + ' Jour');
+                }
+            } else if (leavetype === 'Maladie') {
+                if (leaveData.maladie === null || leaveData.maladie === '') {
+                    $('#total').text('Vous n\'avez pas de solde');
+                } else {
+                    $('#total').text('Solde congé: ' + leaveData.maladie + ' Jour');
+                }
+            } else if (leavetype === 'Maternité') {
+                if (leaveData.maternite === null || leaveData.maternite === '') {
+                    $('#total').text('Vous n\'avez pas de solde');
+                } else {
+                    $('#total').text('Solde congé: ' + leaveData.maternite + ' Mois');
+                }
+            } else if (leavetype === 'exceptionnel') {
+                if (leaveData.except === null || leaveData.except === '') {
+                    $('#total').text('Vous n\'avez pas de solde');
+                } else {
+                    $('#total').text('Solde congé: ' + leaveData.except + ' jours');
+                }
+            } else {
+                $('#total').text('');
+            }
                 }
             });
         });
-    
-
-
-
-
-
-
-
-
-
 
         });
 
-
+        
 
     })(jQuery); // Vous devez envelopper votre code dans une fonction et la passer à jQuery
 </script>
 
 
-<script>
-$(document).ready(function() {
-    // Obtenez l'URL de base depuis PHP et stockez-la dans une variable
-    var url = '<?php echo base_url(); ?>';
-
-    // Attachez un gestionnaire d'événements au changement de l'élément select avec la classe 'fetchLeaveTotal'
-    $('.fetchLeaveTotal').change(function() {
-        // Récupérez la valeur de l'élément select avec l'ID 'em_id'
-        var em_id = $('#em_id').val();
-        // Récupérez la valeur de l'élément select avec l'ID 'leavetype'
-        var leavetype = $('#leavetype').val();
-
-        // Vérifiez si le type de congé est "Avec solde" ou "Maladie"
-        if (leavetype == "Avec solde" || leavetype == "Maladie") {
-            // Vérifiez si l'identifiant de l'employé n'est pas vide
-            if (em_id !== "") {
-                // Déterminez l'URL de l'endpoint en fonction du type de congé
-                var endpoint = leavetype == "Avec solde" ? 'leave/getLeaveDays' : 'leave/getMaladieC';
-
-                // Effectuez une requête AJAX
-                $.ajax({
-                    type: 'POST',
-                    url: url + endpoint,
-                    data: {
-                        em_id: em_id
-                    },
-                    dataType: 'json',
-                    success: function(data) {
-                        // Si des données sont renvoyées avec succès
-                        if (data.nb_jour || data.nb_maladie) {
-                            var message = leavetype == "Avec solde"
-                                ? 'Solde du congé : ' + data.nb_jour
-                                : 'Solde du congé maladie : ' + data.nb_maladie;
-                            // Mettez à jour le contenu de l'élément avec l'ID 'total' avec le message
-                            $('#total').text(message);
-                        }
-                    },
-                    error: function(xhr, status, error) {
-                        console.log("AJAX Error: " + error);
-                    }
-                });
-            }
-        }
-    });
-});
-</script>
 
 
 
