@@ -477,7 +477,7 @@ if (retardMinutes >= 0) {
     $('#retard').val(retardHours + ' heures ' + (retardMinutes % 60) + ' minutes');
 } else {
     // Si la différence est négative, n'affiche rien
-    $('#retard').val('pas de retard');
+    $('#retard').val('------------');
 }
 
 

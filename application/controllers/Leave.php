@@ -41,79 +41,9 @@ class Leave extends CI_Controller
         $this->load->view('login');
     }
 
-    public function Holidays()
-    {
-        if ($this->session->userdata('user_login_access') != False) {
-            $data['holidays'] = $this->leave_model->GetAllHoliInfo();
-            $this->load->view('backend/holiday', $data);
-        } else {
-            redirect(base_url(), 'refresh');
-        }
-    }
+ 
 
-    public function Holidays_for_calendar()
-    {
-        if ($this->session->userdata('user_login_access') != False) {
-            $result = $this->leave_model->GetAllHoliInfoForCalendar();
-            print_r($result);
-            die();
-            echo jason_encode($result);
-           
-        } else {
-            redirect(base_url(), 'refresh');
-        }
-    }
-
-    public function Add_Holidays()
-    {
-        if ($this->session->userdata('user_login_access') != False) {
-            $id      = $this->input->post('id');
-            $name    = $this->input->post('holiname');
-            $sdate   = $this->input->post('startdate');
-            $edate   = $this->input->post('enddate');
-            if(empty($edate)){
-               $nofdate = '1'; 
-                //die($nofdate);
-            } else{
-            $date1 = new DateTime($sdate);
-            $date2 = new DateTime($edate);
-            $diff = date_diff($date1,$date2);
-            $nofdate = $diff->format("%a");
-            //die($nofdate);     
-            }
-            $year    = date('m-Y',strtotime($sdate));
-            $this->form_validation->set_error_delimiters();
-            $this->form_validation->set_rules('holiname', 'Holidays name', 'trim|required|min_length[5]|max_length[120]|xss_clean');
-            
-            if ($this->form_validation->run() == FALSE) {
-                echo validation_errors();
-                #redirect("leave/Holidays");
-            } else {
-                $data = array();
-                $data = array(
-                    'holiday_name' => $name,
-                    'from_date' => $sdate,
-                    'to_date' => $edate,
-                    'number_of_days' => $nofdate,
-                    'year' => $year
-                );
-                if (empty($id)) {
-                    $success = $this->leave_model->Add_HolidayInfo($data);
-                    $this->session->set_flashdata('feedback', 'Successfully Added');
-                    #redirect("leave/Holidays");
-                    echo "Successfully Added";
-                } else {
-                    $success = $this->leave_model->Update_HolidayInfo($id, $data);
-                    $this->session->set_flashdata('feedback', 'Successfully Updated');
-                    #redirect("leave/Holidays");
-                    echo "Successfully Updated";
-                }
-                
-            }
-        } else {
-            redirect(base_url(), 'refresh');
-        }
-    }
+   
 
     public function Add_leaves_Type()
     {
@@ -152,8 +82,16 @@ class Leave extends CI_Controller
     public function Application()
     {
         if ($this->session->userdata('user_login_access') != False) {
-            $data['employee']    = $this->employee_model->emselect(); // obtient les détails des employés actifs
-            $data['leavetypes']  = $this->leave_model->GetleavetypeInfo();
+            $emid = $this->session->userdata('user_login_id');
+            $dep= $this->session->userdata('user_dep');
+            if($this->session->userdata('user_type')== 'EMPLOYEE'){
+                $data['employee']    = $this->employee_model->emselectByID($emid);
+             } else if($this->session->userdata('user_type')== 'N+1'){
+                $data['employee'] = $this->employee_model->nplus_un($dep);
+             } else {
+                $data['employee']    = $this->employee_model->emselect(); // obtient les détails des employés actifs
+            } 
+           
             $this->load->view('backend/leave_approve', $data);
         } else {
             redirect(base_url(), 'refresh');
@@ -161,54 +99,8 @@ class Leave extends CI_Controller
     }
 
 
-    public function EmApplication()
-    {
-        if ($this->session->userdata('user_login_access') != False) {
-            $emid                = $this->session->userdata('user_login_id');
-            $data['employee']    = $this->employee_model->emselectByID($emid);
-            $data['leavetypes']  = $this->leave_model->GetleavetypeInfo();
-            $data['application'] = $this->leave_model->GetallApplication($emid);
-            $this->load->view('backend/leave_apply', $data);
-        } else {
-            redirect(base_url(), 'refresh');
-        }
-    }
-    public function GetEmApplication() {
-        $emid                = $this->session->userdata('user_login_id');
-           
-        $data['application'] = $this->leave_model->GetallApplication($emid);
-        $output = array();
-        
-        foreach ($data['application'] as $value) { // Itérez sur les demandes de congé (supposons que les demandes de congé sont dans $data['application'])
-            ?>
-            <tr style="vertical-align: top">
-                <td><?php echo $value->em_id; ?></td>
-                <td><span><?php echo $value->first_name.' '.$value->last_name ?></span></td>
-                <td><?php echo $value->name; ?></td>
-                <td><?php echo $value->apply_date; ?></td>
-                <td><?php echo $value->start_date; ?></td>
-                <td><?php echo $value->end_date; ?></td>
-                <td>
-                    <!-- Votre code pour la durée ici -->
-                </td>
-                <td><?php echo $value->leave_status; ?></td>
-                <?php if ($this->session->userdata('user_type') != 'EMPLOYEE') { ?>
-                    <td class="jsgrid-align-center">
-                        <?php if ($value->leave_status == 'Approuvé') { ?>
-                            <!-- Votre code ici -->
-                        <?php } elseif ($value->leave_status == 'En attente') { ?>
-                            <button class="btn btn-primary leaveapp " data-id="<?php echo $value->id; ?>"><i class="fa fa-eye" aria-hidden="true"></i></button>
-                        <?php } elseif ($value->leave_status == 'Rejeté') { ?>
-                            <!-- Votre code ici -->
-                        <?php } ?>
-                        
-                       
-                    </td>
-                <?php } ?>
-            </tr>
-            <?php
-        }   
-    }
+  
+   
 
     public function LeaveAppbyid()
     {
@@ -259,25 +151,116 @@ class Leave extends CI_Controller
                 <td><?php echo $value->leave_duration; ?></td>
                 <td><?php echo $value->leave_status; ?></td>
                 <td><?php echo $value->leave_status_rh; ?></td>
-                
-                <?php if ($this->session->userdata('user_type') != 'EMPLOYEE') { ?>
                     <td class="jsgrid-align-center">
-                        <?php if ($value->leave_status == 'Approuvé') { ?>
-                            <!-- Votre code ici -->
-                        <?php } elseif ($value->leave_status == 'En attente') { ?>
-                           
-                            <button class="btn btn-primary leaveapp " data-id="<?php echo $value->id; ?>"><i class="fa fa-eye" aria-hidden="true"></i></button>
-                       <?php } elseif ($value->leave_status == 'Rejeté') { ?>
-                            <!-- Votre code ici -->
-                        <?php } ?>
-                        
-                       
+                    <button class="btn btn-primary edit " data-id="<?php echo $value->id; ?>"><i class="fa fa-eye" aria-hidden="true"></i></button>  
                     </td>
-                <?php } ?>
             </tr>
             <?php
         }   
     }
+
+    public function getidConger(){
+		$id = $_POST['id'];
+		$data = $this->leave_model->getidConger($id);
+		echo json_encode($data);
+}
+
+public function UpdateLeave() {
+    if ($this->session->userdata('user_login_access') != False) {
+    $id = $this->input->post('idc');
+    $status_n = $this->input->post('status_n');
+    $coms_n = $this->input->post('coms_n');
+    $full_name = $this->session->userdata('full_name');
+    
+    // Effectuez la mise à jour de la demande de congé dans la base de données en utilisant le modèle
+    $result = $this->leave_model->UpdateLeave($id,$status_n, $coms_n, $full_name);
+
+    // En fonction du résultat de la mise à jour, renvoyez une réponse appropriée
+    if ($result) {
+        echo json_encode(array('success' => true));
+    } else {
+        echo json_encode(array('success' => false));
+    }
+} else {
+    redirect(base_url(), 'refresh');
+}
+}
+
+
+
+
+
+
+
+    public function GetEmApplication() {
+        $emid = $this->session->userdata('user_login_id');
+           
+        $data['application'] = $this->leave_model->GetallApplication($emid);
+        $output = array();
+        
+        foreach ($data['application'] as $value) { // Itérez sur les demandes de congé (supposons que les demandes de congé sont dans $data['application'])
+            ?>
+            <tr style="vertical-align: top">
+                <td><?php echo $value->em_id; ?></td>
+                <td><span><?php echo $value->first_name.' '.$value->last_name ?></span></td>
+                <td><?php echo $value->typeid; ?></td>
+                <td><?php echo $value->apply_date; ?></td>
+                <td><?php echo $value->start_date; ?></td>
+                <td>
+                <?php
+                if ($value->end_date !== null) {
+                    echo $value->end_date;
+                } else {
+                    echo "------------";
+                }
+                ?>
+                </td>
+                <td><?php echo $value->leave_duration; ?></td>
+                <td><?php echo $value->leave_status; ?></td>
+                <td><?php echo $value->leave_status_rh; ?></td>
+                    <td class="jsgrid-align-center">
+                    <button class="btn btn-primary edit " data-id="<?php echo $value->id; ?>"><i class="fa fa-eye" aria-hidden="true"></i></button>  
+                    </td>
+            </tr>
+            <?php
+        }      
+    }
+
+    public function GetNApplication() {
+     
+        $dep= $this->session->userdata('user_dep');
+        $data['application'] = $this->leave_model->GetNallApplication($dep);
+        $output = array();
+        
+        foreach ($data['application'] as $value) { // Itérez sur les demandes de congé (supposons que les demandes de congé sont dans $data['application'])
+            ?>
+            <tr style="vertical-align: top">
+                <td><?php echo $value->em_id; ?></td>
+                <td><span><?php echo $value->first_name.' '.$value->last_name ?></span></td>
+                <td><?php echo $value->typeid; ?></td>
+                <td><?php echo $value->apply_date; ?></td>
+                <td><?php echo $value->start_date; ?></td>
+                <td>
+                <?php
+                if ($value->end_date !== null) {
+                    echo $value->end_date;
+                } else {
+                    echo "------------";
+                }
+                ?>
+                </td>
+                <td><?php echo $value->leave_duration; ?></td>
+                <td><?php echo $value->leave_status; ?></td>
+                <td><?php echo $value->leave_status_rh; ?></td>
+                    <td class="jsgrid-align-center">
+                    <button class="btn btn-primary edit " data-id="<?php echo $value->id; ?>"><i class="fa fa-eye" aria-hidden="true"></i></button>  
+                    </td>
+            </tr>
+            <?php
+        }      
+    }
+
+
 
     public function GetEarnedleave() {
         $data['application'] = $this->leave_model->AllLeaveAPPlicationok();
@@ -386,7 +369,7 @@ class Leave extends CI_Controller
                 $interval = $formattedStart->diff($formattedEnd);
 
                 // Obtenir le nombre de jours
-                $duration = $interval->format('%a');
+                $duration = $interval->format('%a') . ' jours';
             }
 
             $this->load->library('form_validation');

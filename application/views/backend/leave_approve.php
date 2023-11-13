@@ -4,12 +4,12 @@
     <div class="message"></div>
     <div class="row page-titles">
         <div class="col-md-5 align-self-center">
-            <h3 class="text-themecolor"><i class="fa fa-clone" style="color:#1976d2"> </i> Demande de congé</h3>
+            <h3 class="text-themecolor"><i class="fa fa-clone" style="color:#1976d2"> </i> Demande congé</h3>
         </div>
         <div class="col-md-7 align-self-center">
             <ol class="breadcrumb">
                 <li class="breadcrumb-item"><a href="javascript:void(0)">Accueil</a></li>
-                <li class="breadcrumb-item active">Demande de congé</li>
+                <li class="breadcrumb-item active">Demande congé</li>
             </ol>
         </div>
     </div>
@@ -17,18 +17,32 @@
     <!-- ============================================================== -->
     <div class="container-fluid">
         <div class="row m-b-10">
-            <?php // if($this->session->userdata('user_type')=='EMPLOYEE'){ ?> 
+            
                 <div class="col-12">
-                    <button type="button" class="btn btn-info"><i class="fa fa-plus"></i><a data-toggle="modal" data-target="#appmodel" data-whatever="@getbootstrap" class="text-white"><i class="" aria-hidden="true"></i> Ajouter Demande </a></button>
+
+                <?php if($this->session->userdata('user_type')== 'EMPLOYEE'){ ?>
+                    <button type="button" class="btn btn-info"><i class="fa fa-plus"></i><a data-toggle="modal" data-target="#appmodel" data-whatever="@getbootstrap" class="text-white"><i class="" aria-hidden="true"></i> Envoyer Demande </a></button>
+                    <?php } else if($this->session->userdata('user_type')== 'N+1') { ?>
+                        <button type="button" class="btn btn-info"><i class="fa fa-plus"></i><a data-toggle="modal" data-target="#appmodel" data-whatever="@getbootstrap" class="text-white"><i class="" aria-hidden="true"></i> Envoyer Demande </a></button>
+                    
+                    <?php } else { ?>
+                        <button type="button" class="btn btn-info"><i class="fa fa-plus"></i><a data-toggle="modal" data-target="#appmodel" data-whatever="@getbootstrap" class="text-white"><i class="" aria-hidden="true"></i> Ajouter Demande </a></button>
+                    <?php } ?>
+
                 </div>                       
-            <?php // } ?> 
+            
         </div> 
         <div class="row">
             <div class="col-12">
                 <div class="card card-outline-info">
                     <div class="card-header">
-                        <h4 class="m-b-0 text-white">   Liste des demandes de congé                     
-                        </h4>
+
+                    <?php if($this->session->userdata('user_type')== 'EMPLOYEE' || $this->session->userdata('user_type') == 'N+1'){ ?>
+                        <h4 class="m-b-0 text-white">Liste de mes demandes de congé </h4>
+                    <?php } else { ?>
+                        <h4 class="m-b-0 text-white">   Liste des demandes congé</h4>
+                    <?php } ?>
+                      
                     </div>
                     <div class="card-body">
                         <div class="table-responsive ">
@@ -141,22 +155,47 @@
                             <form method="post" action="Add_Applications" id="leaveapply" enctype="multipart/form-data">
                             <div class="modal-body">
                                 <div class="form_emp">
+                                <?php if($this->session->userdata('user_type')== 'EMPLOYEE'){ ?>
+                                    <div class="form-group">
+                                <label>N° matricule</label>
+                                <select class=" form-control custom-select selectedEmployeeID"  tabindex="1" name="emid" id="em_id" required>
+                                    <option value="<?php echo $employee->em_id ?>"><?php echo $employee->em_id?></option>
+           
+                                </select>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label>Nom et Prénoms</label>
+                                <select class=" form-control custom-select selectedEmployeeID"  tabindex="1" name="names" required>
+                                    <option value="<?php echo $employee->em_id ?>"><?php echo $employee->first_name.' '.$employee->last_name?></option>
+                                       
+                                </select>
+                            </div>
+                                    <?php } else { ?>
                             <div class="form-group">
                                 <label>Matricule</label>
-                                <select class="form-control custom-select selectedEmployeeID fetchLeaveTotal" tabindex="1" name="emid" id="em_id"  required>
+                                    <select class="form-control custom-select selectedEmployeeID fetchLeaveTotal" tabindex="1" name="emid" id="em_id"  required>
                                     <?php foreach ($employee as $value): ?>
                                     <option value="<?php echo $value->em_id ?>"><?php echo $value->em_id ?></option>
                                     <?php endforeach; ?>
                                 </select>
                             </div>
+
+    
                             <div class="form-group">
                                 <label>Nom-prenoms</label>
-                                <select class="form-control custom-select selectedEmployeeName" tabindex="1" name="emid" id="employee_name" required>
+                                <select class="form-control custom-select selectedEmployeeName" tabindex="1" name="names" id="employee_name" required>
                                     <?php foreach ($employee as $value): ?>
                                     <option value="<?php echo $value->em_id ?>"><?php echo $value->first_name . ' ' . $value->last_name ?></option>
                                     <?php endforeach; ?>
                                 </select>
                             </div>
+                                <?php } ?>
+
+                                
+
+                                
+                            
                             </div>
 
 
@@ -168,7 +207,7 @@
                                         <option value="Sans solde">Sans solde</option>
                                         <option value="Maladie">Maladie</option>
                                         <option value="Maternité">Maternité</option>
-                                        <option value="exceptionnel">exceptionnel</option>
+                                        <option value="Exceptionnel">Exceptionnel</option>
                                         
                                     </select>
                                 </div>
@@ -183,29 +222,46 @@
                                     <label for="radio_3">Au dessus d'un jour</label>
                                 </div>
                                 <div class="form-group">
-                                    <label class="control-label" id="hourlyFix">Date</label>
-                                    <input type="date" name="startdate" class="form-control " id="recipient-name1" required>
-                                </div>
+                                        <label class="control-label" id="hourlyFix">Date de départ</label>
+                                        <input type="date" name="startdate" class="form-control" id="recipient-name1" required>
+                                    </div>
 
-                                <div class="form-group" id="enddate" style="display:none">
-                                    <label class="control-label">Date de fin</label>
-                                    <input type="date" name="enddate" class="form-control " id="recipient-name2">
-                                    <span style="color:red" id="different"></span>
-                                </div>
-                                            
+                                    <div class="form-group" id="enddate" style="display:none">
+                                        <label class="control-label">Date de retour</label>
+                                        <input type="date" name="enddate" class="form-control" id="recipient-name2">
+                                        <span style="color:red" id="different"></span>
+                                    </div>
                                     <script>
-                                        document.getElementById("recipient-name2").addEventListener("change", function () {
-                                            var startDate = new Date(document.getElementById("recipient-name1").value);
-                                            var endDate = new Date(this.value);
+      // Sélectionnez les éléments d'entrée de date
+const startDateInput = document.querySelector('input[name="startdate"]');
+const endDateInput = document.querySelector('input[name="enddate"]');
+const differentSpan = document.getElementById('different');
 
-                                            if (!isNaN(startDate) && !isNaN(endDate)) {
-                                                var timeDifference = endDate - startDate;
-                                                var daysDifference = timeDifference / (1000 * 60 * 60 * 24);
+// Fonction pour mettre à jour le calcul
+function updateDateDifference() {
+    const startDate = new Date(startDateInput.value);
+    const endDate = new Date(endDateInput.value);
 
-                                                document.getElementById("different").textContent = daysDifference + " jours";
-                                            }
-                                        });
-                                    </script>
+    if (startDate <= endDate) {
+        // Calculez la différence en millisecondes
+        const timeDiff = endDate - startDate;
+
+        // Convertissez la différence en jours
+        const daysDiff = timeDiff / (1000 * 60 * 60 * 24);
+      
+        // Mettez à jour le contenu de l'élément #different
+        differentSpan.textContent = `${daysDiff} jours`;
+    } else {
+        // Si la date de fin est antérieure à la date de début, affichez un message d'erreur
+        differentSpan.textContent = 'La date de retour doit être ultérieure à la date de départ';
+    }
+}
+
+// Écoutez les événements de changement des dates de début et de fin
+startDateInput.addEventListener('change', updateDateDifference);
+endDateInput.addEventListener('change', updateDateDifference);
+
+    </script>
 
 
 
@@ -262,156 +318,354 @@
 <!--FIN MODAL DEMANDE CONGE-->
 
 
-<!--DEBUT MODAL MODIF VALID CONGE-->
 
-<div class="modal fade" id="appmodel1" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel1">
+<!--DEBUT MODAL EDIT CONGE-->
+<div class="modal fade" id="editmodal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-view">
+        <div class="modal-content">
+            <div class="modal-header">
+                <center><h4 class="modal-title" id="myModalLabel">Details demande congé</h4></center>
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+               
+            </div>
+            <div class="modal-body">
+			<div class="container-fluid">
+			<form id="editForm">
+           
+                <div class="row">
+                    <div class="col-sm-3">
+                        <label class="control-label" style="position:relative; top:7px;">Date de demande:</label>
+                    </div>
+                    <div class="col-sm-4">
+                        <input type="text" class="form-control" name="date_dem" id="date_dem" readonly>
+                    </div>
+                <div class="col-sm-2">
+                        <input type="hidden" class="form-control" name="idc" id="idc" readonly>
+					</div>
+                </div>
+           
 
-<div class="modal-dialog" role="document">
-    <div class="modal-content ">
-        <div class="modal-header">
-            <h4 class="modal-title" id="exampleModalLabel1">Demande congé</h4>
-            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <div class="info_row">
+            <div class="row" >
+				
+					<div class="col-sm-3">
+						<label class="control-label" style="position:relative; top:7px;">Matricule:</label>
+					</div>
+                    <div class="col-sm-2">
+						<input type="text" class="form-control" name="mat" id="mat" readonly>
+                    </div>
+                  
+				
+                    <div class="col-sm-1">
+						<label class="control-label" style="position:relative; top:7px;">Nom:</label>
+                    </div>
+                    <div class="col-sm-6">
+						<input type="text" class="form-control" name="nom" id="nom" readonly>
+					</div>
+            </div>
+             
+				<div class="row">
+                <div class="col-sm-3">
+						<label class="control-label" style="position:relative; top:7px;">Departement:</label>
+                    </div>
+                    <div class="col-sm-8">
+						<input type="text" class="form-control" name="poste" id="poste" readonly>
+					</div>
+                </div>
+
+            <div class="row" >
+				
+                <div class="col-sm-3">
+                <label class="control-label" style="position:relative; top:7px;">Type congé:</label>
+                </div>
+                <div class="col-sm-3">
+                <input type="text" class="form-control" name="type" id="type" readonly>
+                </div>
+             
             
+                <div class="col-sm-3">
+                    <label class="control-label" style="position:relative; top:7px;">Solde conge:</label>
+              </div>
+                <div class="col-sm-3">
+                    <input type="text" class="form-control" name="solde" id="solde" readonly> 
+				 </div>
+           
         </div>
-        <div class="total">
-                <span style="color:red" id="total"></span>
-        </div>
-            
-        <form method="post" action="Add_Applications1" id="leaveapply1" enctype="multipart/form-data">
-        <div class="modal-body">
-            <div class="form_emp">
-        <div class="form-group">
-
-            <label>Matricule</label>
-        <input type="text"  class="form-control"  name="emid" id="em_id" readonly>
-            
-        </div>
-        <div class="form-group">
-            <label>Nom-prenoms</label>
-            <select class="form-control custom-select selectedEmployeeName" tabindex="1" name="emid" id="employee_name" required disabled>
-                <?php foreach ($employee as $value): ?>
-                <option value="<?php echo $value->em_id ?>"><?php echo $value->first_name . ' ' . $value->last_name ?></option>
-                <?php endforeach; ?>
-            </select>
-        </div>
-        </div>
-
-
-            <div class="form-group">
-                <label>Type de congé</label>
-                <select class="form-control custom-select assignleave fetchLeaveTotal"  tabindex="1" name="typeid" id="leavetype" required>
-                    <option value="">Selectinner type de congé</option>
-                    <option value="Avec solde">Avec solde</option>
-                    <option value="Sans solde">Sans solde</option>
-                    <option value="Maladie">Maladie</option>
-                    <option value="Maternité">Maternité</option>
-                    <option value="exceptionnel">exceptionnel</option>
-                    
-                </select>
-            </div>
-
-            <div class="form-group">
-                <label class="control-label">Durée du congé</label><br>
-                <input name="type" type="radio" id="radio_1" data-value="Half" class="duration" value="Half Day" checked="">
-                <label for="radio_1">Demi-journée</label>
-                <input name="type" type="radio" id="radio_2" data-value="Full" class="type" value="Full Day">
-                <label for="radio_2">Journée complète</label>
-                <input name="type" type="radio" class="with-gap duration" id="radio_3" data-value="More" value="More than One day">
-                <label for="radio_3">Au dessus d'un jour</label>
-            </div>
-            <div class="form-group">
-                <label class="control-label" id="hourlyFix">Date</label>
-                <input type="date" name="startdate" class="form-control " id="recipient-name1" required>
-            </div>
-
-            <div class="form-group" id="enddate" style="display:none">
-                <label class="control-label">Date de fin</label>
-                <input type="date" name="enddate" class="form-control " id="recipient-name2">
-                <span style="color:red" id="different"></span>
-            </div>
+        
+				
+               
+				<div class="row">
+					<div class="col-sm-3">
+						<label class="control-label" style="position:relative; top:7px;">Date de départ :</label>
+					</div>
+					<div class="col-sm-3">
+						<input type="text" class="form-control" name="date_deb" id="date_deb" readonly>
+					</div>
+				
+					<div class="col-sm-3">
+						<label class="control-label" style="position:relative; top:7px;">Date de retour:</label>
+					</div>
+					<div class="col-sm-3">
+						<input type="text" class="form-control" name="date_fin" id="date_fin" readonly>
+					</div>
+				</div>
+              
+				<div class="row">
+					<div class="col-sm-3">
+						<label class="control-label" style="position:relative; top:7px;">Durée:</label>
+					</div>
+					<div class="col-sm-3">
+						<input type="text" class="form-control" name="duree" id="duree" readonly>
+					</div>
+				
+					<div class="col-sm-3">
+                        <input type="text" class="form-control" name="solde_moins" id="solde_moins" readonly>
+					</div>
+                    <div class="col-sm-3">
+                        <input type="text" class="form-control" name="total" id="total" readonly>
+					</div>
+				</div>
+               
+				<div class="row">
+					<div class="col-md-3">
+						<label class="control-label" style="position:relative; top:7px;">Raison:</label>
+					</div>
+					<div class="col-md-9">
+						<input type="text" class="form-control" name="reason" id="reason" readonly>
                         
-                <script>
-                    document.getElementById("recipient-name2").addEventListener("change", function () {
-                        var startDate = new Date(document.getElementById("recipient-name1").value);
-                        var endDate = new Date(this.value);
-
-                        if (!isNaN(startDate) && !isNaN(endDate)) {
-                            var timeDifference = endDate - startDate;
-                            var daysDifference = timeDifference / (1000 * 60 * 60 * 24);
-
-                            document.getElementById("different").textContent = daysDifference + " jours";
-                        }
-                    });
-                </script>
-
-
-
-
-            <div class="form-group">
-                <label class="control-label">Raisons</label>
-                <textarea class="form-control" name="reason" id="message-text1"></textarea>                                                
+					</div>
+				</div>
+                
             </div>
-                                                           
-        </div>
-        <script>
-            $(document).ready(function () {
-                $('#leaveapply1 input').on('change', function(e) {
-                    e.preventDefault(e);
+                
 
-                    // Get the record's ID via attribute  
-                    var duration = $('input[name=type]:checked', '#leaveapply1').attr('data-value');
-                    var champDate = document.getElementById("recipient-name2");
-                    
-                    console.log(duration);
-
-                    if(duration =='Half'){
-                        $('#enddate').hide();
-                        $('#hourlyFix').text('Date');
-                        champDate.value = "";
-                        document.getElementById("different").textContent = "";
-                    }
-                    else if(duration =='Full'){
-                        $('#enddate').hide();  
-                        $('#hourlyFix').text('Date');  
-                        champDate.value = "";
-                        document.getElementById("different").textContent = "";
-                    }
-                    else if(duration =='More'){
-                        $('#enddate').show();
+                    <?php if($this->session->userdata('user_type')=='EMPLOYEE'){ ?>
+                        <div class="row">
+                            <div class="col-sm-3">
+                                <label class="control-label" style="position:relative; top:7px;">Validation N+1:</label>
+                                <!--<input type="text" class="form-control" name="status_n" id="status_n" readonly>
+                            -->
+                            </div>
+                            <div class="col-sm-3">
+                                    <select class="form-control custom-select assignleave fetchLeaveTotal"  tabindex="1" name="status_n" id="status_n" disabled>
+                                        <option value="En attente">En attente</option>
+                                        <option value="Approuvé">Approuvé</option>
+                                        <option value="Rejeté">Rejeté</option>
+                                    </select>
+                            </div>
+                            <div class="col-sm-6" id="par">
+					            <input type="textarea" class="form-control" name="id_nplus" id="id_nplus" readonly>
                         
-                    }
-                });
-                $('#appmodel1').on('hidden.bs.modal', function () {
-                //    location.reload();
-                });
-            });                                                          
-        </script>
-        <div class="modal-footer">
-            <input type="hidden" name="id" class="form-control" id="recipient-name1" required> 
-            <button type="button" class="btn btn-danger" data-dismiss="modal"><i class="fa fa-ban" aria-hidden="true"></i> Annuler</button>
-            <button type="submit" class="btn btn-success"><i class="fa fa-paper-plane" aria-hidden="true"></i> Envoyer</button>
+					        </div>
+                        </div>
+                 <br>
+                 <div class="row" id="n_coms">
+                    <div class="col-sm-3">
+						<label class="control-label" style="position:relative; top:7px;">Raison:</label>
+                    </div>
+                    <div class="col-sm-8">
+					<input type="textarea" class="form-control" name="coms_n" id="coms_n" readonly>
+                        
+					</div>
+                </div>
+                <div class="row"> 
+					<div class="col-sm-3">
+                    <label class="control-label" style="position:relative; top:7px;">RH:</label>
+					</div>
+                    <div class="col-sm-3">
+                        <select class="form-control custom-select assignleave fetchLeaveTotal"  tabindex="1" name="status_rh" id="status_rh" disabled>
+                                    <option value="En attente">En attente</option>
+                                    <option value="Approuvé">Approuvé</option>
+                                    <option value="Rejeté">Rejeté</option>
+                                </select>
+					</div>
+                    <div class="col-sm-6" >
+					<input type="textarea" class="form-control" name="id_nplus" id="id_nplus" readonly>
+                        
+					</div>
+					
+				</div>
+                <div class="row" id="rh_coms">
+				
+                    <div class="col-sm-3">
+                        <label class="control-label" style="position:relative; top:7px;">Raison:</label>
+                    </div>
+                    <div class="col-sm-8">
+					<input type="textarea" class="form-control" name="coms_rh" id="coms_rh" readonly>
+                        
+					</div>
+
+				</div>
+
+
+                    <?php } else  if($this->session->userdata('user_type')=='N+1'){ ?>
+                        
+                        <div class="row">
+                            <div class="col-sm-3">
+                                <label class="control-label" style="position:relative; top:7px;">Validation N+1:</label>
+                                <!--<input type="text" class="form-control" name="status_n" id="status_n" readonly>
+                            -->
+                            </div>
+                    <div class="col-sm-3">
+                        <select class="form-control custom-select assignleave fetchLeaveTotal"  tabindex="1" name="status_n" id="status_n" required>
+                                    <option value="En attente">En attente</option>
+                                    <option value="Approuvé">Approuvé</option>
+                                    <option value="Rejeté">Rejeté</option>
+                                </select>
+					</div>
+                      <div class="col-sm-6" id="par">
+					            <input type="textarea" class="form-control" name="id_nplus" id="id_nplus" readonly>
+                        
+					        </div>
+                    </div>
+                 <br>
+                 <div class="row" id="n_coms">
+                    <div class="col-sm-3">
+						<label class="control-label" style="position:relative; top:7px;">Raison:</label>
+                    </div>
+                    <div class="col-sm-8">
+					<input type="textarea" class="form-control" name="coms_n" id="coms_n">
+                        
+					</div>
+                </div>
+
+                <br>
+                <div class="row">
+                    <div class="col-sm-12">
+                    <button type="button"  id="saveButton" class="btn btn-primary"><i class="fa fa-check" aria-hidden="true"></i> Enregistrer</button>
+                    </div>
+                </div>
+                    <?php } else { ?>    
+                       
+                        <div class="row">
+                            <div class="col-sm-3">
+                                <label class="control-label" style="position:relative; top:7px;">Validation N+1:</label>
+                                <!--<input type="text" class="form-control" name="status_n" id="status_n" readonly>
+                            -->
+                            </div>
+                    <div class="col-sm-3">
+                        <select class="form-control custom-select assignleave fetchLeaveTotal"  tabindex="1" name="status_n" id="status_n" required>
+                                    <option value="En attente">En attente</option>
+                                    <option value="Approuvé">Approuvé</option>
+                                    <option value="Rejeté">Rejeté</option>
+                                </select>
+					</div>
+                      <div class="col-sm-6" id="par">
+					            <input type="textarea" class="form-control" name="id_nplus" id="id_nplus" readonly>
+                        
+					        </div>
+                    </div>
+                 <br>
+                 <div class="row" id="n_coms">
+                    <div class="col-sm-3">
+						<label class="control-label" style="position:relative; top:7px;">Raison:</label>
+                    </div>
+                    <div class="col-sm-8">
+					<input type="textarea" class="form-control" name="coms_n" id="coms_n">
+                        
+					</div>
+                </div>
+
+                <br>
+                <div class="row">
+                    <div class="col-sm-12">
+                    <button type="button"  id="saveButton" class="btn btn-primary"><i class="fa fa-check" aria-hidden="true"></i> Enregistrer</button>
+                    </div>
+                </div>
+                <div class="row"> 
+					<div class="col-sm-3">
+                    <label class="control-label" style="position:relative; top:7px;">RH:</label>
+					</div>
+                    <div class="col-sm-3">
+                        <select class="form-control custom-select assignleave fetchLeaveTotal"  tabindex="1" name="status_rh" id="status_rh" required>
+                                    <option value="En attente">En attente</option>
+                                    <option value="Approuvé">Approuvé</option>
+                                    <option value="Rejeté">Rejeté</option>
+                                </select>
+					</div>
+					
+				</div>
+                <div class="row" id="rh_coms">
+				
+                    <div class="col-sm-3">
+                        <label class="control-label" style="position:relative; top:7px;">Raison:</label>
+                    </div>
+                    <div class="col-sm-8">
+					<input type="textarea" class="form-control" name="coms_rh" id="coms_rh">
+                        
+					</div>
+
+				</div>
+                <br>
+                <div class="row">
+                    <div class="col-sm-12">
+                        <button type="button"  id="saveButton_rh" class="btn btn-primary"><i class="fa fa-check" aria-hidden="true"></i> Enregistrer</button>
+                    </div>
+                </div>
+                    <?php } ?>
+                
+                 
+                
+				<input type="hidden" name="id" id="userid">
+            </div> 
+			</div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal"><span class="glyphicon glyphicon-remove"></span> Fermer</button>
+              
+            </form>
+            </div>
+			
         </div>
-        </form>
     </div>
 </div>
-</div>
 
-<!--FIN MODAL MODIF VALID CONGE-->
+<!--FIN MODAL EDIT CONGE-->
+
+
+
+
+<script>
+    $(document).ready(function(){
+        // Hide n_coms initially
+      
+
+        // Attach change event to status_n dropdown
+        $('#status_n').change(function(){
+            // If Rejeté is selected, show n_coms, otherwise hide it
+            if($(this).val() === 'Rejeté'){
+                $('#n_coms').show();
+            } else {
+                $('#n_coms').hide();
+            }
+        });
+        $('#status_rh').change(function(){
+            // If Rejeté is selected, show n_coms, otherwise hide it
+            if($(this).val() === 'Rejeté'){
+                $('#rh_coms').show();
+            } else {
+                $('#rh_coms').hide();
+            }
+        });
+    });
+</script>
+            
 
 
                 
 
-                <script>
+<script>
     (function($) {
         $(document).ready(function() {
             var url = '<?php echo base_url(); ?>';
 
-            function showTable() {
+            function showTable() {  
                 $.ajax({
                     type: 'POST',
-                    <?php if ($this->session->userdata('user_type') == 'EMPLOYEE') { ?>
-                    // Your code for EMPLOYEE user type here
-                    <?php } else { ?>
+                    <?php if($this->session->userdata('user_type')== 'EMPLOYEE'){ ?>
+                        url: url + 'leave/GetEmApplication',
+                        <?php } else if($this->session->userdata('user_type')== 'N+1'){ ?>
+                        url: url + 'leave/GetNApplication',   
+                        <?php } else { ?>
                     url: url + 'leave/GetApplication',
                     <?php } ?>
                     success: function(response) {
@@ -460,6 +714,125 @@
             
 
         });
+//AFFICHER DETAIL CONGE ET MISE A JOUR
+
+        $(document).on('click', '.edit', function(){
+		var id = $(this).data('id');
+		$.ajax({
+			type: 'POST',
+            url: url + 'leave/getidConger',
+			dataType: 'json',
+			data: {id: id},
+			success:function(response){
+				console.log(response);
+                $('#idc').val(response.id);
+				$('#mat').val(response.em_id);
+                $('#nom').val(response.first_name + ' ' + response.last_name);
+                $('#poste').val(response.dep_id);
+                $('#type').val(response.typeid);
+                $('#date_dem').val(response.apply_date);
+                $('#type').val(response.typeid);
+                $('#date_deb').val(response.start_date);
+                $('#date_fin').val(response.end_date);
+                $('#duree').val(response.leave_duration);
+                $('#reason').val(response.reason);
+                $('#coms_n').val(response.coms_n);
+                $('#coms_rh').val(response.coms_rh);
+                $('#status_n').val(response.leave_status);
+                $('#status_rh').val(response.leave_status_rh);
+                $('#id_nplus').val("Par " + response.id_nplus);
+                var leaveDuration = response.leave_duration;
+                var duree2;
+
+                if (leaveDuration === "demi-journée") {
+                    duree2 = 0.5;
+                } else {
+                    // On suppose que leaveDuration est de la forme "x jour(s)"
+                    var match = leaveDuration.match(/(\d+) jour(s)?/);
+
+                    if (match) {
+                        duree2 = parseFloat(match[1]);
+                    }
+                }
+                $('#solde_moins').val(duree2);
+
+
+                if (response.typeid === "Avec solde") {
+                $('#solde').val(response.nb_jour);
+
+                } else if (response.typeid === "Maladie") {
+                    $('#solde').val(response.maladie);
+                } else if (response.typeid === "Maternité") {
+                    $('#solde').val(response.maternite);
+                } else if (response.typeid === "Exceptionnel") {
+                    $('#solde').val(response.except);
+                }
+
+             
+               
+				
+				$('#editmodal').modal('show');
+                // If Rejeté is selected, show n_coms, otherwise hide it
+                // Affichage ou masquage de n_coms en fonction de la valeur de #status_n
+                var solde = parseFloat($('#solde').val());
+            var solde_moins = parseFloat($('#solde_moins').val());
+            var total = solde - solde_moins;
+
+            // Set the value of #total
+            $('#total').val(total);
+               
+             
+                    if($('#status_n').val() === 'Rejeté'){
+                        $('#n_coms').show();
+                        $('#par').show();
+                    } else  if($('#status_n').val() === 'Approuvé'){
+                        $('#n_coms').hide();
+                        $('#par').show();
+                    } else {
+                        $('#n_coms').hide();
+                          $('#par').hide();
+                    }
+
+                    if($('#status_rh').val() === 'Rejeté'){
+                        $('#rh_coms').show();
+                    } else {
+                        $('#rh_coms').hide();
+                    }
+			}
+		});
+	});
+
+
+    // Lorsque le bouton "Enregistrer" dans la modal est cliqué
+$('#saveButton').on('click', function() {
+    var idc = $('#idc').val();;
+    var status_n = $('#status_n').val(); // Récupérez le nouveau statut
+    var coms_n = $('#coms_n').val(); // Récupérez le nouveau commentaire
+
+    $.ajax({
+        type: 'POST',
+        url: url + 'leave/UpdateLeave', // Créez une méthode pour mettre à jour la demande de congé
+        data: {
+            idc: idc,
+            status_n: status_n,
+            coms_n: coms_n
+        },
+        success: function(response) {
+            if (response.success) {
+            $('#editmodal').modal('hide');
+            }
+            $('#editmodal').modal('hide');
+            showTable();
+        }
+    });
+});
+
+
+
+
+
+
+
 
 
         // PARAMETRE DEMANDE DE CONGE 5 JOURS
@@ -646,7 +1019,7 @@ dateInput.addEventListener('change', function () {
                 } else {
                     $('#total').text('Solde congé: ' + leaveData.maternite + ' Mois');
                 }
-            } else if (leavetype === 'exceptionnel') {
+            } else if (leavetype === 'Exceptionnel') {
                 if (leaveData.except === null || leaveData.except === '') {
                     $('#total').text('Vous n\'avez pas de solde');
                 } else {

@@ -2071,7 +2071,7 @@ textarea {
     border: 0;
     /* opacity: 0.7; */
     background-color: #ffffff;
-    color: #0e0e0e;
+    color: #78737f;
     /* font-weight: 400; */
     /* font-size: xxx-large; */
 }
@@ -2102,7 +2102,7 @@ textarea {
 }
 
 form label {
-    font-weight: 400
+    font-weight: 500
 }
 
 .form-group {
@@ -8672,13 +8672,19 @@ a.mytooltip {
     margin-top: 16px;
 
 }
+.info_p{
+    display: flex !important;
+}
+.info_row{
+    border-bottom: 1px solid #dee2e6;
+    margin-bottom: 22px;
+}
 
 @media (min-width: 576px){
-.modal-dialog {
+.modal-view {
     max-width: 700px !important;
    
 }
-
 }
 
 .form_emp{

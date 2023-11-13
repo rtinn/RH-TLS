@@ -221,22 +221,79 @@
     }
     public function GetallApplication($emid){
     $sql = "SELECT `emp_leave`.*,
-      `employee`.`em_id`,`first_name`,`last_name`,
-      `leave_types`.`type_id`,`name`
+      `employee`.`em_id`,`first_name`,`last_name`
+   
       FROM `emp_leave`
       LEFT JOIN `employee` ON `emp_leave`.`em_id`=`employee`.`em_id`
-      LEFT JOIN `leave_types` ON `emp_leave`.`typeid`=`leave_types`.`type_id`
+     
       WHERE `emp_leave`.`em_id`='$emid'";
         $query=$this->db->query($sql);
 		$result = $query->result();
 		return $result; 
+
+        
     }
+    public function GetNallApplication($dep){
+        $sql = "SELECT `emp_leave`.*,
+          `employee`.`em_id`,`first_name`,`last_name`,`dep_id`
+       
+          FROM `emp_leave`
+          LEFT JOIN `employee` ON `emp_leave`.`em_id`=`employee`.`em_id`
+         
+          WHERE `employee`.`dep_id`='$dep'";
+            $query=$this->db->query($sql);
+            $result = $query->result();
+            return $result; 
+    
+            
+        }
+
+
+
+    
+    public function getidConger($id){
+        $sql = "SELECT `emp_leave`.*,
+        `employee`.`first_name`, `employee`.`last_name`, `employee`.`em_id`, `employee`.`dep_id`,
+        `conge_mois`.`nb_jour`,`maladie`,`maternite`,`except`
+         FROM `emp_leave`
+         LEFT JOIN `employee` ON `emp_leave`.`em_id` = `employee`.`em_id`
+         LEFT JOIN `conge_mois` ON `emp_leave`.`em_id` = `conge_mois`.`em_id`
+         WHERE `emp_leave`.`id` = ?";
+         
+        $query = $this->db->query($sql, array($id));
+        return $query->row_array();
+      }
+      
+
+      public function UpdateLeave($id,$status_n, $coms_n, $full_name) {
+
+        $data = array(
+            'leave_status' => $status_n,
+            'coms_n' => $coms_n,
+            'id_nplus' => $full_name
+
+            // Ajoutez d'autres champs à mettre à jour ici si nécessaire
+        );
+    
+        $this->db->where('id', $id);
+        return $this->db->update('emp_leave', $data);
+    }
+    
+
+
+
+
+
+
+
+
     public function AllLeaveAPPlication(){
     $sql = "SELECT `emp_leave`.*,
       `employee`.`em_id`,`first_name`,`last_name`
       FROM `emp_leave`
       LEFT JOIN `employee` ON `emp_leave`.`em_id`=`employee`.`em_id`
-      WHERE `emp_leave`.`leave_status`='En attente'";
+    /*  WHERE `emp_leave`.`leave_status`='En attente'*/
+      ";
         $query=$this->db->query($sql);
 		$result = $query->result();
 		return $result; 
@@ -248,8 +305,7 @@
           `leave_types`.`type_id`,`name`
           FROM `emp_leave`
           LEFT JOIN `employee` ON `emp_leave`.`em_id`=`employee`.`em_id`
-          LEFT JOIN `leave_types` ON `emp_leave`.`typeid`=`leave_types`.`type_id`
-          WHERE `emp_leave`.`leave_status`='Approuvé'";
+             WHERE `emp_leave`.`leave_status`='Approuvé'";
             $query=$this->db->query($sql);
             $result = $query->result();
             return $result; 
