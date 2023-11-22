@@ -375,7 +375,7 @@ public function getidPointage(){
 
             $config = array(
                 'file_name' => $new_file_name,
-                'upload_path' => "./assets/images/users",
+                'upload_path' => "./uploads/users",
                 'allowed_types' => "gif|jpg|png|jpeg",
                 'overwrite' => False,
                 'max_size' => "20240000", // Can be set to particular file size , here it is 2 MB(2048 Kb)
@@ -509,7 +509,7 @@ public function getidPointage(){
 
             $config = array(
                 'file_name' => $new_file_name,
-                'upload_path' => "./assets/images/users",
+                'upload_path' => "./uploads/users",
                 'allowed_types' => "gif|jpg|png|jpeg",
                 'overwrite' => False,
                 'max_size' => "20240000", // Can be set to particular file size , here it is 2 MB(2048 Kb)
@@ -526,7 +526,7 @@ public function getidPointage(){
    
 			else {
             $employee = $this->employee_model->GetBasic($id);
-            $checkimage = "./assets/images/users/$employee->em_image";                 
+            $checkimage = "./uploads/users/$employee->em_image";                 
                 if(file_exists($checkimage)){
             	unlink($checkimage);
 				}
@@ -1067,7 +1067,7 @@ public function getidPointage(){
 
             $config = array(
                 'file_name' => $new_file_name,
-                'upload_path' => "./assets/images/users",
+                'upload_path' => "./uploads/users/",
                 'allowed_types' => "gif|jpg|png|jpeg|pdf|doc|docx|xml|text|txt",
                 'overwrite' => False,
                 'max_size' => "40480000"

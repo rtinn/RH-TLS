@@ -446,7 +446,7 @@ public function Add_Applications() {
 
             $config = array(
                 'file_name' => $new_file_name,
-                'upload_path' => "./assets/images/pj",
+                'upload_path' => "uploads/pj",
                 'allowed_types' => "gif|jpg|png|jpeg|pdf|doc|docx",
                 'overwrite' => False,
                 'max_size' => "50720000"

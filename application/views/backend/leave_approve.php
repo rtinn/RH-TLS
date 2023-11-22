@@ -856,7 +856,7 @@ function initializeDataTable() {
 
             // Récupérer le nom du fichier image et son emplacement
             var imageFileName = response.pj;
-            var imagePath = '<?php echo base_url(); ?>assets/images/pj/';
+            var imagePath = '<?php echo base_url(); ?>uploads/pj/';
 // Masquer l'élément #img_pj si imageFileName est vide
 if (imageFileName === "") {
     $('#img_pj').hide();
@@ -870,13 +870,33 @@ if (imageFileName === "") {
     // Afficher l'image dans un élément img (optionnel)
     var imageUrl = imagePath + imageFileName;
     $('#pj_img_preview').attr('src', imageUrl);
-
+/*
     // Ajouter un événement de clic sur le champ de texte
     $('#pj_img_preview').click(function() {
         // Ouvrir l'image dans un nouvel onglet
         var imageUrl = imagePath + imageFileName;
         window.open(imageUrl, '_blank');
     });
+
+
+    */
+
+// Utilisez Lightbox pour agrandir l'image
+$('#pj_img_preview').on('click', function() {
+    // Déplacez la déclaration de l'URL à l'intérieur de la fonction de clic
+    var imageUrl = imagePath + imageFileName;
+
+    var lightboxOptions = {
+        'resizeDuration': 200,
+        'wrapAround': true
+        // Vous pouvez ajouter d'autres options selon vos besoins
+    };
+
+    // Utilisez la fonction lightbox pour ouvrir l'image
+    lightbox(imageUrl, lightboxOptions);
+});
+
+
 }
 
 

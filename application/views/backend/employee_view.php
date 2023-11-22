@@ -50,9 +50,9 @@
                             <div class="card-body">
                                 <center class="m-t-30">
                                    <?php if(!empty($basic->em_image)){ ?>
-                                    <img src="<?php echo base_url(); ?>assets/images/users/<?php echo $basic->em_image; ?>" class="img-circle" width="150" />
+                                    <img src="<?php echo base_url(); ?>uploads/users/<?php echo $basic->em_image; ?>" class="img-circle" width="150" />
                                     <?php } else { ?>
-                                    <img src="<?php echo base_url(); ?>assets/images/users/user.png" class="img-circle" width="150" alt="<?php echo $basic->first_name ?>" title="<?php echo $basic->first_name ?>"/>                                   
+                                    <img src="<?php echo base_url(); ?>uploads/users/user.png" class="img-circle" width="150" alt="<?php echo $basic->first_name ?>" title="<?php echo $basic->first_name ?>"/>                                   
                                     <?php } ?>
                                     <h4 class="card-title m-t-10"><?php echo $basic->first_name .' '.$basic->last_name; ?></h4>
                                     <h6 class="card-subtitle"><?php echo $basic->des_id; ?></h6>
@@ -184,9 +184,9 @@
 				                                     </div>
 				                                    <div class="form-group col-md-12 m-t-10">
                                    <?php if(!empty($basic->em_image)){ ?>
-                                    <img src="<?php echo base_url(); ?>assets/images/users/<?php echo $basic->em_image; ?>" class="img-circle" width="150" />
+                                    <img src="<?php echo base_url(); ?>uploads/users/<?php echo $basic->em_image; ?>" class="img-circle" width="150" />
                                     <?php } else { ?>
-                                    <img src="<?php echo base_url(); ?>assets/images/users/user.png" class="img-circle" width="150" alt="<?php echo $basic->first_name ?>" title="<?php echo $basic->first_name ?>"/>                                   
+                                    <img src="<?php echo base_url(); ?>uploads/users/user.png" class="img-circle" width="150" alt="<?php echo $basic->first_name ?>" title="<?php echo $basic->first_name ?>"/>                                   
                                     <?php } ?>
                                                         <label>Image </label>
                                                         <input type="file" <?php if($this->session->userdata('user_type')== 'EMPLOYEE' || $this->session->userdata('user_type') == 'N+1'){ ?> readonly <?php } ?> name="image_url" class="form-control" value=""> 
@@ -446,7 +446,7 @@
                                 <tr>
                                     <td><?php echo $value->id ?></td>
                                     <td><?php echo $value->file_title ?></td>
-                                    <td><a href="<?php echo base_url(); ?>assets/images/users/<?php echo $value->file_url ?>" target="_blank"><?php echo $value->file_url ?></a></td>
+                                    <td><a href="<?php echo base_url(); ?>uploads/users/<?php echo $value->file_url ?>" target="_blank"><?php echo $value->file_url ?></a></td>
                                 </tr>
                                 <?php endforeach; ?>
                             </tbody>
