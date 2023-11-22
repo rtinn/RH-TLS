@@ -3,6 +3,8 @@
 <?php 
     $id = $this->session->userdata('user_login_id');
     $nbjour = $this->dashboard_model->Getidconge($id); 
+   
+   
                        
 ?> 
       <div class="page-wrapper">
@@ -39,10 +41,69 @@
                     echo $nbjour->nb_jour
                 ?></h3>
 
-                <p>Solde du congé</p>
+                <p>Solde congé</p>
               </div>
               <div class="icon">
                 <i class="ion ion-calendar"></i>
+                
+             
+              </div>
+             <!-- <a href="#" class="small-box-footer">More info <i class="fa fa-arrow-circle-right"></i></a>-->
+            </div>
+          </div>
+
+          <?php if($this->session->userdata('sexe')== 'Femme'){ ?>
+          
+          <div class="col-lg-3 col-6">
+            <!-- small box -->
+            <div class="small-box bg-success">
+              <div class="inner">
+                <h3>
+                <?php 
+                    echo $nbjour->maternite
+                ?></h3>
+
+                <p>Maternité</p>
+              </div>
+              <div class="icon">
+                <i class="ion ion-calendar"></i>
+              </div>
+             <!-- <a href="#" class="small-box-footer">More info <i class="fa fa-arrow-circle-right"></i></a>-->
+            </div>
+          </div>
+          <?php } else { ?>
+            <?php } ?>
+          <div class="col-lg-3 col-6">
+            <!-- small box -->
+            <div class="small-box bg-warning">
+              <div class="inner">
+                <h3>
+                <?php 
+                    echo $nbjour->maladie
+                ?></h3>
+
+                <p>Maladie</p>
+              </div>
+              <div class="icon">
+                <i class="ion ion-ios-medkit"></i>
+              </div>
+             <!-- <a href="#" class="small-box-footer">More info <i class="fa fa-arrow-circle-right"></i></a>-->
+            </div>
+          </div>
+          
+          <div class="col-lg-3 col-6">
+            <!-- small box -->
+            <div class="small-box bg-info">
+              <div class="inner">
+                <h3>
+                <?php 
+                    echo $nbjour->except
+                ?></h3>
+
+                <p>Exceptionnel</p>
+              </div>
+              <div class="icon">
+                <i class="ion ion-arrow-graph-up-right"></i>
               </div>
              <!-- <a href="#" class="small-box-footer">More info <i class="fa fa-arrow-circle-right"></i></a>-->
             </div>

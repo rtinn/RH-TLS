@@ -278,9 +278,63 @@
         $this->db->where('id', $id);
         return $this->db->update('emp_leave', $data);
     }
+
+    public function UpdateLeaveRH($id,$status_rh, $coms_rh) {
+
+        $data = array(
+            'leave_status_rh' => $status_rh,
+            'coms_rh' => $coms_rh,
+          
+
+            // Ajoutez d'autres champs à mettre à jour ici si nécessaire
+        );
     
+        $this->db->where('id', $id);
+        return $this->db->update('emp_leave', $data);
+    }
 
+    
+    
+    public function UpdateLeaveAvecsolde($ids,$retenu) {
 
+        $data = array(
+            'nb_jour' => $retenu
+            // Ajoutez d'autres champs à mettre à jour ici si nécessaire
+        );
+    
+        $this->db->where('em_id', $ids);
+        return $this->db->update('conge_mois', $data);
+    }
+    public function UpdateLeaveMaladie($ids,$retenu) {
+
+        $data = array(
+            'maladie' => $retenu
+            // Ajoutez d'autres champs à mettre à jour ici si nécessaire
+        );
+    
+        $this->db->where('em_id', $ids);
+        return $this->db->update('conge_mois', $data);
+    }
+    public function UpdateLeaveMaternite($ids,$retenu) {
+
+        $data = array(
+            'maternite' => $retenu
+            // Ajoutez d'autres champs à mettre à jour ici si nécessaire
+        );
+    
+        $this->db->where('em_id', $ids);
+        return $this->db->update('conge_mois', $data);
+    }
+    public function UpdateLeaveExceptionnel($ids,$retenu) {
+
+        $data = array(
+            'except' => $retenu
+            // Ajoutez d'autres champs à mettre à jour ici si nécessaire
+        );
+    
+        $this->db->where('em_id', $ids);
+        return $this->db->update('conge_mois', $data);
+    }
 
 
 
@@ -292,7 +346,7 @@
       `employee`.`em_id`,`first_name`,`last_name`
       FROM `emp_leave`
       LEFT JOIN `employee` ON `emp_leave`.`em_id`=`employee`.`em_id`
-    /*  WHERE `emp_leave`.`leave_status`='En attente'*/
+     WHERE `emp_leave`.`leave_status`='Approuvé'
       ";
         $query=$this->db->query($sql);
 		$result = $query->result();

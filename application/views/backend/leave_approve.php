@@ -27,7 +27,11 @@
                     
                     <?php } else { ?>
                         <button type="button" class="btn btn-info"><i class="fa fa-plus"></i><a data-toggle="modal" data-target="#appmodel" data-whatever="@getbootstrap" class="text-white"><i class="" aria-hidden="true"></i> Ajouter Demande </a></button>
-                    <?php } ?>
+                        <button type="button" id="monBoutonA" class="btn btn-info"><i class="fa fa-plus"></i> En Attente</button>
+                        <button type="button" id="monBoutonV" class="btn btn-info"><i class="fa fa-plus"></i> Validé</button>
+                        <button type="button" id="monBoutonR" class="btn btn-info"><i class="fa fa-plus"></i> Rejeté</button>
+                  
+                        <?php } ?>
 
                 </div>                       
             
@@ -40,7 +44,8 @@
                     <?php if($this->session->userdata('user_type')== 'EMPLOYEE' || $this->session->userdata('user_type') == 'N+1'){ ?>
                         <h4 class="m-b-0 text-white">Liste de mes demandes de congé </h4>
                     <?php } else { ?>
-                        <h4 class="m-b-0 text-white">   Liste des demandes congé</h4>
+                         <h4 id="texte_titre"  class="m-b-0 text-white"><i class="fa fa-user-o" aria-hidden="true"></i> </h4>
+                           
                     <?php } ?>
                       
                     </div>
@@ -192,10 +197,6 @@
                             </div>
                                 <?php } ?>
 
-                                
-
-                                
-                            
                             </div>
 
 
@@ -210,6 +211,10 @@
                                         <option value="Exceptionnel">Exceptionnel</option>
                                         
                                     </select>
+                                </div>
+                                <div class="form-group"id="pj" style="display:none">
+                                    <label>P. J</label>
+                                    <input type="file" class="form-control-file" name="file_url" id="file_url" >
                                 </div>
 
                                 <div class="form-group">
@@ -231,49 +236,106 @@
                                         <input type="date" name="enddate" class="form-control" id="recipient-name2">
                                         <span style="color:red" id="different"></span>
                                     </div>
-                                    <script>
-      // Sélectionnez les éléments d'entrée de date
-const startDateInput = document.querySelector('input[name="startdate"]');
-const endDateInput = document.querySelector('input[name="enddate"]');
-const differentSpan = document.getElementById('different');
 
-// Fonction pour mettre à jour le calcul
-function updateDateDifference() {
-    const startDate = new Date(startDateInput.value);
-    const endDate = new Date(endDateInput.value);
 
-    if (startDate <= endDate) {
-        // Calculez la différence en millisecondes
-        const timeDiff = endDate - startDate;
+                            <script>
+                                // Sélectionnez les éléments d'entrée de date
+                            const startDateInput = document.querySelector('input[name="startdate"]');
+                            const endDateInput = document.querySelector('input[name="enddate"]');
+                            const differentSpan = document.getElementById('different');
 
-        // Convertissez la différence en jours
-        const daysDiff = timeDiff / (1000 * 60 * 60 * 24);
-      
-        // Mettez à jour le contenu de l'élément #different
+                            // Function to calculate and update the date difference
+                            function updateDateDifference() {
+                                const startDate = new Date(startDateInput.value);
+                                const endDate = new Date(endDateInput.value);
+                                const currentDate = new Date();
+
+                                if (startDate <= endDate) {
+                                    // Calculate the difference in milliseconds
+                                    const timeDiff = endDate - startDate;
+
+                                    // Convert the difference to days
+                                    const daysDiff = timeDiff / (1000 * 60 * 60 * 24);
+                            /*
+
+        // Check if the conditions for displaying the alert are met
+        if (1 <= daysDiff <= 3  && (startDate - currentDate) / (1000 * 60 * 60 * 24) <2) {
+            alert("Pour le congé de 1 à 3 jours,Vous devez envoyer la demande au moins 3 jours à l'avance.");
+
+            // Clear the date fields
+            startDateInput.value = '';
+            endDateInput.value = '';
+
+            // Exit the function after displaying the alert and clearing the fields
+            return;
+        }else if (4 <= daysDiff <= 7  && (startDate - currentDate) / (1000 * 60 * 60 * 24) <7) {
+            alert("Pour le congé de 4 à 7 jours,Vous devez envoyer la demande au moins 3 jours à l'avance.");
+
+            // Clear the date fields
+            startDateInput.value = '';
+            endDateInput.value = '';
+
+            // Exit the function after displaying the alert and clearing the fields
+            return;
+        }else if (8 <= daysDiff <= 15  && (startDate - currentDate) / (1000 * 60 * 60 * 24) <14) {
+            alert("Pour le congé de 8 à 15 jours,Vous devez envoyer la demande au moins 15 jours à l'avance.");
+
+            // Clear the date fields
+            startDateInput.value = '';
+            endDateInput.value = '';
+
+            // Exit the function after displaying the alert and clearing the fields
+            return;
+        }else if (daysDiff > 15  && (startDate - currentDate) / (1000 * 60 * 60 * 24) <20) {
+            alert("Pour le congé de + 15 jours,Vous devez envoyer la demande au moins 20 jours à l'avance.");
+
+            // Clear the date fields
+            startDateInput.value = '';
+            endDateInput.value = '';
+
+            // Exit the function after displaying the alert and clearing the fields
+            return;
+        }
+*/
+        // Update the content of the element #different
         differentSpan.textContent = `${daysDiff} jours`;
     } else {
-        // Si la date de fin est antérieure à la date de début, affichez un message d'erreur
+        // If the end date is earlier than the start date, display an error message
         differentSpan.textContent = 'La date de retour doit être ultérieure à la date de départ';
+        
     }
 }
 
-// Écoutez les événements de changement des dates de début et de fin
+// Event listeners for date input fields
 startDateInput.addEventListener('change', updateDateDifference);
 endDateInput.addEventListener('change', updateDateDifference);
 
     </script>
 
-
-
- 
                                 <div class="form-group">
                                     <label class="control-label">Raisons</label>
                                     <textarea class="form-control" name="reason" id="message-text1"></textarea>                                                
                                 </div>
                                                                                
                             </div>
+                           
                             <script>
                                 $(document).ready(function () {
+                                    // Détecter le changement dans la sélection du type de congé
+                                    $('#leavetype').change(function () {
+                                                // Récupérer la valeur sélectionnée
+                                                var selectedType = $(this).val();
+
+                                                // Vérifier si le type de congé nécessite l'affichage du champ d'importation d'image
+                                                if (selectedType === 'Maladie' || selectedType === 'Maternité' || selectedType === 'Exceptionnel') {
+                                                    $('#pj').show(); // Afficher le champ d'importation d'image
+                                                } else {
+                                                    $('#pj').hide(); // Masquer le champ d'importation d'image
+                                                }
+                                            });
+
+
+
                                     $('#leaveapply input').on('change', function(e) {
                                         e.preventDefault(e);
 
@@ -419,10 +481,10 @@ endDateInput.addEventListener('change', updateDateDifference);
 					</div>
 				
 					<div class="col-sm-3">
-                        <input type="text" class="form-control" name="solde_moins" id="solde_moins" readonly>
+                        <input type="hidden" class="form-control" name="solde_moins" id="solde_moins" readonly>
 					</div>
                     <div class="col-sm-3">
-                        <input type="text" class="form-control" name="total" id="total" readonly>
+                        <input type="hidden" class="form-control" name="retenu" id="retenu" readonly>
 					</div>
 				</div>
                
@@ -435,6 +497,17 @@ endDateInput.addEventListener('change', updateDateDifference);
                         
 					</div>
 				</div>
+                <div class="row" id="img_pj">
+                    <div class="col-md-3">
+                        <label class="control-label" style="position:relative; top:7px;">P. J:</label>
+                    </div>
+                <div class="col-md-9">
+                 <!--    <input type="text" class="form-control" name="pj_img" id="pj_img" readonly>
+                    <!-- Optionnel: Afficher l'image -->
+                    <img id="pj_img_preview" src="" alt="Image PJ">
+                </div>
+            </div>
+
                 
             </div>
                 
@@ -657,6 +730,26 @@ endDateInput.addEventListener('change', updateDateDifference);
     (function($) {
         $(document).ready(function() {
             var url = '<?php echo base_url(); ?>';
+            var table; 
+
+// Fonction pour initialiser la DataTable
+function initializeDataTable() {
+            table = $('#example23').DataTable({
+                "paging": true,
+                "searching": true,
+                "ordering": true,
+                "info": true,
+                "aaSorting": [[1, 'asc']],
+                dom: 'Bfrtip',
+                buttons: [
+                    'copy', 'csv', 'excel', 'pdf', 'print'
+                ]
+            });
+        }
+
+        // Appelez la fonction pour initialiser DataTable
+        initializeDataTable();
+
 
             function showTable() {  
                 $.ajax({
@@ -675,6 +768,12 @@ endDateInput.addEventListener('change', updateDateDifference);
 
                         // Initialize DataTable after loading data
                         var dataTable = initializeDataTable();
+                        table.column(8).search('En attente').draw();
+                    $('#texte_titre').text('Liste des travailleurs jour');
+                    $('#monBoutonA').addClass('btn-danger');
+                    $('#monBoutonV').removeClass('btn-danger');
+                    $('#monBoutonR').removeClass('btn-danger');
+
                     }
                 });
             }
@@ -682,20 +781,32 @@ endDateInput.addEventListener('change', updateDateDifference);
             // Call showTable on page load
             showTable();
 
-            // Function to initialize the DataTable
-            function initializeDataTable() {
-                return $('#example23').DataTable({
-                    "paging": true,
-                    "searching": true,
-                    "ordering": true,
-                    "info": true,
-                    "order": [[1, 'asc']],
-                    "dom": 'Bfrtip',
-                    "buttons": ['copy', 'csv', 'excel', 'pdf', 'print']
-                });
-            }
-            // Appelez la fonction pour initialiser la DataTable
-          
+// Gérez le filtrage en dehors de la DataTable
+            $('#monBoutonA').click(function() {
+            table.column(8).search('En attente').draw();
+            $('#texte_titre').text('Liste des demande congé');
+            $('#monBoutonA').addClass('btn-danger');
+            $('#monBoutonV').removeClass('btn-danger');
+            $('#monBoutonR').removeClass('btn-danger');
+        });
+
+        $('#monBoutonV').click(function() {
+            table.column(8).search('Approuvé').draw();
+            $('#texte_titre').text('Liste des congé Validé');
+            $('#monBoutonA').removeClass('btn-danger');
+            $('#monBoutonV').addClass('btn-danger');
+            $('#monBoutonR').removeClass('btn-danger');
+        });
+
+        $('#monBoutonR').click(function() {
+            table.column(8).search('Rejeté').draw();
+            $('#texte_titre').text('Liste des congé Rejeté');
+            $('#monBoutonA').removeClass('btn-danger');
+            $('#monBoutonV').removeClass('btn-danger');
+            $('#monBoutonR').addClass('btn-danger');
+        });
+
+
 
             $(document).on('click', '.valide', function(){
             var id = $(this).data('id');
@@ -741,6 +852,34 @@ endDateInput.addEventListener('change', updateDateDifference);
                 $('#status_n').val(response.leave_status);
                 $('#status_rh').val(response.leave_status_rh);
                 $('#id_nplus').val("Par " + response.id_nplus);
+               
+
+            // Récupérer le nom du fichier image et son emplacement
+            var imageFileName = response.pj;
+            var imagePath = '<?php echo base_url(); ?>assets/images/pj/';
+// Masquer l'élément #img_pj si imageFileName est vide
+if (imageFileName === "") {
+    $('#img_pj').hide();
+} else {
+    // Afficher l'élément #img_pj
+    $('#img_pj').show();
+
+    // Afficher le nom du fichier dans le champ de texte
+    $('#pj_img').val(imageFileName);
+
+    // Afficher l'image dans un élément img (optionnel)
+    var imageUrl = imagePath + imageFileName;
+    $('#pj_img_preview').attr('src', imageUrl);
+
+    // Ajouter un événement de clic sur le champ de texte
+    $('#pj_img_preview').click(function() {
+        // Ouvrir l'image dans un nouvel onglet
+        var imageUrl = imagePath + imageFileName;
+        window.open(imageUrl, '_blank');
+    });
+}
+
+
                 var leaveDuration = response.leave_duration;
                 var duree2;
 
@@ -767,6 +906,14 @@ endDateInput.addEventListener('change', updateDateDifference);
                 } else if (response.typeid === "Exceptionnel") {
                     $('#solde').val(response.except);
                 }
+                    // Calculate total
+                    var soldeValue = parseFloat($('#solde').val()) || 0; // Parse the value as a float, default to 0 if not a valid number
+                    var soldeMoinsValue = parseFloat($('#solde_moins').val()) || 0;
+
+                    var totalValue = soldeValue - soldeMoinsValue;
+
+                    // Set the value for the total input field
+                    $('#retenu').val(totalValue);
 
              
                
@@ -774,13 +921,7 @@ endDateInput.addEventListener('change', updateDateDifference);
 				$('#editmodal').modal('show');
                 // If Rejeté is selected, show n_coms, otherwise hide it
                 // Affichage ou masquage de n_coms en fonction de la valeur de #status_n
-                var solde = parseFloat($('#solde').val());
-            var solde_moins = parseFloat($('#solde_moins').val());
-            var total = solde - solde_moins;
-
-            // Set the value of #total
-            $('#total').val(total);
-               
+            
              
                     if($('#status_n').val() === 'Rejeté'){
                         $('#n_coms').show();
@@ -803,7 +944,7 @@ endDateInput.addEventListener('change', updateDateDifference);
 	});
 
 
-    // Lorsque le bouton "Enregistrer" dans la modal est cliqué
+    //----------------- MISE A JOUR DEMANDE CONGE N+1 --------------------
 $('#saveButton').on('click', function() {
     var idc = $('#idc').val();;
     var status_n = $('#status_n').val(); // Récupérez le nouveau statut
@@ -827,6 +968,41 @@ $('#saveButton').on('click', function() {
     });
 });
 
+  // --------------- MISE A JOUR DEMANDE CONGE RH ------------------------
+
+$('#saveButton_rh').on('click', function() {
+    var idc = $('#idc').val();
+    var ids = $('#mat').val();
+    var status_rh = $('#status_rh').val(); // Récupérez le nouveau statut
+    var retenu;
+        if (status_rh === 'Approuvé') {
+            retenu = $('#retenu').val();
+        } else {
+            retenu = $('#solde').val();
+        }
+    var coms_rh = $('#coms_rh').val();
+    var type = $('#type').val();
+    
+    $.ajax({
+        type: 'POST',
+        url: url + 'leave/UpdateLeaveRH', // Créez une méthode pour mettre à jour la demande de congé
+        data: {
+            idc: idc,
+            ids:ids,
+            status_rh: status_rh,
+            coms_rh: coms_rh,
+            retenu:retenu,
+            type:type
+        },
+        success: function(response) {
+            if (response.success) {
+            $('#editmodal').modal('hide');
+            }
+            $('#editmodal').modal('hide');
+            showTable();
+        }
+    });
+});
 
 
 
@@ -835,8 +1011,11 @@ $('#saveButton').on('click', function() {
 
 
 
-        // PARAMETRE DEMANDE DE CONGE 5 JOURS
-        var dateInput = document.getElementById('recipient-name1');
+
+// PARAMETRE DEMANDE DE CONGE 3 JOURS POUR HALF ET FULL
+var dateInput = document.getElementById('recipient-name1');
+var durationRadioHalf = document.getElementById('radio_1');
+var durationRadioFull = document.getElementById('radio_2');
 
 // Écoutez l'événement "change" lorsque la date est modifiée
 dateInput.addEventListener('change', function () {
@@ -850,13 +1029,12 @@ dateInput.addEventListener('change', function () {
     var timeDiff = selectedDate - currentDate;
     var dayDiff = Math.ceil(timeDiff / (1000 * 3600 * 24));
 
-    if (dayDiff < 5) {
-      
-        alert("vous devez envoyer 5 jours avant");
+    // Vérifiez si la durée est 'Half' ou 'Full' et si dayDiff est inférieur à 3
+    if ((durationRadioHalf.checked || durationRadioFull.checked) && dayDiff < 3) {
+        alert("Vous devez envoyer la demande au moins 3 jours à l'avance.");
         dateInput.value = ''; // Vide le champ de date
     }
-        });
-
+});
 
 
 

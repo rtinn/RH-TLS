@@ -172,36 +172,36 @@ public function deleteP($id){
 	}
 
   */
-    public function emselectByID($emid){
+public function emselectByID($emid){
     $sql = "SELECT * FROM `employee`
-      WHERE `em_id`='$emid'";
+    WHERE `em_id`='$emid'";
     $query=$this->db->query($sql);
-	$result = $query->row();
-	return $result;
+	  $result = $query->row();
+	  return $result;
 	}
-    public function emselectByCode($emid){
+public function emselectByCode($emid){
     $sql = "SELECT * FROM `employee`
-      WHERE `em_id`='$emid'";
+    WHERE `em_id`='$emid'";
     $query=$this->db->query($sql);
-	$result = $query->row();
-	return $result;
+	  $result = $query->row();
+	  return $result;
 	}
-    public function getInvalidUser(){
-      $sql = "SELECT * FROM `employee`
-      WHERE `status`='INACTIF'";
-        $query=$this->db->query($sql);
+public function getInvalidUser(){
+    $sql = "SELECT * FROM `employee`
+    WHERE `status`='INACTIF'";
+    $query=$this->db->query($sql);
 		$result = $query->result();
 		return $result;
 	}
 
 
 public function getPlanningid(){
-  $sql = "SELECT `planning`.*,
-  `employee`.`first_name`, `employee`.`last_name`, `employee`.`em_id`, `employee`.`des_id`
-   FROM `planning`
-   LEFT JOIN `employee` ON `planning`.`em_id` = `employee`.`em_id`";
-  $query = $this->db->query($sql);
-  $result = $query->result();
+    $sql = "SELECT `planning`.*,
+    `employee`.`first_name`, `employee`.`last_name`, `employee`.`em_id`, `employee`.`des_id`
+    FROM `planning`
+    LEFT JOIN `employee` ON `planning`.`em_id` = `employee`.`em_id`";
+    $query = $this->db->query($sql);
+    $result = $query->result();
   
   return $result;
 }
@@ -212,13 +212,13 @@ public function getPlanningid(){
 
   public function Does_email_exists($email) {
 		$user = $this->db->dbprefix('employee');
-        $sql = "SELECT `em_email` FROM $user
+    $sql = "SELECT `em_email` FROM $user
 		WHERE `em_email`='$email'";
 		$result=$this->db->query($sql);
-        if ($result->row()) {
-            return $result->row();
+      if ($result->row()) {
+          return $result->row();
         } else {
-            return false;
+          return false;
         }
     }
     public function Add($data){

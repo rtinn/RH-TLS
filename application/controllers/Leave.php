@@ -187,6 +187,56 @@ public function UpdateLeave() {
 }
 
 
+public function UpdateLeaveRH() {
+    if ($this->session->userdata('user_login_access') != False) {
+        $id = $this->input->post('idc');
+        $ids = $this->input->post('ids');
+        $status_rh = $this->input->post('status_rh');
+        $coms_rh = $this->input->post('coms_rh');
+        $retenu = $this->input->post('retenu');
+        $type = $this->input->post('type');  // Ajout de la récupération du type de congé
+
+        $full_name = $this->session->userdata('full_name');
+
+        // Effectuez la mise à jour de la demande de congé dans la base de données en utilisant le modèle
+        $result = $this->leave_model->UpdateLeaveRH($id, $status_rh, $coms_rh);
+        
+        // Ajout de la condition pour mettre à jour en fonction du type de congé
+        if ($type == 'Avec solde') {
+            $result = $this->leave_model->UpdateLeaveAvecsolde($ids, $retenu); 
+
+        } elseif ($type == 'Maladie') {
+            $result = $this->leave_model->UpdateLeaveMaladie($ids, $retenu); 	
+        } elseif ($type == 'Maternité') {
+            $result = $this->leave_model->UpdateLeaveMaternite($ids, $retenu); 
+        }elseif ($type == 'Exceptionnel') {
+            $result = $this->leave_model->UpdateLeaveExceptionnel($ids, $retenu);
+        }
+
+        // En fonction du résultat de la mise à jour, renvoyez une réponse appropriée
+        if ($result) {
+            echo json_encode(array('success' => true));
+        } else {
+            echo json_encode(array('success' => false));
+        }
+    } else {
+        redirect(base_url(), 'refresh');
+    }
+}
+
+// Modification du modèle pour prendre en compte la mise à jour en fonction du type de congé
+public function UpdateLeaveMaladie($ids, $retenu) {
+    $data = array(
+        'maladie' => $retenu
+        // Ajoutez d'autres champs à mettre à jour ici si nécessaire
+    );
+
+    $this->db->where('em_id', $ids);
+    return $this->db->update('conge_mois', $data);
+}
+
+
+
 
 
 
@@ -337,12 +387,10 @@ public function UpdateLeave() {
     
 
 
-    
 
-    public function Add_Applications()
-    {
-        if ($this->session->userdata('user_login_access') != False) {
-            $id           = $this->input->post('id');
+public function Add_Applications() {
+    if ($this->session->userdata('user_login_access') != False) {
+        $id           = $this->input->post('id');
             $emid         = $this->input->post('emid');
             $typeid       = $this->input->post('typeid');
             $applydate    = date('d/m/Y');
@@ -351,8 +399,7 @@ public function UpdateLeave() {
             $hourAmount   = $this->input->post('hourAmount');
             $reason       = $this->input->post('reason');
             $type         = $this->input->post('type');
-            // $duration     = $this->input->post('duration');
-
+    
             if($type == 'Half Day') {
                 $duration = "demi-journée";
             } else if($type == 'Full Day') { 
@@ -372,50 +419,75 @@ public function UpdateLeave() {
                 $duration = $interval->format('%a') . ' jours';
             }
 
-            $this->load->library('form_validation');
-            $this->form_validation->set_error_delimiters();
-            $this->form_validation->set_rules('startdate', 'Start Date', 'trim|required|xss_clean');
-            if ($this->form_validation->run() == FALSE) {
-                echo validation_errors();
-                #redirect("employee/view?I=" .base64_encode($eid));
+           $this->load->library('form_validation');
+        $this->form_validation->set_error_delimiters();
+        $this->form_validation->set_rules('startdate', 'Start Date', 'trim|required|xss_clean');
+
+        if ($this->form_validation->run() == FALSE) {
+            echo validation_errors();
+            #redirect("employee/view?I=" .base64_encode($eid));
+        } else {
+            $data = array();
+            $newStartDate = date('d/m/Y', strtotime($appstartdate));
+
+            $newEndDate = null; // Initialisez $newEndDate avec NULL par défaut
+
+            if (!empty($appenddate)) {
+                $newEndDate = date('d/m/Y', strtotime($appenddate));
+            }
+
+        // Ajoutez la gestion de l'upload d'image ici
+        if ($_FILES['file_url']['name']) {
+            $file_name = $_FILES['file_url']['name'];
+           
+            $fileSize = $_FILES["file_url"]["size"] / 1024;
+            $fileType = $_FILES["file_url"]["type"];
+            $new_file_name = $emid . '_' . $file_name;
+
+            $config = array(
+                'file_name' => $new_file_name,
+                'upload_path' => "./assets/images/pj",
+                'allowed_types' => "gif|jpg|png|jpeg|pdf|doc|docx",
+                'overwrite' => False,
+                'max_size' => "50720000"
+            );
+
+            $this->load->library('Upload', $config);
+            $this->upload->initialize($config);
+
+            if (!$this->upload->do_upload('file_url')) {
+                echo $this->upload->display_errors();
             } else {
-                $data = array();
-                $newStartDate = date('d/m/Y', strtotime($appstartdate));
-                
-                $newEndDate = null; // Initialisez $newEndDate avec NULL par défaut
-
-                if (!empty($appenddate)) {
-                 $newEndDate = date('d/m/Y', strtotime($appenddate));
-                }
-
-                $data = array(
-                    'em_id' => $emid,
-                    'typeid' => $typeid,
-                    'apply_date' => $applydate,
-                    'start_date' => $newStartDate,
-                    'end_date' => $newEndDate,
-                    'reason' => $reason,
-                    'leave_type' => $type,
-                    'leave_duration' => $duration,
-                    'leave_status' => 'En attente'
-                );
-                if (empty($id)) {
-                    $success = $this->leave_model->Application_Apply($data);
-                    #$this->session->set_flashdata('feedback','Successfully Updated');
-                    #redirect("leave/Application");
-                    echo "Enregistrement Reussi";
-                } else {
-                    $success = $this->leave_model->Application_Apply_Update($id, $data);
-                    #$this->session->set_flashdata('feedback','Successfully Updated');
-                    #redirect("leave/Application");
-                    echo "Enregistrement Reussi";
-                }
-                
+                $path = $this->upload->data();
+                $img_url = $path['file_name'];
             }
         } else {
-            redirect(base_url(), 'refresh');
+            // Aucun fichier n'a été téléchargé, définissez 'pj' sur une chaîne vide
+            $img_url = '';
         }
+
+        $data = array(
+            'em_id' => $emid,
+            'typeid' => $typeid,
+            'apply_date' => $applydate,
+            'start_date' => $newStartDate,
+            'end_date' => $newEndDate,
+            'reason' => $reason,
+            'leave_type' => $type,
+            'leave_duration' => $duration,
+            'leave_status' => 'En attente',
+            'pj' => $img_url
+        );
+
+        $success = $this->leave_model->Application_Apply($data);
+        echo "Enregistrement Réussi";
     }
+}
+
+}
+
+
+
 
     public function Add_L_Status()
     {

@@ -85,9 +85,12 @@ date_default_timezone_set('Asia/Dhaka');
                         <li class="nav-item"> <a class="nav-link nav-toggler hidden-md-up text-muted waves-effect waves-dark" href="javascript:void(0)"><i class="mdi mdi-menu"></i></a> </li>
                         <li class="nav-item m-l-10"> <a class="nav-link sidebartoggler hidden-sm-down text-muted waves-effect waves-dark" href="javascript:void(0)"><i class="ti-menu"></i></a> </li>
                         <li class="nav-item dropdown">
+                            
                             <a class="nav-link dropdown-toggle text-muted text-muted waves-effect waves-dark" href="#" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"> <i class="mdi mdi-bell"></i>
-                                <div class="notify"> <span class="heartbit"></span> <span class="point"></span> </div>
+                               <span class="badge badge-warning navbar-badge">15</span>
                             </a>
+          
+
                             <div class="dropdown-menu mailbox scale-up-left">
                                 <ul>
                                     <li>
@@ -109,6 +112,8 @@ date_default_timezone_set('Asia/Dhaka');
                                         <a class="nav-link text-center" href="<?php echo base_url(); ?>leave/Application"> <strong>Check all notifications</strong> <i class="fa fa-angle-right"></i> </a>
                                     </li>
                                 </ul>
+                                 <!-- Notifications Dropdown Menu -->
+     
                             </div>
                         </li>
                     </ul>
@@ -126,12 +131,12 @@ date_default_timezone_set('Asia/Dhaka');
                                         </div>
                                     </li>
                                     <li role="separator" class="divider"></li>
-                                    <li><a href="<?php echo base_url(); ?>employee/view?I=<?php echo base64_encode($basicinfo->em_id); ?>"><i class="ti-user"></i> My Profile</a></li>
+                                    <li><a href="<?php echo base_url(); ?>employee/view?I=<?php echo base64_encode($basicinfo->em_id); ?>"><i class="ti-user"></i> Mon profile</a></li>
                                     <?php if($this->session->userdata('user_type')!='EMPLOYEE'){ ?>
                                     
-                                    <li><a href="<?php echo base_url(); ?>settings/Settings"><i class="ti-settings"></i> Account Setting</a></li>
+                                    <li><a href="<?php echo base_url(); ?>settings/Settings"><i class="ti-settings"></i>Paramètres</a></li>
                                     <?php } ?>
-                                    <li><a href="<?php echo base_url(); ?>login/logout"><i class="fa fa-power-off"></i> Logout</a></li>
+                                    <li><a href="<?php echo base_url(); ?>login/logout"><i class="fa fa-power-off"></i> Deconnexion</a></li>
                                 </ul>
                             </div>
                         </li>

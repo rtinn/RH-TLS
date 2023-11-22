@@ -499,6 +499,7 @@ public function getidPointage(){
             echo validation_errors();
 			#redirect("employee/view?I=" .base64_encode($eid));
 			} else {
+                
             if($_FILES['image_url']['name']){
             $file_name = $_FILES['image_url']['name'];
 			$fileSize = $_FILES["image_url"]["size"]/1024;

@@ -24,6 +24,8 @@ ob_start();
 |
 */
 $config['base_url'] = 'http://localhost/RH-TLS/';
+
+//$config['base_url'] = 'http://rh.telesourcia.local/';
 /*
 |--------------------------------------------------------------------------
 | Index File

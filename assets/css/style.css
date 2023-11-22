@@ -1131,8 +1131,18 @@ html body .waves-notransition {
     background-color: #5c4ac7
 }
 
+#pj_img_preview{
+width: 25%;
+}
 .badge-warning {
-    background-color: #ffb22b
+    background-color: #ffb22b;
+    font-size: .6rem;
+    font-weight: 300;
+    padding: 2px 4px;
+    position: absolute;
+    
+    right: 2px;
+    top: 12px;
 }
 
 .badge-danger {
