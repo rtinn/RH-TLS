@@ -24,13 +24,14 @@ class Pointage extends CI_Controller {
             #$data['settingsvalue'] = $this->dashboard_model->GetSettingsValue();
 			$this->load->view('login');
 	}
-	public function import(){
+
+
+	public function import()
+	{
 		if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-			$upload_status =  $this->uploadDoc();
+			$upload_status = $this->uploadDoc();
 			if ($upload_status != false) {
 				$inputFileName = 'uploads/' . $upload_status;
-	
-				
 	
 				$inputFileType = \PhpOffice\PhpSpreadsheet\IOFactory::identify($inputFileName);
 				$reader = \PhpOffice\PhpSpreadsheet\IOFactory::createReader($inputFileType);
@@ -49,23 +50,26 @@ class Pointage extends CI_Controller {
 					$Time = trim($spreadsheet->getActiveSheet()->getCell('C' . $row->getRowIndex())->getValue());
 					$Idp = (int)trim($spreadsheet->getActiveSheet()->getCell('D' . $row->getRowIndex())->getValue());
 	
-					if (!isset($idpRanges[$sName][$Date])) {
-						// Initialiser la plage d'Idp pour une nouvelle combinaison de sName et Date
-						$idpRanges[$sName][$Date] = [
-							'min' => $Idp,
-							'max' => $Idp,
-							'Time_in' => $Time,
-							'Time_out' => $Time,
-						];
-					} else {
-						// Mettre à jour les valeurs minimales et maximales d'Idp
-						if ($Idp < $idpRanges[$sName][$Date]['min']) {
-							$idpRanges[$sName][$Date]['min'] = $Idp;
-							$idpRanges[$sName][$Date]['Time_in'] = $Time;
-						}
-						if ($Idp > $idpRanges[$sName][$Date]['max']) {
-							$idpRanges[$sName][$Date]['max'] = $Idp;
-							$idpRanges[$sName][$Date]['Time_out'] = $Time;
+					// Ajouter une vérification pour ignorer les lignes où sName est NULL
+					if ($sName !== null && $sName !== 'NULL') {
+						if (!isset($idpRanges[$sName][$Date])) {
+							// Initialiser la plage d'Idp pour une nouvelle combinaison de sName et Date
+							$idpRanges[$sName][$Date] = [
+								'min' => $Idp,
+								'max' => $Idp,
+								'Time_in' => $Time,
+								'Time_out' => $Time,
+							];
+						} else {
+							// Mettre à jour les valeurs minimales et maximales d'Idp
+							if ($Idp < $idpRanges[$sName][$Date]['min']) {
+								$idpRanges[$sName][$Date]['min'] = $Idp;
+								$idpRanges[$sName][$Date]['Time_in'] = $Time;
+							}
+							if ($Idp > $idpRanges[$sName][$Date]['max']) {
+								$idpRanges[$sName][$Date]['max'] = $Idp;
+								$idpRanges[$sName][$Date]['Time_out'] = $Time;
+							}
 						}
 					}
 				}
@@ -97,7 +101,6 @@ class Pointage extends CI_Controller {
 						];
 					}
 				}
-	
 				// Insérer les données dans la base de données
 				foreach ($dataToInsert as $data) {
 					$this->db->insert('pointage', $data);
@@ -108,6 +111,10 @@ class Pointage extends CI_Controller {
 		}
 	}
 	
+
+
+
+
 
    /*
 	public function import()

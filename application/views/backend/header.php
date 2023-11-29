@@ -45,22 +45,21 @@ date_default_timezone_set('Asia/Dhaka');
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
 <script src="https://ajax.aspnetcdn.com/ajax/jquery.validate/1.9/jquery.validate.min.js"></script>
-
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/lightbox2/2.11.3/css/lightbox.min.css">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/lightbox2/2.11.3/js/lightbox.min.js"></script>
-
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-zoom/1.7.21/jquery.zoom.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.4.0/jspdf.umd.min.js"></script>
+   
 </head>
 
 <body class="fix-header fix-sidebar card-no-border">
         <?php 
             $id = $this->session->userdata('user_login_id');
+            $dep = $this->session->userdata('user_dep');
             $basicinfo = $this->employee_model->GetBasic($id); 
             $settingsvalue = $this->settings_model->GetSettingsValue();
-            $year =  date('y');
-            $y = substr( $year, -2);
-            $date = date("m/d/$y");
-    #echo $date;
-            $leavetoday = $this->leave_model->GetLeaveToday(); 
+            $leavetodayN = $this->leave_model-> GetLeaveTodayN($dep);
+            $leavetodayE = $this->leave_model-> GetLeaveTodayE($id);
+            $n_notifE = $this->leave_model->GetnbnotifE($id);
+            $n_notifN = $this->leave_model->GetnbnotifN($dep);
         ?>
     <div class="preloader">
         <svg class="circular" viewBox="25 25 50 50">
@@ -87,9 +86,76 @@ date_default_timezone_set('Asia/Dhaka');
                         <li class="nav-item"> <a class="nav-link nav-toggler hidden-md-up text-muted waves-effect waves-dark" href="javascript:void(0)"><i class="mdi mdi-menu"></i></a> </li>
                         <li class="nav-item m-l-10"> <a class="nav-link sidebartoggler hidden-sm-down text-muted waves-effect waves-dark" href="javascript:void(0)"><i class="ti-menu"></i></a> </li>
                         <li class="nav-item dropdown">
-                            
+<!---------------------------------------NOTIFICATIONS POUR L'EMPLOYEE----------------------------------------------------- -->
+                        <?php if($this->session->userdata('user_type')== 'EMPLOYEE'){ ?>
+
                             <a class="nav-link dropdown-toggle text-muted text-muted waves-effect waves-dark" href="#" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"> <i class="mdi mdi-bell"></i>
-                               <span class="badge badge-warning navbar-badge">15</span>
+                                <span class="badge badge-warning navbar-badge"><?php echo $n_notifE; ?></span>
+                           
+                            </a>
+          
+
+                            <div class="dropdown-menu mailbox scale-up-left">
+                                <ul>
+                                    <li>
+                                        <div class="drop-title">Notificationss</div>
+                                    </li>
+                                    <li>
+                                        <div class="message-center">
+                                            <!-- Message -->
+                                            <?php foreach($leavetodayE as $value): ?>
+                                            <a href="#">
+                                                <div class="btn btn-danger btn-circle"><i class="fa fa-link"></i></div>
+                                                <div class="mail-contnet">
+                                                    <h5><?php echo $value->first_name; ?></h5> <span class="mail-desc"><?php echo $value->reason; ?></span> <span class="time"><?php echo $value->apply_date; ?></span> </div>
+                                            </a>
+                                            <?php endforeach; ?>
+                                        </div>
+                                    </li>
+                                    <li> 
+                                        <a class="nav-link text-center" href="<?php echo base_url(); ?>leave/Application"> <strong>Check all notifications</strong> <i class="fa fa-angle-right"></i> </a>
+                                    </li>
+                                </ul>
+                                 <!-- Notifications Dropdown Menu -->
+     
+<!---------------------------------------NOTIFICATIONS POUR N+1----------------------------------------------------- -->
+                            <?php } else if($this->session->userdata('user_type')== 'N+1') { ?>
+                                <a class="nav-link dropdown-toggle text-muted text-muted waves-effect waves-dark" href="#" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"> <i class="mdi mdi-bell"></i>
+                                <span class="badge badge-warning navbar-badge"><?php echo $n_notifN; ?></span>
+                           
+                            </a>
+          
+
+                            <div class="dropdown-menu mailbox scale-up-left">
+                                <ul>
+                                    <li>
+                                        <div class="drop-title">Notificationss</div>
+                                    </li>
+                                    <li>
+                                        <div class="message-center">
+                                            <!-- Message -->
+                                            <?php foreach($leavetodayN as $value): ?>
+                                            <a href="#">
+                                                <div class="btn btn-danger btn-circle"><i class="fa fa-link"></i></div>
+                                                <div class="mail-contnet">
+                                                    <h5><?php echo $value->first_name; ?></h5> <span class="mail-desc"><?php echo $value->reason; ?></span> <span class="time"><?php echo $value->apply_date; ?></span> </div>
+                                            </a>
+                                            <?php endforeach; ?>
+                                        </div>
+                                    </li>
+                                    <li> 
+                                        <a class="nav-link text-center" href="<?php echo base_url(); ?>leave/Application"> <strong>Check all notifications</strong> <i class="fa fa-angle-right"></i> </a>
+                                    </li>
+                                </ul>
+                                 <!-- Notifications Dropdown Menu -->
+
+
+
+<!---------------------------------------NOTIFICATIONS POUR RH----------------------------------------------------- -->
+                            <?php } else { ?>
+                                <a class="nav-link dropdown-toggle text-muted text-muted waves-effect waves-dark" href="#" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"> <i class="mdi mdi-bell"></i>
+                                <span class="badge badge-warning navbar-badge"><?php echo $n_notifE; ?></span>
+                           
                             </a>
           
 
@@ -115,7 +181,15 @@ date_default_timezone_set('Asia/Dhaka');
                                     </li>
                                 </ul>
                                  <!-- Notifications Dropdown Menu -->
-     
+                            <?php } ?>
+
+
+
+
+
+
+
+                                 
                             </div>
                         </li>
                     </ul>

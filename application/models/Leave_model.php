@@ -46,6 +46,11 @@
     public function Application_Apply($data){
         $this->db->insert('emp_leave',$data);
     }
+    public function Application_Apply_notif($notif_data){
+        $this->db->insert('notif',$notif_data);
+    }
+
+   
 
     // Add Earn leave with ID no ID
     public function Add_Earn_Leave($data){
@@ -188,15 +193,33 @@
     $result = $query->result();
     return $result; 
 }
-    public function GetLeaveToday(){
+    public function GetLeaveTodayN($dep){
     $sql = "SELECT `emp_leave`.*,
-      `employee`.`em_id`,`first_name`,`last_name`
+      `employee`.`em_id`,`first_name`,`last_name`,
+      `notif`.`id_conge`,`st_emp`
       FROM `emp_leave`
-      LEFT JOIN `employee` ON `emp_leave`.`em_id`=`employee`.`em_id`";
+      LEFT JOIN `employee` ON `emp_leave`.`em_id`=`employee`.`em_id`
+      LEFT JOIN `notif` ON `emp_leave`.`id_conge`=`notif`.`id_conge`
+      WHERE `employee`.`dep_id` = '$dep' AND `notif`.`st_emp`= '0' ";
         $query=$this->db->query($sql);
 		$result = $query->result();
 		return $result; 
     }
+
+    public function GetLeaveTodayE($id){
+        $sql = "SELECT `emp_leave`.*,
+          `employee`.`em_id`,`first_name`,`last_name`,
+          `notif`.`id_conge`,`st_n`
+          FROM `emp_leave`
+          LEFT JOIN `employee` ON `emp_leave`.`em_id`=`employee`.`em_id`
+          LEFT JOIN `notif` ON `emp_leave`.`id_conge`=`notif`.`id_conge`
+          WHERE `emp_leave`.`em_id` = '$id' AND `notif`.`st_emp`= '1' ";
+            $query=$this->db->query($sql);
+            $result = $query->result();
+            return $result; 
+        }
+
+
     public function GetLeaveApply($id){
         $sql = "SELECT `emp_leave`.*,
       `employee`.`em_id`,`first_name`,`last_name`
@@ -248,16 +271,67 @@
             
         }
 
+       //NOMBRE DE NOTIFICATIONS POUR EMPLOYEE
+        public function GetnbnotifE2($id) {
+            $sql = "SELECT COUNT(*) as nb_notif FROM `notif`
+                    WHERE `em_id`='$id' AND `st_admin`='1'";
+            $query = $this->db->query($sql);
+            $result = $query->row(); // Utilisez row() au lieu de result() pour obtenir une seule ligne
+        
+            // Accédez au nombre de notifications avec $result->nb_notif
+            return $result->nb_notif;
+        }
+        public function GetnbnotifE1($id) {
+            $sql = "SELECT COUNT(*) as nb_notif FROM `notif`
+                    WHERE `em_id`='$id' AND `st_emp`='1'";
+            $query = $this->db->query($sql);
+            $result = $query->row(); // Utilisez row() au lieu de result() pour obtenir une seule ligne
+        
+            // Accédez au nombre de notifications avec $result->nb_notif
+            return $result->nb_notif;
+        }
+
+        public function GetnbnotifE($id) {
+            $countE1 = $this->GetnbnotifE1($id);
+            $countE2 = $this->GetnbnotifE2($id);
+        
+            // Somme des résultats
+            $sum = $countE1 + $countE2;
+        
+            return $sum;
+        }
+    //FIN NOMBRE DE NOTIFICATIONS POUR EMPLOYEE
 
 
+    public function GetnbnotifN($dep) {
+        $sql = "SELECT COUNT(*) as `notif`,
+                `employee`.`em_id`, `dep_id`
+                FROM `notif`
+                LEFT JOIN `employee` ON `notif`.`em_id` = `employee`.`em_id`
+                WHERE `employee`.`dep_id` = '$dep' AND `st_emp` = '0'";
     
+        $query = $this->db->query($sql);
+        $result = $query->row(); // Utilisez row() au lieu de result() pour obtenir une seule ligne
+    
+        // Accédez au nombre de notifications avec $result->notif
+        return $result->notif;
+    }
+
+ 
+  
+
+
+
+
     public function getidConger($id){
         $sql = "SELECT `emp_leave`.*,
         `employee`.`first_name`, `employee`.`last_name`, `employee`.`em_id`, `employee`.`dep_id`,
-        `conge_mois`.`nb_jour`,`maladie`,`maternite`,`except`
+        `conge_mois`.`nb_jour`,`maladie`,`maternite`,`except`,
+        `notif`.`id_conge`,`st_emp`,`st_n`,`st_admin`
          FROM `emp_leave`
          LEFT JOIN `employee` ON `emp_leave`.`em_id` = `employee`.`em_id`
          LEFT JOIN `conge_mois` ON `emp_leave`.`em_id` = `conge_mois`.`em_id`
+         LEFT JOIN `notif` ON `emp_leave`.`id_conge` = `notif`.`id_conge`
          WHERE `emp_leave`.`id` = ?";
          
         $query = $this->db->query($sql, array($id));

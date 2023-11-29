@@ -27,12 +27,12 @@
                     
                     <?php } else { ?>
                         <button type="button" class="btn btn-info"><i class="fa fa-plus"></i><a data-toggle="modal" data-target="#appmodel" data-whatever="@getbootstrap" class="text-white"><i class="" aria-hidden="true"></i> Ajouter Demande </a></button>
+                       
+                        <?php } ?>
                         <button type="button" id="monBoutonA" class="btn btn-info"><i class="fa fa-plus"></i> En Attente</button>
                         <button type="button" id="monBoutonV" class="btn btn-info"><i class="fa fa-plus"></i> Validé</button>
                         <button type="button" id="monBoutonR" class="btn btn-info"><i class="fa fa-plus"></i> Rejeté</button>
                   
-                        <?php } ?>
-
                 </div>                       
             
         </div> 
@@ -675,6 +675,11 @@ endDateInput.addEventListener('change', updateDateDifference);
                         <button type="button"  id="saveButton_rh" class="btn btn-primary"><i class="fa fa-check" aria-hidden="true"></i> Enregistrer</button>
                     </div>
                 </div>
+                <div class="row">
+    <div class="col-sm-12">
+        <button type="button" id="printButton" class="btn btn-primary"><i class="fa fa-print" aria-hidden="true"></i> Imprimer en PDF</button>
+    </div>
+</div>
                     <?php } ?>
                 
                  
@@ -683,6 +688,7 @@ endDateInput.addEventListener('change', updateDateDifference);
             </div> 
 			</div>
             <div class="modal-footer">
+
                 <button type="button" class="btn btn-default" data-dismiss="modal"><span class="glyphicon glyphicon-remove"></span> Fermer</button>
               
             </form>
@@ -870,32 +876,61 @@ if (imageFileName === "") {
     // Afficher l'image dans un élément img (optionnel)
     var imageUrl = imagePath + imageFileName;
     $('#pj_img_preview').attr('src', imageUrl);
-/*
-    // Ajouter un événement de clic sur le champ de texte
-    $('#pj_img_preview').click(function() {
-        // Ouvrir l'image dans un nouvel onglet
-        var imageUrl = imagePath + imageFileName;
-        window.open(imageUrl, '_blank');
+
+   
+    $('#pj_img_preview').click(function () {
+        // Récupérer l'URL de l'image
+        var imageUrl = $(this).attr('src');
+
+        // Afficher l'image zoomée dans un conteneur
+        var zoomContainer = $('<div id="zoom-container"></div>');
+        var zoomedImg = $('<img id="zoomed-img" src="' + imageUrl + '" alt="Zoomed Image">');
+        var closeIcon = $('<i class="fa fa-times"  id="close-icon" aria-hidden="true"></i>'); // Utilisez × pour un symbole "X"
+       
+        var downloadIcon = $('<i class="fa fa-download" id="download-icon" aria-hidden="true"></i>'); // Icône de téléchargement (exemple avec FontAwesome)
+
+        // Ajouter l'image zoomée, l'icône de fermeture et l'icône de téléchargement au conteneur
+        zoomContainer.append(zoomedImg);
+        zoomContainer.append(closeIcon);
+        zoomContainer.append(downloadIcon);
+
+        // Ajouter le conteneur au body
+        $('body').append(zoomContainer);
+
+        // Afficher le conteneur
+        zoomContainer.fadeIn(300);
+
+        // Fermer le zoom en cliquant sur l'icône de fermeture
+        closeIcon.click(function () {
+            closeZoomContainer(zoomContainer);
+        });
+
+        // Désactiver le clic droit sur l'image zoomée
+        zoomedImg.on('contextmenu', function (e) {
+            e.preventDefault();
+        });
+
+        // Télécharger l'image en cliquant sur l'icône de téléchargement
+        downloadIcon.click(function () {
+            // Créer un lien temporaire et déclencher le téléchargement
+            var downloadLink = document.createElement('a');
+            downloadLink.href = imageUrl;
+            
+           // downloadLink.download = 'image.jpg'; // Nom de fichier par défaut (vous pouvez ajuster selon vos besoins)
+           downloadLink.download = imageFileName; // Nom de fichier personnalisé
+           document.body.appendChild(downloadLink);
+            downloadLink.click();
+            document.body.removeChild(downloadLink);
+        });
     });
 
+    // ... (suite de votre code)
 
-    */
-
-// Utilisez Lightbox pour agrandir l'image
-$('#pj_img_preview').on('click', function() {
-    // Déplacez la déclaration de l'URL à l'intérieur de la fonction de clic
-    var imageUrl = imagePath + imageFileName;
-
-    var lightboxOptions = {
-        'resizeDuration': 200,
-        'wrapAround': true
-        // Vous pouvez ajouter d'autres options selon vos besoins
-    };
-
-    // Utilisez la fonction lightbox pour ouvrir l'image
-    lightbox(imageUrl, lightboxOptions);
-});
-
+    function closeZoomContainer(container) {
+        container.fadeOut(300, function () {
+            container.remove();
+        });
+    }
 
 }
 
@@ -941,7 +976,19 @@ $('#pj_img_preview').on('click', function() {
 				$('#editmodal').modal('show');
                 // If Rejeté is selected, show n_coms, otherwise hide it
                 // Affichage ou masquage de n_coms en fonction de la valeur de #status_n
-            
+                function generatePDF() {
+        var pdf = new jsPDF();
+
+        pdf.text('Details demande congé', 10, 10);
+        // Ajoutez d'autres informations de votre modal ici
+
+        pdf.save('demande_conge.pdf');
+    }
+
+    $(document).ready(function() {
+        // Ajoutez cette ligne pour appeler la fonction generatePDF
+        $('#printButton').on('click', generatePDF);
+    });
              
                     if($('#status_n').val() === 'Rejeté'){
                         $('#n_coms').show();

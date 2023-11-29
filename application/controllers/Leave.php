@@ -399,7 +399,13 @@ public function Add_Applications() {
             $hourAmount   = $this->input->post('hourAmount');
             $reason       = $this->input->post('reason');
             $type         = $this->input->post('type');
-    
+        // Supposez que $emid soit une chaîne de caractères
+            // Supposez que $emid soit une chaîne de caractères
+            $lastFourDigits = substr($emid, -4);
+            $id_conge = str_replace('/', '', $applydate) . $lastFourDigits . rand(1, 9);
+
+
+
             if($type == 'Half Day') {
                 $duration = "demi-journée";
             } else if($type == 'Full Day') { 
@@ -476,10 +482,18 @@ public function Add_Applications() {
             'leave_type' => $type,
             'leave_duration' => $duration,
             'leave_status' => 'En attente',
+            'id_conge' => $id_conge,
             'pj' => $img_url
         );
 
+        $notif_data = array(
+            'em_id' => $emid,
+            'id_conge' => $id_conge
+            
+        );
+
         $success = $this->leave_model->Application_Apply($data);
+        $success = $this->leave_model->Application_Apply_notif($notif_data);
         echo "Enregistrement Réussi";
     }
 }
