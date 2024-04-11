@@ -23,7 +23,7 @@ ob_start();
 | a PHP script and you can easily do that on your own.
 |
 */
-$config['base_url'] = 'http://localhost/RH-TLS11/';
+$config['base_url'] = 'http://localhost/RH-TLS/';
 
 //$config['base_url'] = 'http://rh.telesourcia.local/';
 /*
