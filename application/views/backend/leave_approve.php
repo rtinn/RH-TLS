@@ -22,17 +22,21 @@
 
                 <?php if($this->session->userdata('user_type')== 'EMPLOYEE'){ ?>
                     <button type="button" class="btn btn-info"><i class="fa fa-plus"></i><a data-toggle="modal" data-target="#appmodel" data-whatever="@getbootstrap" class="text-white"><i class="" aria-hidden="true"></i> Envoyer Demande </a></button>
+                    <button type="button" id="monBoutonA" class="btn btn-info"><i class="fa fa-plus"></i> En Attente</button>
+                        <button type="button" id="monBoutonV" class="btn btn-info"><i class="fa fa-plus"></i> Validé</button>
+                        <button type="button" id="monBoutonR" class="btn btn-info"><i class="fa fa-plus"></i> Rejeté</button>
+                  
                     <?php } else if($this->session->userdata('user_type')== 'N+1') { ?>
                         <button type="button" class="btn btn-info"><i class="fa fa-plus"></i><a data-toggle="modal" data-target="#appmodel" data-whatever="@getbootstrap" class="text-white"><i class="" aria-hidden="true"></i> Envoyer Demande </a></button>
-                    
+                        <button type="button" id="monBoutonA" class="btn btn-info"><i class="fa fa-plus"></i> Nouveau demande</button>
+                        <button type="button" id="monBoutonV" class="btn btn-info"><i class="fa fa-plus"></i> Validé</button>
+                        <button type="button" id="monBoutonR" class="btn btn-info"><i class="fa fa-plus"></i> Rejeté</button>
+                  
                     <?php } else { ?>
                         <button type="button" class="btn btn-info"><i class="fa fa-plus"></i><a data-toggle="modal" data-target="#appmodel" data-whatever="@getbootstrap" class="text-white"><i class="" aria-hidden="true"></i> Ajouter Demande </a></button>
                        
                         <?php } ?>
-                        <button type="button" id="monBoutonA" class="btn btn-info"><i class="fa fa-plus"></i> En Attente</button>
-                        <button type="button" id="monBoutonV" class="btn btn-info"><i class="fa fa-plus"></i> Validé</button>
-                        <button type="button" id="monBoutonR" class="btn btn-info"><i class="fa fa-plus"></i> Rejeté</button>
-                  
+                       
                 </div>                       
             
         </div> 
@@ -580,7 +584,7 @@ endDateInput.addEventListener('change', updateDateDifference);
                             -->
                             </div>
                     <div class="col-sm-3">
-                        <select class="form-control custom-select assignleave fetchLeaveTotal"  tabindex="1" name="status_n" id="status_n" required>
+                        <select class="form-control custom-select assignleave fetchLeaveTotal"  tabindex="1" name="status_n" id="status_n">
                                     <option value="En attente">En attente</option>
                                     <option value="Approuvé">Approuvé</option>
                                     <option value="Rejeté">Rejeté</option>
@@ -617,7 +621,7 @@ endDateInput.addEventListener('change', updateDateDifference);
                             -->
                             </div>
                     <div class="col-sm-3">
-                        <select class="form-control custom-select assignleave fetchLeaveTotal"  tabindex="1" name="status_n" id="status_n" required>
+                        <select class="form-control custom-select assignleave fetchLeaveTotal"  tabindex="1" name="status_n" id="status_n" disabled>
                                     <option value="En attente">En attente</option>
                                     <option value="Approuvé">Approuvé</option>
                                     <option value="Rejeté">Rejeté</option>
@@ -639,12 +643,7 @@ endDateInput.addEventListener('change', updateDateDifference);
 					</div>
                 </div>
 
-                <br>
-                <div class="row">
-                    <div class="col-sm-12">
-                    <button type="button"  id="saveButton" class="btn btn-primary"><i class="fa fa-check" aria-hidden="true"></i> Enregistrer</button>
-                    </div>
-                </div>
+               
                 <div class="row"> 
 					<div class="col-sm-3">
                     <label class="control-label" style="position:relative; top:7px;">RH:</label>
@@ -670,6 +669,7 @@ endDateInput.addEventListener('change', updateDateDifference);
 
 				</div>
                 <br>
+
                 <div class="row">
                     <div class="col-sm-12">
                         <button type="button"  id="saveButton_rh" class="btn btn-primary"><i class="fa fa-check" aria-hidden="true"></i> Enregistrer</button>
@@ -685,6 +685,7 @@ endDateInput.addEventListener('change', updateDateDifference);
                  
                 
 				<input type="hidden" name="id" id="userid">
+                <input type="hidden" name="id_conge" id="id_conge">
             </div> 
 			</div>
             <div class="modal-footer">
@@ -756,17 +757,13 @@ function initializeDataTable() {
         // Appelez la fonction pour initialiser DataTable
         initializeDataTable();
 
+        <?php if($this->session->userdata('user_type')== 'EMPLOYEE'){ ?>
 
-            function showTable() {  
+        function showTable() {  
                 $.ajax({
                     type: 'POST',
-                    <?php if($this->session->userdata('user_type')== 'EMPLOYEE'){ ?>
                         url: url + 'leave/GetEmApplication',
-                        <?php } else if($this->session->userdata('user_type')== 'N+1'){ ?>
-                        url: url + 'leave/GetNApplication',   
-                        <?php } else { ?>
-                    url: url + 'leave/GetApplication',
-                    <?php } ?>
+                    
                     success: function(response) {
                         $('#example23').DataTable().destroy(); // Détruire la DataTable existante
            
@@ -775,7 +772,7 @@ function initializeDataTable() {
                         // Initialize DataTable after loading data
                         var dataTable = initializeDataTable();
                         table.column(8).search('En attente').draw();
-                    $('#texte_titre').text('Liste des travailleurs jour');
+                    $('#texte_titre').text('');
                     $('#monBoutonA').addClass('btn-danger');
                     $('#monBoutonV').removeClass('btn-danger');
                     $('#monBoutonR').removeClass('btn-danger');
@@ -786,6 +783,7 @@ function initializeDataTable() {
 
             // Call showTable on page load
             showTable();
+            
 
 // Gérez le filtrage en dehors de la DataTable
             $('#monBoutonA').click(function() {
@@ -811,6 +809,121 @@ function initializeDataTable() {
             $('#monBoutonV').removeClass('btn-danger');
             $('#monBoutonR').addClass('btn-danger');
         });
+
+
+        <?php } else if($this->session->userdata('user_type')== 'N+1'){ ?>
+
+
+        function showTable() {  
+                $.ajax({
+                    type: 'POST',
+                   
+                        url: url + 'leave/GetNApplication',   
+                       
+                    success: function(response) {
+                        $('#example23').DataTable().destroy(); // Détruire la DataTable existante
+           
+                        $('#example23 tbody').html(response);
+
+                        // Initialize DataTable after loading data
+                        var dataTable = initializeDataTable();
+                        table.column(7).search('En attente').draw();
+                    $('#texte_titre').text('');
+                    $('#monBoutonA').addClass('btn-danger');
+                    $('#monBoutonV').removeClass('btn-danger');
+                    $('#monBoutonR').removeClass('btn-danger');
+
+                    }
+                });
+            }
+
+            // Call showTable on page load
+            showTable();
+            
+
+// Gérez le filtrage en dehors de la DataTable
+            $('#monBoutonA').click(function() {
+            table.column(7).search('En attente').draw();
+            $('#texte_titre').text('Liste des demande congé');
+            $('#monBoutonA').addClass('btn-danger');
+            $('#monBoutonV').removeClass('btn-danger');
+            $('#monBoutonR').removeClass('btn-danger');
+        });
+
+        $('#monBoutonV').click(function() {
+            table.column(7).search('Approuvé').draw();
+            $('#texte_titre').text('Liste des congé Validé');
+            $('#monBoutonA').removeClass('btn-danger');
+            $('#monBoutonV').addClass('btn-danger');
+            $('#monBoutonR').removeClass('btn-danger');
+        });
+
+        $('#monBoutonR').click(function() {
+            table.column(7).search('Rejeté').draw();
+            $('#texte_titre').text('Liste des congé Rejeté');
+            $('#monBoutonA').removeClass('btn-danger');
+            $('#monBoutonV').removeClass('btn-danger');
+            $('#monBoutonR').addClass('btn-danger');
+        });
+
+        <?php } else { ?>
+
+            function showTable() {  
+                $.ajax({
+                    type: 'POST',
+                    
+                    url: url + 'leave/GetApplication',
+                   
+                    success: function(response) {
+                        $('#example23').DataTable().destroy(); // Détruire la DataTable existante
+           
+                        $('#example23 tbody').html(response);
+
+                        // Initialize DataTable after loading data
+                        var dataTable = initializeDataTable();
+                        table.column(8).search('En attente').draw();
+                    $('#texte_titre').text('');
+                    $('#monBoutonA').addClass('btn-danger');
+                    $('#monBoutonV').removeClass('btn-danger');
+                    $('#monBoutonR').removeClass('btn-danger');
+
+                    }
+                });
+            }
+
+            // Call showTable on page load
+            showTable();
+            
+
+// Gérez le filtrage en dehors de la DataTable
+            $('#monBoutonA').click(function() {
+            table.column(8).search('En attente').draw();
+            $('#texte_titre').text('Liste des demande congé');
+            $('#monBoutonA').addClass('btn-danger');
+            $('#monBoutonV').removeClass('btn-danger');
+            $('#monBoutonR').removeClass('btn-danger');
+        });
+
+        $('#monBoutonV').click(function() {
+            table.column(8).search('Approuvé').draw();
+            $('#texte_titre').text('Liste des congé Validé');
+            $('#monBoutonA').removeClass('btn-danger');
+            $('#monBoutonV').addClass('btn-danger');
+            $('#monBoutonR').removeClass('btn-danger');
+        });
+
+        $('#monBoutonR').click(function() {
+            table.column(8).search('Rejeté').draw();
+            $('#texte_titre').text('Liste des congé Rejeté');
+            $('#monBoutonA').removeClass('btn-danger');
+            $('#monBoutonV').removeClass('btn-danger');
+            $('#monBoutonR').addClass('btn-danger');
+        });
+
+
+        <?php } ?>
+
+
 
 
 
@@ -858,6 +971,7 @@ function initializeDataTable() {
                 $('#status_n').val(response.leave_status);
                 $('#status_rh').val(response.leave_status_rh);
                 $('#id_nplus').val("Par " + response.id_nplus);
+                $('#id_conge').val(response.id_conge);
                
 
             // Récupérer le nom du fichier image et son emplacement
@@ -1013,7 +1127,8 @@ if (imageFileName === "") {
 
     //----------------- MISE A JOUR DEMANDE CONGE N+1 --------------------
 $('#saveButton').on('click', function() {
-    var idc = $('#idc').val();;
+    var idc = $('#idc').val();
+    var id_conge = $('#id_conge').val();
     var status_n = $('#status_n').val(); // Récupérez le nouveau statut
     var coms_n = $('#coms_n').val(); // Récupérez le nouveau commentaire
 
@@ -1022,6 +1137,7 @@ $('#saveButton').on('click', function() {
         url: url + 'leave/UpdateLeave', // Créez une méthode pour mettre à jour la demande de congé
         data: {
             idc: idc,
+            id_conge: id_conge,
             status_n: status_n,
             coms_n: coms_n
         },
@@ -1042,6 +1158,7 @@ $('#saveButton_rh').on('click', function() {
     var ids = $('#mat').val();
     var status_rh = $('#status_rh').val(); // Récupérez le nouveau statut
     var retenu;
+    var id_conge = $('#id_conge').val();
         if (status_rh === 'Approuvé') {
             retenu = $('#retenu').val();
         } else {
@@ -1056,6 +1173,7 @@ $('#saveButton_rh').on('click', function() {
         data: {
             idc: idc,
             ids:ids,
+            id_conge: id_conge,
             status_rh: status_rh,
             coms_rh: coms_rh,
             retenu:retenu,

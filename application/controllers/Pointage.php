@@ -111,7 +111,75 @@ class Pointage extends CI_Controller {
 		}
 	}
 	
+	public function importN()
+{
+    if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+        $upload_status = $this->uploadDoc();
+        if ($upload_status != false) {
+            $inputFileName = 'uploads/' . $upload_status;
 
+            $inputFileType = \PhpOffice\PhpSpreadsheet\IOFactory::identify($inputFileName);
+            $reader = \PhpOffice\PhpSpreadsheet\IOFactory::createReader($inputFileType);
+            $spreadsheet = $reader->load($inputFileName);
+            $sheet = $spreadsheet->getSheet(0);
+            $idpRanges = [];
+
+            foreach ($sheet->getRowIterator() as $row) {
+                $sName = trim($spreadsheet->getActiveSheet()->getCell('A' . $row->getRowIndex())->getValue());
+                $Date = trim($spreadsheet->getActiveSheet()->getCell('B' . $row->getRowIndex())->getValue());
+                $Time = trim($spreadsheet->getActiveSheet()->getCell('C' . $row->getRowIndex())->getValue());
+                $Idp = (int)trim($spreadsheet->getActiveSheet()->getCell('D' . $row->getRowIndex())->getValue());
+
+                if ($sName !== null && $sName !== 'NULL') {
+                    if (!isset($idpRanges[$sName]) || $Idp < $idpRanges[$sName]['minIdp']) {
+                        $idpRanges[$sName] = [
+                            'minIdp' => $Idp,
+                            'maxIdp' => $Idp,
+                            'Date' => $Date,
+                            'Time_in' => $Time,
+                            'Time_out' => $Time,
+                        ];
+                    } else {
+                        if ($Idp < $idpRanges[$sName]['minIdp']) {
+                            $idpRanges[$sName]['minIdp'] = $Idp;
+                            $idpRanges[$sName]['Time_in'] = $Time;
+                        }
+                        if ($Idp > $idpRanges[$sName]['maxIdp']) {
+                            $idpRanges[$sName]['maxIdp'] = $Idp;
+                            $idpRanges[$sName]['Time_out'] = $Time;
+                        }
+                    }
+                }
+            }
+
+            foreach ($idpRanges as $sName => $data) {
+                // Calculez la différence de temps
+                // Calculate the time difference considering midnight
+				$timeInObj = new DateTime($data['Time_in']);
+				$timeOutObj = new DateTime($data['Time_out']);
+
+				// If 'Time_out' is before 'Time_in', it means it spans midnight
+				if ($timeOutObj < $timeInObj) {
+					$timeOutObj->modify('+1 day'); // Add 24 hours to 'Time_out'
+				}
+                $diff = $timeInObj->diff($timeOutObj);
+
+                // Insérer les données dans la base de données
+                $this->db->insert('pointage', [
+                    'sName' => $sName,
+                    'Date' => $data['Date'],
+                    'Time_in' => $data['Time_in'],
+                    'Time_out' => $data['Time_out'],
+                    'Time_diff' => $diff->format('%H:%i:%s'), // Format de la différence de temps
+                ]);
+            }
+
+            echo "Fichier importé avec succès";
+        }
+    }
+}
+
+	
 
 
 

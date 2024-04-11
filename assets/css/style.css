@@ -7110,7 +7110,8 @@ a.mytooltip {
 .mailbox .message-center a .mail-contnet {
     display: inline-block;
     width: 75%;
-    vertical-align: middle
+    vertical-align: middle;
+    margin-left: 6px;
 }
 
 .mailbox .message-center a .mail-contnet h5 {

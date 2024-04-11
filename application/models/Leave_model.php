@@ -218,7 +218,18 @@
             $result = $query->result();
             return $result; 
         }
-
+        public function GetLeaveTodayAll(){
+            $sql = "SELECT `emp_leave`.*,
+              `employee`.`em_id`,`first_name`,`last_name`,
+              `notif`.`id_conge`,`st_n`
+              FROM `emp_leave`
+              LEFT JOIN `employee` ON `emp_leave`.`em_id`=`employee`.`em_id`
+              LEFT JOIN `notif` ON `emp_leave`.`id_conge`=`notif`.`id_conge`
+              WHERE `notif`.`st_n`= '1' ";
+                $query=$this->db->query($sql);
+                $result = $query->result();
+                return $result; 
+            }
 
     public function GetLeaveApply($id){
         $sql = "SELECT `emp_leave`.*,
@@ -317,7 +328,15 @@
         return $result->notif;
     }
 
- 
+    public function GetnbnotifAll() {
+        $sql = "SELECT COUNT(*) as nb_notif FROM `notif`
+        WHERE `st_n`='1'";
+        $query = $this->db->query($sql);
+        $result = $query->row(); // Utilisez row() au lieu de result() pour obtenir une seule ligne
+
+        // Accédez au nombre de notifications avec $result->nb_notif
+        return $result->nb_notif;
+    }
   
 
 
@@ -351,6 +370,17 @@
     
         $this->db->where('id', $id);
         return $this->db->update('emp_leave', $data);
+    }
+    public function UpdateLeave_notif($id_conge) {
+
+        $data = array(
+            'st_emp' => 1,
+            'st_n' => 1
+            // Ajoutez d'autres champs à mettre à jour ici si nécessaire
+        );
+    
+        $this->db->where('id_conge', $id_conge);
+        return $this->db->update('notif', $data);
     }
 
     public function UpdateLeaveRH($id,$status_rh, $coms_rh) {

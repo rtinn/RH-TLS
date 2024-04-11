@@ -37,7 +37,7 @@
 
                             
                    
-                    <li><a href="<?php echo base_url(); ?>employee/view?I=<?php echo base64_encode($basicinfo->em_id); ?>"><i class="mdi mdi-account-multiple"></i> Mon Profil</a></li>
+                    <li><a href="<?php echo base_url(); ?>employee/view?I=<?php echo base64_encode($basicinfo->em_id); ?>"><i class="fa fa-user" aria-hidden="true"></i> Mon Profil</a></li>
                         <li><a href="<?php echo base_url(); ?>employee/Pointage"> <i class="fa fa-qrcode" aria-hidden="true"></i> Pointage</a></li>
                         <li><a href="<?php echo base_url(); ?>leave/Application"> <i class="mdi mdi-rocket" aria-hidden="true"></i> Conge</a></li>
                          
@@ -54,8 +54,8 @@
 
                             
                    
-                        <li><a href="<?php echo base_url(); ?>employee/view?I=<?php echo base64_encode($basicinfo->em_id); ?>"><i class="mdi mdi-account-multiple"></i> Mon Profil</a></li>
-                        <li><a href="<?php echo base_url(); ?>employee/Nplus_un"> <i class="fa fa-qrcode" aria-hidden="true"></i> N+1</a></li>
+                        <li><a href="<?php echo base_url(); ?>employee/view?I=<?php echo base64_encode($basicinfo->em_id); ?>"><i class="fa fa-user" aria-hidden="true"></i> Mon Profil</a></li>
+                        <li><a href="<?php echo base_url(); ?>employee/Nplus_un"> <i class="fa fa-users" aria-hidden="true"></i> Mes équipes</a></li>
                         
                     
                         <li><a href="<?php echo base_url(); ?>employee/Pointage"> <i class="fa fa-qrcode" aria-hidden="true"></i> Pointage</a></li>
@@ -85,7 +85,7 @@
                                 <li><a href="<?php echo base_url(); ?>employee/Disciplinary">Disciplinary </a></li>
                                 -->
                                 <li><a href="<?php echo base_url(); ?>employee/Inactive_Employee"> <i class="fa fa-circle-o"></i> Personnels inactifs </a></li>
-                                <li><a href="<?php echo base_url(); ?>employee/Planning"> <i class="fa fa-circle-o"></i> Planning Personnels </a></li>
+                              <!--   <li><a href="<?php echo base_url(); ?>employee/Planning"> <i class="fa fa-circle-o"></i> Planning Personnels </a></li>--> 
                                 <li><a href="<?php echo base_url(); ?>employee/pointage"> <i class="fa fa-circle-o"></i> Pointage</a></li>
                                
                                 <li>
@@ -107,11 +107,12 @@
                         -->
                         <li> <a class="has-arrow waves-effect waves-dark" href="#" aria-expanded="false"><i class="mdi mdi-account-off"></i><span class="hide-menu">Conge </span></a>
                             <ul aria-expanded="false" class="collapse">
-                             <!--     <li><a href="<?php echo base_url(); ?>leave/Holidays"> Holiday </a></li>-->
-                                <li><a href="<?php echo base_url(); ?>leave/leavetypes"> Type de congé</a></li>
-                                <li><a href="<?php echo base_url(); ?>leave/Application"> Demande de congé </a></li>
+                             <!--     <li><a href="<?php echo base_url(); ?>leave/Holidays"> Holiday </a></li>
+                                <li><a href="<?php echo base_url(); ?>leave/leavetypes"> Type de congé</a></li>-->
+                                <li><a href="<?php echo base_url(); ?>leave/Application"> Demande Congé </a></li>
+<!-- 
                                 <li><a href="<?php echo base_url(); ?>leave/Earnedleave"> Congé gagné </a></li>
-                                <li><a href="<?php echo base_url(); ?>leave/Leave_report"> Report </a></li>
+                                <li><a href="<?php echo base_url(); ?>leave/Leave_report"> Report </a></li>-->
                             </ul>
                         </li>
                         <!--

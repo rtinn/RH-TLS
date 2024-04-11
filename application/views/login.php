@@ -54,7 +54,7 @@
                     <a href="javascript:void(0)" class="text-center db"><br/><img src="<?php echo base_url(); ?>assets/images/logo-1.png" width="175px" alt="Home" /></a>
                     <div class="form-group m-t-40">
                         <div class="col-xs-12">
-                            <input class="form-control" name="email" value="<?php if(isset($_COOKIE['email'])) { echo $_COOKIE['email']; } ?>" type="text" required placeholder="Email">
+                            <input class="form-control" name="email_or_em_id" value="<?php if(isset($_COOKIE['email_or_em_id'])) { echo $_COOKIE['email_or_em_id']; } ?>" type="text" required placeholder="N° Matricule ou e-mail">
                         </div>
                     </div>
                     <div class="form-group">

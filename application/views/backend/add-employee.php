@@ -98,15 +98,15 @@
                                     </div>
                                     <div class="form-group col-md-3 m-t-20">
                                         <label>CIN</label>
-                                        <input type="text" name="nid" class="form-control" value="" placeholder="(Max. 12)" minlength="12" required> 
+                                        <input type="text" name="nid" class="form-control" value="" placeholder="(Max. 12)" minlength="12"> 
                                     </div>
                                     <div class="form-group col-md-3 m-t-20">
                                         <label>Télephone </label>
-                                        <input type="text" name="contact" class="form-control" value="" placeholder="03*0000000" minlength="10" maxlength="15" required> 
+                                        <input type="text" name="contact" class="form-control" value="" placeholder="03*0000000" minlength="10" maxlength="15"> 
                                     </div>
                                     <div class="form-group col-md-3 m-t-20">
                                         <label>Date de Naissance </label>
-                                        <input type="date" name="dob" id="example-email2" name="example-email" class="form-control" placeholder="" required> 
+                                        <input type="date" name="dob" id="example-email2" name="example-email" class="form-control" placeholder="" > 
                                     </div>
                                     <div class="form-group col-md-3 m-t-20">
                                         <label>Date de début </label>
@@ -124,7 +124,7 @@
 
                                     <div class="form-group col-md-3 m-t-20">
                                         <label>E-mail </label>
-                                        <input type="email" id="example-email2" name="email" class="form-control" placeholder="email@mail.com" minlength="7" required > 
+                                        <input type="email" id="example-email2" name="email" class="form-control" placeholder="email@mail.com" minlength="7" > 
                                     </div><!--
                                     <div class="form-group col-md-3 m-t-20">
                                         <label>Password </label>

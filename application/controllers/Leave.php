@@ -41,7 +41,42 @@ class Leave extends CI_Controller
         $this->load->view('login');
     }
 
- 
+    public function getNotifications() {
+        if ($this->session->userdata('user_login_access') == 1) {
+            $id = $this->session->userdata('user_login_id');
+            $dep = $this->session->userdata('user_dep');
+    
+            if ($this->session->userdata('user_type') == 'EMPLOYEE') {
+                $leavetoday = $this->leave_model->GetLeaveTodayE($id);
+                $n_notif = $this->leave_model->GetnbnotifE($id);
+            } elseif ($this->session->userdata('user_type') == 'N+1') {
+                $leavetoday = $this->leave_model->GetLeaveTodayN($dep);
+                $n_notif = $this->leave_model->GetnbnotifN($dep);
+            } else {
+                $leavetoday = $this->leave_model->GetLeaveTodayAll();
+                $n_notif = $this->leave_model->GetnbnotifAll();
+            }
+    
+            $notifications = array();
+            foreach ($leavetoday as $value) {
+                $notifications[] = array(
+                    'first_name' => $value->first_name,
+                    'typeid' => $value->typeid,
+                    'leave_status' => $value->leave_status,
+                    'id_nplus' => $value->id_nplus,
+                    'apply_date' => $value->apply_date
+                );
+            }
+    
+            $response = array(
+                'notifications' => $notifications,
+                'n_notif' => $n_notif
+            );
+    
+            echo json_encode($response);
+        }
+    }
+    
 
    
 
@@ -168,12 +203,14 @@ class Leave extends CI_Controller
 public function UpdateLeave() {
     if ($this->session->userdata('user_login_access') != False) {
     $id = $this->input->post('idc');
+    $id_conge= $this->input->post('id_conge');
     $status_n = $this->input->post('status_n');
     $coms_n = $this->input->post('coms_n');
     $full_name = $this->session->userdata('full_name');
     
     // Effectuez la mise à jour de la demande de congé dans la base de données en utilisant le modèle
     $result = $this->leave_model->UpdateLeave($id,$status_n, $coms_n, $full_name);
+    $result = $this->leave_model->UpdateLeave_notif($id_conge);
 
     // En fonction du résultat de la mise à jour, renvoyez une réponse appropriée
     if ($result) {
@@ -193,6 +230,7 @@ public function UpdateLeaveRH() {
         $ids = $this->input->post('ids');
         $status_rh = $this->input->post('status_rh');
         $coms_rh = $this->input->post('coms_rh');
+        $id_conge= $this->input->post('id_conge');
         $retenu = $this->input->post('retenu');
         $type = $this->input->post('type');  // Ajout de la récupération du type de congé
 
@@ -200,6 +238,7 @@ public function UpdateLeaveRH() {
 
         // Effectuez la mise à jour de la demande de congé dans la base de données en utilisant le modèle
         $result = $this->leave_model->UpdateLeaveRH($id, $status_rh, $coms_rh);
+        $result = $this->leave_model->UpdateLeave_notifRH($id_conge);
         
         // Ajout de la condition pour mettre à jour en fonction du type de congé
         if ($type == 'Avec solde') {
@@ -395,7 +434,6 @@ public function Add_Applications() {
             $typeid       = $this->input->post('typeid');
             $applydate    = date('d/m/Y');
             $appstartdate = $this->input->post('startdate');
-            $appenddate   = $this->input->post('enddate');
             $hourAmount   = $this->input->post('hourAmount');
             $reason       = $this->input->post('reason');
             $type         = $this->input->post('type');
@@ -406,22 +444,19 @@ public function Add_Applications() {
 
 
 
-            if($type == 'Half Day') {
+            if ($type == 'Half Day') {
+                $appenddate = $appstartdate;
                 $duration = "demi-journée";
-            } else if($type == 'Full Day') { 
-                $duration = "1 jour" ;
-            } else { 
-                
-                 // Date de début
+            } else if ($type == 'Full Day') {
                 $formattedStart = new DateTime($appstartdate);
-
-                // Date de fin
+                $formattedStart->modify('+1 day'); // Ajoute un jour à la date de début
+                $appenddate = $formattedStart->format('Y-m-d');
+                $duration = "1 jour";
+            } else {
+                $appenddate = $this->input->post('enddate');
+                $formattedStart = new DateTime($appstartdate);
                 $formattedEnd = new DateTime($appenddate);
-
-                // Calculer la différence
                 $interval = $formattedStart->diff($formattedEnd);
-
-                // Obtenir le nombre de jours
                 $duration = $interval->format('%a') . ' jours';
             }
 

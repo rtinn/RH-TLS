@@ -22,7 +22,8 @@
                 <?php } else { ?>
                 <div class="row m-b-10"> 
                     <div class="col-12">
-                        <button type="button" class="btn btn-info"><i class="fa fa-plus"></i><a data-toggle="modal" data-target="#noticemodel" data-whatever="@getbootstrap" class="text-white "><i class="" aria-hidden="true"></i> Import csv </a></button>
+                        <button type="button" class="btn btn-info"><i class="fa fa-plus"></i><a data-toggle="modal" data-target="#noticemodel" data-whatever="@getbootstrap" class="text-white "><i class="" aria-hidden="true"></i> Import csv DAY </a></button>
+                      <button type="button" class="btn btn-success"><i class="fa fa-plus"></i><a data-toggle="modal" data-target="#noticemodelN" data-whatever="@getbootstrap" class="text-white "><i class="" aria-hidden="true"></i> Import csv NIGHT </a></button>
                     </div>
                 </div>
                 <?php } ?>
@@ -152,7 +153,37 @@
                         </div>
    
                         <!-- /.modal --> 
-
+                        <div class="modal fade" id="noticemodelN" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel1">
+                            <div class="modal-dialog" role="document">
+                                <div class="modal-content ">
+                                    <div class="modal-header">
+                                        <h4 class="modal-title" id="exampleModalLabel1">Importer un fichier CSV</h4>
+                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                                    </div>
+                                    
+                                    <form action="<?=base_url('Pointage/importN')?>" enctype="multipart/form-data" method="post">
+                                    <div class="modal-body">
+                                            
+                                    
+                                        <input type="file" name="upload_excel" required />
+                                        <?php if($this->session->flashdata('success'))  { ?>
+                                            <p><?=$this->session->flashdata('success')?></p>
+                                        <?php  } ?>
+                                        <?php if($this->session->flashdata('error'))  { ?>
+                                            <p><?=$this->session->flashdata('error')?></p>
+                                        <?php  } ?>
+                                  
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-danger" data-dismiss="modal">Fermer</button>
+                                        <button type="submit" class="btn btn-success">Importer</button>
+                                    </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+   
+                        <!-- /.modal --> 
 <!-- /.modal --> 
 <div class="modal fade" id="editmodal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
     <div class="modal-dialog">

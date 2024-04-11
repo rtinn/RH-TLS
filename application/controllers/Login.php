@@ -36,69 +36,69 @@ class Login extends CI_Controller {
 			$this->load->view('login');
 	}
 	public function Login_Auth(){	
-	$response = array();
-    //Recieving post input of email, password from request
-    $email = $this->input->post('email');
-    $password = sha1($this->input->post('password'));
-	$remember = $this->input->post('remember');
-	#Login input validation\
-	$this->load->library('form_validation');
-    $this->form_validation->set_error_delimiters('<div class="error">', '</div>');
-	$this->form_validation->set_rules('email', 'User Email', 'trim|xss_clean|required|min_length[7]');
-	$this->form_validation->set_rules('password', 'Password', 'trim|xss_clean|required|min_length[6]');
-	
-	if($this->form_validation->run() == FALSE){
-		$this->session->set_flashdata('feedback','UserEmail or Password is Invalid');
-		redirect(base_url() . 'login', 'refresh');		
-	}
-	else{
-        //Validating login
-        $login_status = $this->validate_login($email, $password);
-        $response['login_status'] = $login_status;
-        if ($login_status == 'success') {
-        	if($remember){
-        		setcookie('email',$email,time() + (86400 * 30));
-        		setcookie('password',$this->input->post('password'),time() + (86400 * 30));
-        		redirect(base_url() . 'login', 'refresh');
-        		
-        	} else {
-        		if(isset($_COOKIE['email']))
-        		{
-        			setcookie('email',' ');
-        		}
-        		if(isset($_COOKIE['password']))
-        		{
-        			setcookie('password',' ');
-        		}        		
-        		redirect(base_url() . 'login', 'refresh');
-        	}
-        
-        }
-		else{
-			$this->session->set_flashdata('feedback','UserEmail or Password is Invalid');
-			redirect(base_url() . 'login', 'refresh');
+		$response = array();
+		//Recevoir les entrées postales de l'email ou de l'em_id, et du mot de passe depuis la requête
+		$login_input = $this->input->post('email_or_em_id');
+		$password = sha1($this->input->post('password'));
+		$remember = $this->input->post('remember');
+		
+		// Validation des entrées de connexion
+		$this->load->library('form_validation');
+		$this->form_validation->set_error_delimiters('<div class="error">', '</div>');
+		$this->form_validation->set_rules('email_or_em_id', 'Email or Employee ID', 'trim|xss_clean|required');
+		$this->form_validation->set_rules('password', 'Password', 'trim|xss_clean|required|min_length[6]');
+		
+		if($this->form_validation->run() == FALSE){
+			$this->session->set_flashdata('feedback','Email ou Identifiant Employé ou Mot de passe invalide');
+			redirect(base_url() . 'login', 'refresh');		
+		} else {
+			// Valider la connexion
+			$login_status = $this->validate_login($login_input, $password);
+			$response['login_status'] = $login_status;
+			if ($login_status == 'success') {
+				if($remember){
+					setcookie('email_or_em_id', $login_input, time() + (86400 * 30));
+					setcookie('password', $this->input->post('password'), time() + (86400 * 30));
+				}
+				redirect(base_url() . 'dashboard', 'refresh');
+			} else {
+				$this->session->set_flashdata('feedback','Email ou Identifiant Employé ou Mot de passe invalide');
+				redirect(base_url() . 'login', 'refresh');
+			}
 		}
 	}
-	}
-    //Validating login from request
-    function validate_login($email = '', $password = '') {
-        $credential = array('em_email' => $email, 'em_password' => $password,'status' => 'ACTIF');
-
-
-        $query = $this->login_model->getUserForLogin($credential);
-        if ($query->num_rows() > 0) {
-            $row = $query->row();
-            $this->session->set_userdata('user_login_access', '1');
-            $this->session->set_userdata('user_login_id', $row->em_id);
-            $this->session->set_userdata('name', $row->first_name);
+	
+	// Validation de la connexion depuis la requête
+	function validate_login($login_input = '', $password = '') {
+		$credential = array(
+			'status' => 'ACTIF',
+			'em_password' => $password
+		);
+	
+		// Vérifier si l'entrée est un email ou un em_id
+		if (filter_var($login_input, FILTER_VALIDATE_EMAIL)) {
+			$credential['em_email'] = $login_input;
+		} else {
+			$credential['em_id'] = $login_input;
+		}
+	
+		$query = $this->login_model->getUserForLogin($credential);
+		if ($query->num_rows() > 0) {
+			$row = $query->row();
+			// Définir les données de session
+			$this->session->set_userdata('user_login_access', '1');
+			$this->session->set_userdata('user_login_id', $row->em_id);
+			$this->session->set_userdata('name', $row->first_name);
 			$this->session->set_userdata('full_name', $row->first_name . ' ' . $row->last_name);
-            $this->session->set_userdata('email', $row->em_email);
-            $this->session->set_userdata('user_image', $row->em_image);
-            $this->session->set_userdata('user_type', $row->em_role);
+			$this->session->set_userdata('email', $row->em_email);
+			$this->session->set_userdata('user_image', $row->em_image);
+			$this->session->set_userdata('user_type', $row->em_role);
 			$this->session->set_userdata('user_dep', $row->dep_id);
 			$this->session->set_userdata('sexe', $row->em_gender);
-            return 'success';
-        }
+			return 'success';
+		} else {
+			return 'failed';
+		}
 	}
     /*Logout method*/
     function logout() {
