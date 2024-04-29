@@ -21,20 +21,23 @@
                 <div class="col-12">
 
                 <?php if($this->session->userdata('user_type')== 'EMPLOYEE'){ ?>
-                    <button type="button" class="btn btn-info"><i class="fa fa-plus"></i><a data-toggle="modal" data-target="#appmodel" data-whatever="@getbootstrap" class="text-white"><i class="" aria-hidden="true"></i> Envoyer Demande </a></button>
-                    <button type="button" id="monBoutonA" class="btn btn-info"><i class="fa fa-plus"></i> En Attente</button>
-                        <button type="button" id="monBoutonV" class="btn btn-info"><i class="fa fa-plus"></i> Validé</button>
-                        <button type="button" id="monBoutonR" class="btn btn-info"><i class="fa fa-plus"></i> Rejeté</button>
+                        <button type="button" class="btn btn-info"><i class="fa fa-plus"></i><a data-toggle="modal" data-target="#appmodel" data-whatever="@getbootstrap" class="text-white"><i class="" aria-hidden="true"></i> Envoyer Demande </a></button>
+                        <button type="button" id="monBoutonA" class="btn btn-info"><i class="fa fa-clock-o" aria-hidden="true"></i> En Attente</button>
+                        <button type="button" id="monBoutonV" class="btn btn-info"><i class="fa fa-check" aria-hidden="true"></i> Validé</button>
+                        <button type="button" id="monBoutonR" class="btn btn-info"><i class="fa fa-times" aria-hidden="true"></i> Rejeté</button>
                   
                     <?php } else if($this->session->userdata('user_type')== 'N+1') { ?>
                         <button type="button" class="btn btn-info"><i class="fa fa-plus"></i><a data-toggle="modal" data-target="#appmodel" data-whatever="@getbootstrap" class="text-white"><i class="" aria-hidden="true"></i> Envoyer Demande </a></button>
-                        <button type="button" id="monBoutonA" class="btn btn-info"><i class="fa fa-plus"></i> Nouveau demande</button>
-                        <button type="button" id="monBoutonV" class="btn btn-info"><i class="fa fa-plus"></i> Validé</button>
-                        <button type="button" id="monBoutonR" class="btn btn-info"><i class="fa fa-plus"></i> Rejeté</button>
+                        <button type="button" id="monBoutonA" class="btn btn-info"><i class="fa fa-clock-o" aria-hidden="true"></i> En attente</button>
+                        <button type="button" id="monBoutonV" class="btn btn-info"><i class="fa fa-check" aria-hidden="true"></i> Validé</button>
+                        <button type="button" id="monBoutonR" class="btn btn-info"><i class="fa fa-times" aria-hidden="true"></i> Rejeté</button>
                   
                     <?php } else { ?>
                         <button type="button" class="btn btn-info"><i class="fa fa-plus"></i><a data-toggle="modal" data-target="#appmodel" data-whatever="@getbootstrap" class="text-white"><i class="" aria-hidden="true"></i> Ajouter Demande </a></button>
                        
+                        <button type="button" id="monBoutonA" class="btn btn-info"><i class="fa fa-clock-o" aria-hidden="true"></i> En attente</button>
+                         <button type="button" id="monBoutonV" class="btn btn-info"><i class="fa fa-check" aria-hidden="true"></i> Validé</button>
+                        <button type="button" id="monBoutonR" class="btn btn-info"><i class="fa fa-times" aria-hidden="true"></i> Rejeté</button>
                         <?php } ?>
                        
                 </div>                       
@@ -46,7 +49,7 @@
                     <div class="card-header">
 
                     <?php if($this->session->userdata('user_type')== 'EMPLOYEE' || $this->session->userdata('user_type') == 'N+1'){ ?>
-                        <h4 class="m-b-0 text-white">Liste de mes demandes de congé </h4>
+                        <h4 class="m-b-0 text-white"></h4>
                     <?php } else { ?>
                          <h4 id="texte_titre"  class="m-b-0 text-white"><i class="fa fa-user-o" aria-hidden="true"></i> </h4>
                            
@@ -405,8 +408,11 @@ endDateInput.addEventListener('change', updateDateDifference);
                     <div class="col-sm-4">
                         <input type="text" class="form-control" name="date_dem" id="date_dem" readonly>
                     </div>
-                <div class="col-sm-2">
+                    <div class="col-sm-2">
                         <input type="hidden" class="form-control" name="idc" id="idc" readonly>
+					</div>
+                    <div class="col-sm-2">
+                    <input type="hidden" class="form-control" name="solde_moins" id="solde_moins" readonly>
 					</div>
                 </div>
            
@@ -483,13 +489,14 @@ endDateInput.addEventListener('change', updateDateDifference);
 					<div class="col-sm-3">
 						<input type="text" class="form-control" name="duree" id="duree" readonly>
 					</div>
-				
-					<div class="col-sm-3">
-                        <input type="hidden" class="form-control" name="solde_moins" id="solde_moins" readonly>
-					</div>
                     <div class="col-sm-3">
-                        <input type="hidden" class="form-control" name="retenu" id="retenu" readonly>
+						<label class="control-label reste" style="position:relative; top:7px;">Nouveau solde:</label>
 					</div>
+					
+                    <div class="col-sm-3">
+                        <input type="text" class="form-control reste" name="retenu" id="retenu" readonly>
+					</div>
+                    
 				</div>
                
 				<div class="row">
@@ -676,9 +683,7 @@ endDateInput.addEventListener('change', updateDateDifference);
                     </div>
                 </div>
                 <div class="row">
-    <div class="col-sm-12">
-        <button type="button" id="printButton" class="btn btn-primary"><i class="fa fa-print" aria-hidden="true"></i> Imprimer en PDF</button>
-    </div>
+   
 </div>
                     <?php } ?>
                 
@@ -844,7 +849,7 @@ function initializeDataTable() {
 // Gérez le filtrage en dehors de la DataTable
             $('#monBoutonA').click(function() {
             table.column(7).search('En attente').draw();
-            $('#texte_titre').text('Liste des demande congé');
+            $('#texte_titre').text('Liste desl demande congé');
             $('#monBoutonA').addClass('btn-danger');
             $('#monBoutonV').removeClass('btn-danger');
             $('#monBoutonR').removeClass('btn-danger');
@@ -852,7 +857,7 @@ function initializeDataTable() {
 
         $('#monBoutonV').click(function() {
             table.column(7).search('Approuvé').draw();
-            $('#texte_titre').text('Liste des congé Validé');
+            $('#texte_titre').text('Liste desh congé Validé');
             $('#monBoutonA').removeClass('btn-danger');
             $('#monBoutonV').addClass('btn-danger');
             $('#monBoutonR').removeClass('btn-danger');
@@ -860,7 +865,7 @@ function initializeDataTable() {
 
         $('#monBoutonR').click(function() {
             table.column(7).search('Rejeté').draw();
-            $('#texte_titre').text('Liste des congé Rejeté');
+            $('#texte_titre').text('Liste desh congé Rejeté');
             $('#monBoutonA').removeClass('btn-danger');
             $('#monBoutonV').removeClass('btn-danger');
             $('#monBoutonR').addClass('btn-danger');

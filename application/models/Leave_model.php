@@ -397,6 +397,20 @@
         return $this->db->update('emp_leave', $data);
     }
 
+
+    public function UpdateLeave_notifRH($id_conge) {
+
+        $data = array(
+           
+            'st_n' => 2,
+            'st_admin' => 1
+            // Ajoutez d'autres champs à mettre à jour ici si nécessaire
+        );
+    
+        $this->db->where('id_conge', $id_conge);
+        return $this->db->update('notif', $data);
+    }
+
     
     
     public function UpdateLeaveAvecsolde($ids,$retenu) {

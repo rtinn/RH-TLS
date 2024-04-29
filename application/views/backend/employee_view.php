@@ -90,12 +90,22 @@
                                                     
 				                                    <div class="form-group col-md-4 m-t-10">
 				                                        <label>Genre </label>
-				                                        <select name="gender" <?php if($this->session->userdata('user_type')== 'EMPLOYEE' || $this->session->userdata('user_type') == 'N+1'){ ?> readonly <?php } ?> class="form-control custom-select">
+
+                                                        <?php if($this->session->userdata('user_type')== 'EMPLOYEE' || $this->session->userdata('user_type') == 'N+1'){ ?>
+                                                            
+                                                            <input type="text" class="form-control form-control-line"  name="" value="<?php echo $basic->em_gender; ?>" <?php if($this->session->userdata('user_type')== 'EMPLOYEE' || $this->session->userdata('user_type') == 'N+1'){ ?> readonly <?php } ?> minlength="3" required> 
+				                                    
+                                                            <?php } else { ?> 
+                                                          
+                                                                <select name="gender" class="form-control custom-select">
 				                                           
-				                                            <option value="<?php echo $basic->em_gender; ?>"><?php echo $basic->em_gender; ?></option>
-				                                            <option value="Homme">Homme</option>
-				                                            <option value="Femme">Femme</option>
-				                                        </select>
+                                                           <option value="<?php echo $basic->em_gender; ?>"><?php echo $basic->em_gender; ?></option>
+                                                           <option value="Homme">Homme</option>
+                                                           <option value="Femme">Femme</option>
+                                                       </select>
+                                                          
+                                                            <?php } ?>
+
 				                                    </div>
                                                    <?php if($this->session->userdata('user_type')== 'EMPLOYEE' || $this->session->userdata('user_type') == 'N+1'){ ?>  <?php } else { ?> 
                                                     <div class="form-group col-md-4 m-t-10">
@@ -121,7 +131,16 @@
                                                     <?php } ?>				                                    
 				                                    <div class="form-group col-md-4 m-t-10">
 				                                        <label>Date de Naissance </label>
-				                                        <input type="date" id="example-email2" name="dob" class="form-control" placeholder="" value="<?php echo $basic->em_birthday; ?>" required> 
+
+                                                        <?php if($this->session->userdata('user_type')== 'EMPLOYEE' || $this->session->userdata('user_type') == 'N+1'){ ?>
+                                                            
+                                                            <input type="text" class="form-control form-control-line"  name="dob" value="<?php echo $basic->em_birthday; ?>" <?php if($this->session->userdata('user_type')== 'EMPLOYEE' || $this->session->userdata('user_type') == 'N+1'){ ?> readonly <?php } ?> minlength="3" required> 
+				                                    
+                                                            <?php } else { ?> 
+                                                                <input type="date" id="example-email2" name="dob" class="form-control" placeholder="" value="<?php echo $basic->em_birthday; ?>" required> 
+                                                            <?php } ?>
+
+				                                        
 				                                    </div>
 				                                    <div class="form-group col-md-4 m-t-10">
 				                                        <label>CIN</label>
@@ -156,7 +175,16 @@
 
                                                     <div class="form-group col-md-4 m-t-10">
                                                         <label>Type de contrat </label>
-                                                        <select name="contrat" <?php if($this->session->userdata('user_type')== 'EMPLOYEE' || $this->session->userdata('user_type') == 'N+1'){ ?> readonly <?php } ?> value="<?php echo $basic->contrat; ?>" class="form-control custom-select">
+
+
+
+
+                                                        <?php if($this->session->userdata('user_type')== 'EMPLOYEE' || $this->session->userdata('user_type') == 'N+1'){ ?>
+                                                            
+                                                            <input type="text" class="form-control form-control-line"  name="" value="<?php echo $basic->contrat; ?>" <?php if($this->session->userdata('user_type')== 'EMPLOYEE' || $this->session->userdata('user_type') == 'N+1'){ ?> readonly <?php } ?> minlength="3" required> 
+				                                    
+                                                            <?php } else { ?> 
+                                                                <select name="contrat"  value="<?php echo $basic->contrat; ?>" class="form-control custom-select">
                                                             <option value="<?php echo $basic->contrat; ?>"><?php echo $basic->contrat; ?></option>
                                                             <option value="CDI">CDI</option>
                                                             <option value="CDD">CDD</option>
@@ -165,6 +193,13 @@
 
                                                             
                                                         </select>
+                                                          
+                                                            <?php } ?>
+
+
+
+
+                                                   
                                                     </div>
 				                                    <div class="form-group col-md-4 m-t-10">
 				                                        <label>Debut de contrat </label>
@@ -176,7 +211,7 @@
 				                                    </div>
 				                                    <div class="form-group col-md-4 m-t-10">
 				                                        <label>Email </label>
-				                                        <input type="email" id="example-email2" name="email" class="form-control" <?php if($this->session->userdata('user_type')== 'EMPLOYEE' || $this->session->userdata('user_type') == 'N+1'){ ?> readonly <?php } ?> value="<?php echo $basic->em_email; ?>" placeholder="email@mail.com" minlength="7" required> 
+				                                        <input type="email" id="example-email2" name="email" class="form-control" <?php if($this->session->userdata('user_type')== 'EMPLOYEE' || $this->session->userdata('user_type') == 'N+1'){ ?> readonly <?php } ?> value="<?php echo $basic->em_email; ?>" placeholder="email@mail.com" minlength="7" > 
 				                                    </div>
                                                     <div class="form-group col-md-4 m-t-10">
                                                     <label>Heure d'entrée </label>

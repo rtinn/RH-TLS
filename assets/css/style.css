@@ -27,7 +27,9 @@
 }
 }
 
-
+.reste{
+    color: #ff0019 !important;
+}
 #zoom-container {
     position: fixed;
     top: 0;

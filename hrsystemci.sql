@@ -319,7 +319,7 @@ CREATE TABLE IF NOT EXISTS `conge_mois` (
   UNIQUE KEY `id_2` (`id`),
   UNIQUE KEY `em_id` (`em_id`),
   KEY `id_3` (`id`)
-) ENGINE=MyISAM AUTO_INCREMENT=252 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=MyISAM AUTO_INCREMENT=252 DEFAULT CHARSET=utf8mb4 ;
 
 --
 -- Dumping data for table `conge_mois`
@@ -590,7 +590,7 @@ CREATE TABLE IF NOT EXISTS `crud` (
   `name` varchar(255) NOT NULL,
   `email` varchar(255) NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 ;
 
 --
 -- Dumping data for table `crud`
@@ -1408,7 +1408,7 @@ CREATE TABLE IF NOT EXISTS `notif` (
   `st_n` int NOT NULL DEFAULT '0',
   `st_admin` int NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM AUTO_INCREMENT=8 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=MyISAM AUTO_INCREMENT=8 DEFAULT CHARSET=utf8mb4 ;
 
 --
 -- Dumping data for table `notif`
@@ -1497,9 +1497,9 @@ DROP TABLE IF EXISTS `planning`;
 CREATE TABLE IF NOT EXISTS `planning` (
   `id` int NOT NULL AUTO_INCREMENT,
   `em_id` varchar(50) NOT NULL,
-  `type` enum('DAY','PM','NIGHT') CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL DEFAULT 'DAY',
+  `type` enum('DAY','PM','NIGHT') CHARACTER SET utf8mb4  NOT NULL DEFAULT 'DAY',
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM AUTO_INCREMENT=49 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=MyISAM AUTO_INCREMENT=49 DEFAULT CHARSET=utf8mb4 ;
 
 --
 -- Dumping data for table `planning`
