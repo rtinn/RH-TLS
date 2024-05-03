@@ -76,6 +76,7 @@
                             <ul aria-expanded="false" class="collapse">
                                 <li><a href="<?php echo base_url();?>organization/Department"> <i class="fa fa-circle-o"></i> Departement </a></li>
                                 <li><a href="<?php echo base_url();?>organization/Designation"> <i class="fa fa-circle-o"></i> Poste</a></li>
+                                <li><a href="<?php echo base_url();?>organization/Hierarchie"> <i class="fa fa-circle-o"></i> Hiérarchie</a></li>
                             </ul>
                         </li>
                         <li> <a class="has-arrow waves-effect waves-dark" href="#" aria-expanded="false"><i class="mdi mdi-account-multiple"></i><span class="hide-menu">Personnels </span></a>

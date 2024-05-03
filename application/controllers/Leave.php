@@ -124,7 +124,7 @@ class Leave extends CI_Controller
              } else if($this->session->userdata('user_type')== 'N+1'){
                 $data['employee'] = $this->employee_model->nplus_un($dep);
              } else {
-                $data['employee']    = $this->employee_model->emselect(); // obtient les détails des employés actifs
+                $data['employee'] = $this->employee_model->emselect(); // obtient les détails des employés actifs
             } 
            
             $this->load->view('backend/leave_approve', $data);
