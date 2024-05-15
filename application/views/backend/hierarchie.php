@@ -147,12 +147,9 @@
                     <div class="card-body">
 
 <div>
-<div class="form-group">
-    <label>Nom-prenoms</label>
-    <select class="form-control custom-select selectedEmployeeNam" tabindex="1" name="nam" id="employee_nam" required>
-    </select>
-</div>
-
+        <div class="form-group">
+            <button type="button" id="btn_add" class="btn btn-primary"> <i class="fa fa-check"></i> Ajouter</button>
+        </div>
 </div>
 
                             <table id="employee2_table" class="display nowrap table table-hover table-striped table-bordered" cellspacing="0" width="100%">
@@ -403,27 +400,6 @@ $(document).ready(function() {
 
 
 
-    // Charger les données lorsque la liste déroulante employee_nam change
-    $('#employee_nam').change(function() {
-        var selectedEmId = $('#em_ide').val(); // Récupérer l'ID de l'employé sélectionné dans la liste déroulante em_ide
-        var selectedEmployeeId = $(this).val(); // Récupérer l'ID de l'employé sélectionné dans la liste déroulante employee_nam
-
-        // Envoyer une requête AJAX pour mettre à jour id_np
-        $.ajax({
-            type: "POST",
-            url: '<?php echo base_url(); ?>employee/update_id_np_by_em_id',
-            url: url + 'organization/update_id_np_by_em_id',
-            dataType: 'json',
-            data: { em_id: selectedEmId, employee_id: selectedEmployeeId },
-            success: function(response) {
-                // Afficher un message de succès ou actualiser la page si nécessaire
-                console.log("ID_NP mis à jour avec succès.");
-            },
-            error: function(xhr, status, error) {
-                console.error(xhr.responseText);
-            }
-        });
-    });
 
 
 
