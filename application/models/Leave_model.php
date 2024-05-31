@@ -315,18 +315,22 @@
 
 
     public function GetnbnotifN($dep) {
-        $sql = "SELECT COUNT(*) as `notif`,
-                `employee`.`em_id`, `dep_id`
-                FROM `notif`
-                LEFT JOIN `employee` ON `notif`.`em_id` = `employee`.`em_id`
-                WHERE `employee`.`dep_id` = '$dep' AND `st_emp` = '0'";
-    
-        $query = $this->db->query($sql);
-        $result = $query->row(); // Utilisez row() au lieu de result() pour obtenir une seule ligne
-    
+        $sql = "SELECT COUNT(*) as `notif`
+                FROM (
+                    SELECT `employee`.`em_id`, `dep_id`
+                    FROM `notif`
+                    LEFT JOIN `employee` ON `notif`.`em_id` = `employee`.`em_id`
+                    WHERE `employee`.`dep_id` = ?
+                    AND `st_emp` = '0'
+                ) AS subquery";
+        
+        $query = $this->db->query($sql, array($dep));
+        $result = $query->row();
+        
         // Accédez au nombre de notifications avec $result->notif
         return $result->notif;
     }
+    
 
     public function GetnbnotifAll() {
         $sql = "SELECT COUNT(*) as nb_notif FROM `notif`
