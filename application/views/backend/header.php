@@ -270,6 +270,7 @@
             });
         }
 
+        
         // Appelez loadNotifications une fois au chargement de la page
         loadNotifications();
 
