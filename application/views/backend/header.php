@@ -121,6 +121,18 @@
                             </div>
                         </li>
                     </ul>
+
+
+
+                    <ul class="navbar-nav my-lg-0">
+                    <div id="chronometer" style="color: white;">00:00:00</div>
+                        <button onclick="startChronometer()">Démarrer</button>
+                        <button onclick="stopChronometer()">Arrêter</button>
+                    </ul>
+
+
+
+
                     <ul class="navbar-nav my-lg-0">
                         <li class="nav-item dropdown">
                             <a class="nav-link dropdown-toggle text-muted waves-effect waves-dark" href="#" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><img src="<?php echo base_url(); ?>uploads/users/<?php echo $basicinfo->em_image; ?>" alt="Genit" class="profile-pic" style="height:40px;width:40px;border-radius:50px" /></a>
@@ -149,7 +161,65 @@
             </nav>
         </header>
 
+        <script>
+        let startTime;
+        let interval;
 
+        function startChronometer() {
+            fetch('http://localhost/RH-TLS/chronometer/start', { method: 'POST' })
+                .then(response => response.json())
+                .then(data => {
+                    console.log('Start response:', data);
+                    if (data.status === 'started') {
+                        startTime = data.start_time;
+                        interval = setInterval(updateChronometer, 1000);
+                    }
+                })
+                .catch(error => console.error('Error:', error));
+        }
+
+        function stopChronometer() {
+            fetch('http://localhost/RH-TLS/chronometer/stop', { method: 'POST' })
+                .then(response => response.json())
+                .then(data => {
+                    console.log('Stop response:', data);
+                    if (data.status === 'stopped') {
+                        clearInterval(interval);
+                        alert('Temps écoulé: ' + formatTime(data.elapsed_time));
+                    }
+                })
+                .catch(error => console.error('Error:', error));
+        }
+
+        function updateChronometer() {
+            const currentTime = Math.floor(Date.now() / 1000);
+            const elapsedTime = currentTime - startTime;
+            document.getElementById('chronometer').innerText = formatTime(elapsedTime);
+        }
+
+        function checkStatus() {
+            fetch('http://localhost/RH-TLS/chronometer/status')
+                .then(response => response.json())
+                .then(data => {
+                    console.log('Status response:', data);
+                    if (data.status === 'running') {
+                        startTime = data.start_time;
+                        document.getElementById('chronometer').innerText = formatTime(data.elapsed_time);
+                        interval = setInterval(updateChronometer, 1000);
+                    }
+                })
+                .catch(error => console.error('Error:', error));
+        }
+
+        function formatTime(seconds) {
+            const hrs = Math.floor(seconds / 3600);
+            const mins = Math.floor((seconds % 3600) / 60);
+            const secs = seconds % 60;
+            return `${String(hrs).padStart(2, '0')}:${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
+        }
+
+        window.onload = checkStatus;
+    </script>
 
  <script>
     $(document).ready(function() {
