@@ -92,7 +92,7 @@ public function get_entries()
       return $absentEmployees;
   }
   
-
+  
   public function pointageselect(){
     $sql = "SELECT `pointage`.*,
     `employee`.`first_name`, `employee`.`last_name`, `employee`.`em_id`, `employee`.`des_id`, `employee`.`em_entree`
@@ -104,7 +104,16 @@ public function get_entries()
     return $result;
 }
 
-
+public function timingselect(){
+  $sql = "SELECT `timing`.*,
+  `employee`.`first_name`, `employee`.`last_name`, `employee`.`em_id`, `employee`.`des_id`
+   FROM `timing`
+   LEFT JOIN `employee` ON `timing`.`em_id` = `employee`.`em_id`";
+  $query = $this->db->query($sql);
+  $result = $query->result();
+  
+  return $result;
+}
 
 public function getidPointage($id){
   $sql = "SELECT `pointage`.*,

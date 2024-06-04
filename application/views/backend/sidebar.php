@@ -88,11 +88,9 @@
                                 <li><a href="<?php echo base_url(); ?>employee/Inactive_Employee"> <i class="fa fa-circle-o"></i> Personnels inactifs </a></li>
                               <!--   <li><a href="<?php echo base_url(); ?>employee/Planning"> <i class="fa fa-circle-o"></i> Planning Personnels </a></li>--> 
                                 <li><a href="<?php echo base_url(); ?>employee/pointage"> <i class="fa fa-circle-o"></i> Pointage</a></li>
+                                <li><a href="<?php echo base_url(); ?>employee/timing"> <i class="fa fa-circle-o"></i> Timing</a></li>
                                
-                                <li>
-                                <a class = "ayam" href="<?php echo base_url();?>employee/pointage"> <i class="fa fa-circle-o"></i> Kimai
-                                </a>
-                                </li>
+                                
                             </ul>
                         </li>
                        

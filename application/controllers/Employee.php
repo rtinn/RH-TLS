@@ -62,6 +62,14 @@ class Employee extends CI_Controller {
     
 
 
+    public function timing(){
+        if($this->session->userdata('user_login_access') != False) { 
+        $this->load->view('backend/timing');
+        }
+    else{
+		redirect(base_url() , 'refresh');
+	}        
+    }
 
 
     public function Pointage(){
@@ -90,7 +98,25 @@ class Employee extends CI_Controller {
         echo json_encode($data);
     }
 
-    
+    public function GetTiming(){
+        
+		$data = $this->employee_model->timingselect();
+		$output = array();
+		foreach($data as $value){
+			?>
+			<tr>
+            <td><?php echo $value->em_id; ?></td>
+            <td><?php echo $value->des_id; ?></td>
+            <td><?php echo $value->first_name . ' ' . $value->last_name; ?></td>
+            <td><?php echo $value->time; ?></td>
+            <td><?php echo $value->tdate; ?></td>
+          
+			</tr>
+			<?php
+		}
+	}
+
+
 
 
     public function GetPointage(){
