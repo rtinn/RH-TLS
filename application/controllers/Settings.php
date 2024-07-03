@@ -13,6 +13,50 @@ class Settings extends CI_Controller {
         $this->load->model('settings_model'); 
         $this->load->model('leave_model'); 
     }
+
+    public function export() {
+        $this->load->helper('download');
+        
+        // Nom du fichier d'exportation
+        $filename = 'hrsystemci_' . date('YmdHis') . '.sql';
+        
+        // Obtenez les informations de connexion à la base de données depuis la configuration
+        $hostname = $this->db->hostname;
+        $username = $this->db->username;
+        $password = $this->db->password;
+        $database = $this->db->database;
+
+        // Commande pour exporter la base de données
+        $command = "mysqldump --opt -h $hostname -u $username -p$password $database > /tmp/$filename";
+
+        // Exécutez la commande
+        system($command);
+
+        // Lisez le fichier généré
+        $data = file_get_contents("/tmp/$filename");
+
+        // Forcer le téléchargement
+        force_download($filename, $data);
+
+        // Supprimez le fichier temporaire
+        unlink("/tmp/$filename");
+    }
+
+
+    public function Backup(){
+        if($this->session->userdata('user_login_access') != False) { 
+        $this->load->view('backend/backup');
+        }
+    else{
+		redirect(base_url() , 'refresh');
+	}            
+    }
+
+
+
+
+
+
     public function index(){
 		#Redirect to Admin dashboard after authentication
         if ($this->session->userdata('user_login_access') == 1)

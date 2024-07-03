@@ -42,17 +42,43 @@
     $result = $query->result();
     return $result;
 }
+//requete pour afficher la liste de personnel sur sup hierarchique
+public function getListeH() {
+  $sql = "SELECT *
+          FROM `employee`
+          WHERE `status` = 'ACTIF' 
+            AND `em_id` != 'T0000'
+            AND (`id_np` IS NULL OR `id_np` = '')
+          ORDER BY `em_id` ASC";
+  
+  $query = $this->db->query($sql);
+  $result = $query->result();
+  return $result;
+}
 
-
-
-public function nplus_un($dep) {
+//requete pour afficher la listes des equipes
+public function nplus_un($emid) {
   $sql = "SELECT *
   FROM `employee`
-  WHERE `status` = 'ACTIF' AND `em_id` != 'T0000'  AND `dep_id`='$dep'";
+  WHERE `status` = 'ACTIF' AND `em_id` != 'T0000'  AND `id_np`='$emid'";
 
 $query = $this->db->query($sql);
 $result = $query->result();
 return $result;
+}
+
+//requete pour afficher la liste deroulante demande conger N+1 / fusion de n+1 et l'equipe
+public function emselectAndNplusUn($emid){
+  $sql = "
+      SELECT * FROM `employee`
+      WHERE `em_id`='$emid'
+      UNION
+      SELECT * FROM `employee`
+      WHERE `status` = 'ACTIF' AND `em_id` != 'T0000' AND `id_np`='$emid'
+  ";
+  $query = $this->db->query($sql);
+  $result = $query->result(); // Utilisez `result()` si vous attendez plusieurs lignes
+  return $result;
 }
 
 

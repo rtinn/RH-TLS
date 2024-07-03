@@ -40,7 +40,7 @@
                     <li><a href="<?php echo base_url(); ?>employee/view?I=<?php echo base64_encode($basicinfo->em_id); ?>"><i class="fa fa-user" aria-hidden="true"></i> Mon Profil</a></li>
                         <li><a href="<?php echo base_url(); ?>employee/Pointage"> <i class="fa fa-qrcode" aria-hidden="true"></i> Pointage</a></li>
                         <li><a href="<?php echo base_url(); ?>leave/Application"> <i class="mdi mdi-rocket" aria-hidden="true"></i> Conge</a></li>
-                         
+                       
                        <!--
                         <li> <a class="has-arrow waves-effect waves-dark" href="#" aria-expanded="false"><i class="mdi mdi-briefcase-check"></i><span class="hide-menu">Projects </span></a>
                             <ul aria-expanded="false" class="collapse">
@@ -65,8 +65,7 @@
                             <ul aria-expanded="false" class="collapse">
                               
                                 <li><a href="<?php echo base_url(); ?>leave/Application"> Demande de congé </a></li>
-                                <li><a href="<?php echo base_url(); ?>leave/Application"> Demande des Autres </a></li>
-                               
+                              
                             </ul>
                         </li> 
 

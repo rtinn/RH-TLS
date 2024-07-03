@@ -119,7 +119,7 @@
                                         <div class="form_emp">              
                                             <div class="form-group">
                                                 <label>Matricule</label>
-                                                <select class="form-control custom-select selectedEmployeeIDD fetchLeaveTotall" tabindex="1" name="emidd" id="em_ide"  required>
+                                                <select class="form-control custom-select selectedEmployeeIDD " tabindex="1" name="emidd" id="em_ide"  required>
                                                 </select>
                                             </div>
 
@@ -141,21 +141,21 @@
             </div>
             <div class="card card-outline-info">
                     <div class="card-header">
-                        <h4 class="m-b-0 text-white">Liste Equipe pour</h4>
+                        <h4 class="m-b-0 text-white" id="name_sup"></h4>
                     </div>
                     
                     <div class="card-body">
 
 <div>
         <div class="form-group">
-            <button type="button" id="btn_add" class="btn btn-primary"> <i class="fa fa-check"></i> Ajouter</button>
+            <button type="button" id="btn_add"  class="btn btn-primary"> <i class="fa fa-check"></i> Ajouter</button>
         </div>
 </div>
 
                             <table id="employee2_table" class="display nowrap table table-hover table-striped table-bordered" cellspacing="0" width="100%">
                                 <thead>
                                     <tr>
-                                        <th>N° </th>
+                                        <th>N°g </th>
                                         <th>Noms et prenoms </th>
                                         <th>Action</th>
                                     </tr>
@@ -170,6 +170,65 @@
                 </div>
         </div>
     </div>
+
+
+
+
+
+
+  <!-- The Modal -->
+  <div class="modal" id="myModal">
+    <div class="modal-dialog dialog1 modal-dialog-scrollable">
+      <div class="modal-content">
+      
+        <!-- Modal Header -->
+        <div class="modal-header">
+        
+          <h3 class="modal-title" id="titremodal"></h3>
+          <button type="button" class="close" data-dismiss="modal">×</button>
+        </div>
+        
+        <!-- Modal body -->
+        <div class="modal-body">
+        <div class="modal-body">
+        <table id="personnelTable" class="display nowrap table table-hover table-striped table-bordered" cellspacing="0" width="100%">
+                                     
+                            <thead>
+                                <tr>
+                                    <th>Matricule</th>
+                                    <th>Nom</th>
+                                    <th>Poste</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- Les données seront ajoutées ici par jQuery -->
+                            </tbody>
+        </table>
+
+</table>
+
+
+
+
+                    </div>
+        </div>
+        
+        <!-- Modal footer -->
+        <div class="modal-footer">
+          <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+        </div>
+        
+      </div>
+    </div>
+  </div>
+
+
+
+
+
+
+
     <?php $this->load->view('backend/footer'); ?>
    
 
@@ -178,8 +237,10 @@
 
 
 <script>
+    
     $(document).ready(function() {
         var url = '<?php echo base_url(); ?>';
+        
         // Lorsque le bouton d'enregistrement est cliqué
         $('#btn_enregistrer').click(function(e) {
             e.preventDefault();
@@ -265,78 +326,161 @@
             }
         });
     }
+
+// Fonction pour charger les données dans le tableau personnelTable
+function loadPersonnelTable() {
+        $.ajax({
+            url: url + 'employee/getListeH',
+            method: 'GET',
+            dataType: 'json',
+            success: function(data) {
+                let tableBody = $('#personnelTable tbody');
+                tableBody.empty(); // Vider le contenu existant du tableau
+
+                // Ajouter chaque ligne de personnel au tableau
+                data.forEach(function(personnel) {
+                    tableBody.append(`
+                        <tr data-em-id="${personnel.em_id}">
+                            <td>${personnel.em_id}</td>
+                            <td>${personnel.first_name} ${personnel.last_name}</td>
+                            <td>${personnel.des_id}</td>
+                            <td>
+                                <button class="btn btn-success btn-sm edit-btnn"><i class="fa fa-check-square-o" aria-hidden="true"></i></button>
+                            </td>
+                        </tr>
+                    `);
+                });
+
+                // Ajouter le gestionnaire d'événements pour les boutons "Edit" après le chargement
+                $('.edit-btnn').on('click', function() {
+                    var emId = $(this).closest('tr').data('em-id'); // Récupérer l'ID de l'employé
+
+                    // Envoyer une requête AJAX pour effectuer l'édition
+                    $.ajax({
+                        url: url + 'organization/updateIdNp',
+                        method: 'POST',
+                        data: {
+                            em_id: emId,
+                            id_np: $('#em_ide').val()
+                        },
+                        success: function(response) {
+                            // Si la mise à jour est réussie, recharger la table personnelTable
+                   
+                            loadPersonnelTable();
+                           loadData();
+                        },
+                        error: function(xhr, status, error) {
+                            console.error('Erreur:', error);
+                        }
+                    });
+                });
+                
+            },
+            error: function(xhr, status, error) {
+                console.error('Erreur:', error);
+            }
+        });
+    }
+
+    // Charger la table personnelTable au chargement de la page
+    loadPersonnelTable();
+
+
+    function updateHeaderModal() {
+        var selectedEmployeeName = $('#employee_namee option:selected').text();
+        $('#titremodal').text('Selectionner equipe pour ' + selectedEmployeeName);
+         
+    }
+
+    // Gestionnaire d'événements pour le clic sur le bouton "Ajouter" (#btn_add)
+    $('#btn_add').on('click', function() {
+        // Appeler simplement loadPersonnelTable() pour recharger les données après l'ajout
+        loadPersonnelTable();
+        updateHeaderModal();
+        $('#myModal').modal('show'); // Afficher le modal après l'ajout
+       
+    });
+
+
+
+
     charge_sup();
 
 
 
- 
-    });
-</script>
-<script type="text/javascript">
-    $(document).ready(function() {
-        var url = '<?php echo base_url(); ?>';
+
 
         // Chargement des données lors de la sélection d'un employé 1
-        $('#em_ide').change(function() {
-            loadData();
+    $('#em_ide').change(function() {
+        loadData();
+      
+    });
+
+    // Fonction pour charger les données
+    function loadData() {
+        var selectedId = $('#em_ide').val();
+
+        $.ajax({
+            type: "GET",
+            url: url + 'organization/get_employee2_list',
+            dataType: "json",
+            data: { em_id: selectedId },
+            success: function(data) {
+                var employees2 = data.employees2;
+                displayEmployee2List(employees2);
+            }
         });
+    }
 
-        // Fonction pour charger les données
-        function loadData() {
-            var selectedId = $('#em_ide').val();
+    // Fonction pour afficher les employés 2 dans le tableau
+    function displayEmployee2List(employees2) {
+        $('#employee2_table tbody').empty(); // Vider le tableau
 
-            $.ajax({
-                type: "GET",
-                url: url + 'organization/get_employee2_list',
-                dataType: "json",
-                data: { em_id: selectedId },
-                success: function(data) {
-                    var employees2 = data.employees2;
-                    displayEmployee2List(employees2);
-                }
-            });
-        }
-
-        // Fonction pour afficher les employés 2 dans le tableau
-        function displayEmployee2List(employees2) {
-            $('#employee2_table tbody').empty(); // Vider le tableau
-
-            $.each(employees2, function(key, value) {
-                var editButton = '<button class="btn btn-danger btn-sm edit-btn"><i class="fa fa-trash-o"></i></button>';
-        var rowData = '<tr><td>' + value.em_id + '</td><td>' + value.first_name + ' ' + value.last_name + '</td><td>' + editButton + '</td></tr>';
-        $('#employee2_table tbody').append(rowData);
-            });
-        }
-
-        // Fonction pour synchroniser les sélections entre deux paires de listes déroulantes
-        function synchronizeSelection(sourceSelect, targetSelect) {
-            sourceSelect.addEventListener('change', function () {
-                const selectedValue = sourceSelect.value;
-                const targetOption = targetSelect.querySelector(`option[value="${selectedValue}"]`);
-                if (targetOption) {
-                    targetOption.selected = true;
-                }
-            });
-        }
-
-        // Récupérer les éléments select
-        const emIdSelect1 = document.getElementById('em_id');
-        const employeeNameSelect1 = document.getElementById('employee_name');
-        const emIdSelect2 = document.getElementById('em_ide');
-        const employeeNameSelect2 = document.getElementById('employee_namee');
-
-        // Appliquer la synchronisation pour la première paire de listes déroulantes
-        synchronizeSelection(emIdSelect1, employeeNameSelect1);
-        synchronizeSelection(employeeNameSelect1, emIdSelect1);
-
-        // Appliquer la synchronisation pour la deuxième paire de listes déroulantes
-        synchronizeSelection(emIdSelect2, employeeNameSelect2);
-        synchronizeSelection(employeeNameSelect2, emIdSelect2);
-
-        // Charger les données lors du clic sur la liste déroulante employee_namee
-        $('#employee_namee').click(function() {
-            loadData();
+        $.each(employees2, function(key, value) {
+            var editButton = '<button class="btn btn-danger btn-sm edit-btn"><i class="fa fa-trash-o"></i></button>';
+            var rowData = '<tr><td>' + value.em_id + '</td><td>' + value.first_name + ' ' + value.last_name + '</td><td>' + editButton + '</td></tr>';
+            $('#employee2_table tbody').append(rowData);
         });
+    }
+
+    // Fonction pour synchroniser les sélections entre deux paires de listes déroulantes
+    function synchronizeSelection(sourceSelect, targetSelect) {
+        sourceSelect.addEventListener('change', function () {
+            const selectedValue = sourceSelect.value;
+            const targetOption = targetSelect.querySelector(`option[value="${selectedValue}"]`);
+            if (targetOption) {
+                targetOption.selected = true;
+            }
+        });
+    }
+
+    // Récupérer les éléments select
+    const emIdSelect1 = document.getElementById('em_id');
+    const employeeNameSelect1 = document.getElementById('employee_name');
+    const emIdSelect2 = document.getElementById('em_ide');
+    const employeeNameSelect2 = document.getElementById('employee_namee');
+
+    // Appliquer la synchronisation pour la première paire de listes déroulantes
+    synchronizeSelection(emIdSelect1, employeeNameSelect1);
+    synchronizeSelection(employeeNameSelect1, emIdSelect1);
+
+    // Appliquer la synchronisation pour la deuxième paire de listes déroulantes
+    synchronizeSelection(emIdSelect2, employeeNameSelect2);
+    synchronizeSelection(employeeNameSelect2, emIdSelect2);
+
+    // Fonction pour mettre à jour le texte dans la balise <h4>
+    function updateHeaderText() {
+        var selectedEmployeeName = $('#employee_namee option:selected').text();
+        $('#name_sup').text('Liste Equipe pour ' + selectedEmployeeName);
+        $('#titre modal').text('Selectionner equipe pour ' + selectedEmployeeName);
+         
+    }
+
+    // Charger les données et mettre à jour le texte lors du clic sur la liste déroulante employee_namee
+    $('#employee_namee').click(function() {
+        loadData();
+        updateHeaderText();
+    });
 
 
 // Gérer le clic sur le bouton "Edit"

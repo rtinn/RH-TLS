@@ -50,9 +50,10 @@ class Employee extends CI_Controller {
   
 
     public function Nplus_un(){
-        if($this->session->userdata('user_login_access') != False) { 
-        $dep= $this->session->userdata('user_dep');
-        $data['employee'] = $this->employee_model->nplus_un($dep);
+        if($this->session->userdata('user_login_access') != False) {
+        
+        $emid= $this->session->userdata('user_login_id');
+        $data['employee'] = $this->employee_model->nplus_un($emid);
         $this->load->view('backend/nplus_un', $data);
         }
         else{
@@ -80,6 +81,12 @@ class Employee extends CI_Controller {
 		redirect(base_url() , 'refresh');
 	}        
     }
+    public function getListeH() {
+        $data = $this->employee_model->getListeH();
+        echo json_encode($data);
+    }
+
+
 
     public function Absent() {
         if($this->session->userdata('user_login_access') != False) { 

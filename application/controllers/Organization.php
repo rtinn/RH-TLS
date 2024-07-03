@@ -235,6 +235,24 @@ class Organization extends CI_Controller {
         echo json_encode(array('success' => true));
     }
     
+   // updateIdNp
+ 
+   public function updateIdNp() {
+    $em_id = $this->input->post('em_id');
+    $id_np = $this->input->post('id_np');
+
+    if ($this->organization_model->updateIdNp($em_id, $id_np)) {
+        $response = array('status' => 'success', 'message' => 'ID NP mis à jour avec succès');
+    } else {
+        $response = array('status' => 'error', 'message' => 'Erreur lors de la mise à jour de l\'ID NP');
+    }
+
+    echo json_encode($response);
+}
+
+
+
+
     public function get_all_employees() {
         $employees = $this->employee_model->emselect();
         echo json_encode(array('employees' => $employees));

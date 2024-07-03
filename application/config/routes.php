@@ -56,3 +56,5 @@ $route['translate_uri_dashes'] = FALSE;
 $route['chronometer/start'] = 'chronometer/start';
 $route['chronometer/stop'] = 'chronometer/stop';
 $route['chronometer/status'] = 'chronometer/status';
+// application/config/routes.php
+$route['export'] = 'Settings/export';

@@ -156,7 +156,7 @@
                     <div class="modal-dialog" role="document">
                         <div class="modal-content ">
                             <div class="modal-header">
-                                <h4 class="modal-title" id="exampleModalLabel1">Demande congé</h4>
+                                <h4 class="modal-title" id="exampleModalLabel1">Demanded congé</h4>
                                 <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
                                 
                             </div>

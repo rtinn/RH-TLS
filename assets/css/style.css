@@ -26,6 +26,9 @@
     color: white;
 }
 }
+.dialog1{
+    max-width: 73% !important;
+}
 
 .reste{
     color: #ff0019 !important;

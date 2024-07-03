@@ -118,11 +118,12 @@ class Leave extends CI_Controller
     {
         if ($this->session->userdata('user_login_access') != False) {
             $emid = $this->session->userdata('user_login_id');
-            $dep= $this->session->userdata('user_dep');
+          
             if($this->session->userdata('user_type')== 'EMPLOYEE'){
                 $data['employee']    = $this->employee_model->emselectByID($emid);
              } else if($this->session->userdata('user_type')== 'N+1'){
-                $data['employee'] = $this->employee_model->nplus_un($dep);
+               
+                $data['employee'] = $this->employee_model->emselectAndNplusUn($emid);
              } else {
                 $data['employee'] = $this->employee_model->emselect(); // obtient les détails des employés actifs
             } 

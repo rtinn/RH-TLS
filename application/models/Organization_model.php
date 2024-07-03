@@ -102,6 +102,17 @@ public function update_id_np($em_id) {
 }
 
 
+public function updateIdNp($em_id, $id_np) {
+
+  $this->db->set('id_np', $id_np);
+  $this->db->where('em_id', $em_id);
+  $this->db->update('employee');
+}
+
+
+
+
+
   public function enregistrer_hierarchie($em_id) {
     // Table concernée dans la base de données (à adapter selon votre structure)
     $table = 'hierarchie';
