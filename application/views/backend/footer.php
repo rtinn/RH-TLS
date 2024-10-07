@@ -30,7 +30,7 @@
     <script src="<?php echo base_url(); ?>assets/plugins/morrisjs/morris.js"></script>
     <!-- Chart JS -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/lightbox2/2.11.3/js/lightbox.min.js"></script>
-
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 
     <!-- CHART COMMENTED....UNCOMMENT WHEN DONE -->

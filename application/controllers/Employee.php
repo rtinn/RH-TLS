@@ -210,9 +210,12 @@ public function GetPointage() {
         ?>
         <tr <?php echo (!empty($value->em_entree) && strtotime($value->Time_in) - strtotime($value->em_entree) > 600) ? 'class="text-danger"' : ''; ?>>
             <td><?php echo $value->sName; ?></td>
-            <td><?php echo $value->des_id; ?></td>
             <td><?php echo $value->first_name . ' ' . $value->last_name; ?></td>
+            <td><?php echo $value->des_id; ?></td>
+           
+           
             <td><?php echo $value->Date; ?></td>
+            <td><?php echo $value->shift; ?></td>
             <td><?php echo $value->em_entree; ?></td>
             <td><?php echo $value->Time_in; ?></td>
             <td>
@@ -235,6 +238,7 @@ public function GetPointage() {
             </td>
             <td><?php echo $value->Time_out; ?></td>
             <td><?php echo $value->Time_diff; ?></td>
+            <td><?php echo $value->dep; ?></td>
             <td>
                 <button class="btn btn-warning edit" data-id="<?php echo $value->id; ?>"><i class="fa fa-eye" aria-hidden="true"></i></button>
                 <button class="btn btn-danger delete" data-id="<?php echo $value->id; ?>"><i class="fa fa-trash-o"></i></button>
@@ -354,10 +358,15 @@ public function getidPointage(){
 
 
     
+//supprimer pointage par date
 
-
+public function deletePointageByDate() {
+    $date = $this->input->post('date');
+    $deleted = $this->employee_model->deletePByDate($date);
     
-    
+    $response = array('success' => $deleted > 0);
+    echo json_encode($response);
+}
 
 
 
@@ -436,147 +445,122 @@ public function getidPointage(){
 	}
 
 
-    
-
-	public function Save(){ 
-    if($this->session->userdata('user_login_access') != False) {     
-    $eid = $this->input->post('eid');    
-    $id = $this->input->post('emid');    
-	$fname = $this->input->post('fname');
-	$lname = $this->input->post('lname');
-    $dept = $this->input->post('dept');
-	$deg = $this->input->post('deg');
-	$role = $this->input->post('role');
-	$gender = $this->input->post('gender');
-	$contact = $this->input->post('contact');
-	$dob = $this->input->post('dob');	
-	$joindate = $this->input->post('joindate');	
-	$leavedate = $this->input->post('leavedate');	
-	$heure_entree = $this->input->post('heure_entree');	
-	$email = $this->input->post('email');	
-	$password = sha1($contact);	
-	$confirm = $this->input->post('confirm');	
-	$nid = $this->input->post('nid');		
-	$contrat = $this->input->post('contrat');		
-        $this->load->library('form_validation');
-        $this->form_validation->set_error_delimiters();
-        // Validating Name Field
-        $this->form_validation->set_rules('contact', 'contact', 'trim|min_length[10]|max_length[15]|xss_clean');
-        /*validating email field*/
-        /*$this->form_validation->set_rules('email', 'Email','trim|min_length[7]|max_length[100]|xss_clean');
-       
-        $this->form_validation->set_rules('contact', 'contact', 'trim|required|min_length[10]|max_length[15]|xss_clean');
-        /*validating email field*/
-        /*
-        $this->form_validation->set_rules('email', 'Email','trim|required|min_length[7]|max_length[100]|xss_clean');
-        */
-        if ($this->form_validation->run() == FALSE) {
-            echo validation_errors();
-			} else {
-            if($this->employee_model->Does_email_exists($email) && $password != $confirm){
-                $this->session->set_flashdata('formdata','Email is already Exist or Check your password');
-                echo "Email is already Exist or Check your password";
-            } else {
-            if($_FILES['image_url']['name']){
-            $file_name = $_FILES['image_url']['name'];
-			$fileSize = $_FILES["image_url"]["size"]/1024;
-			$fileType = $_FILES["image_url"]["type"];
-			$new_file_name='';
-            $new_file_name .= $emrand;
-
-            $config = array(
-                'file_name' => $new_file_name,
-                'upload_path' => "./uploads/users",
-                'allowed_types' => "gif|jpg|png|jpeg",
-                'overwrite' => False,
-                'max_size' => "20240000", // Can be set to particular file size , here it is 2 MB(2048 Kb)
-                'max_height' => "800",
-                'max_width' => "800"
-            );
-    
-            $this->load->library('Upload', $config);
-            $this->upload->initialize($config);                
-            if (!$this->upload->do_upload('image_url')) {
-                echo $this->upload->display_errors();
-			}
    
-			else {
-                $path = $this->upload->data();
-                $img_url = $path['file_name'];
-                $data = array();
+    
+
+    public function Save(){ 
+        if($this->session->userdata('user_login_access') != False) {     
+            $eid = $this->input->post('eid');    
+            $id = $this->input->post('emid');    
+            $fname = $this->input->post('fname');
+            $lname = $this->input->post('lname');
+            $dept = $this->input->post('dept');
+            $deg = $this->input->post('deg');
+            $role = $this->input->post('role');
+            $gender = $this->input->post('gender');
+            $contact = $this->input->post('contact');
+            $dob = $this->input->post('dob');    
+            $joindate = $this->input->post('joindate');    
+            $leavedate = $this->input->post('leavedate');    
+            $heure_entree = $this->input->post('heure_entree');    
+            $email = $this->input->post('email');    
+            $password = "f7c3bc1d808e04732adf679965ccc34ca7ae3441";       
+            $nid = $this->input->post('nid');        
+            $contrat = $this->input->post('contrat');        
+            $this->load->library('form_validation');
+            $this->form_validation->set_error_delimiters();
+    
+            // Validation des champs
+            $this->form_validation->set_rules('contact', 'contact', 'trim|min_length[10]|max_length[15]|xss_clean');
+    
+            if ($this->form_validation->run() == FALSE) {
+                echo validation_errors();
+            } else {
+                $img_url = ''; // Initialisation de $img_url
+    
+                if($_FILES['image_url']['name']){
+                    $file_name = $_FILES['image_url']['name'];
+                    $fileSize = $_FILES["image_url"]["size"]/1024;
+                    $fileType = $_FILES["image_url"]["type"];
+                    $new_file_name='';
+                    $new_file_name .= $emrand;
+    
+                    $config = array(
+                        'file_name' => $new_file_name,
+                        'upload_path' => "./uploads/users",
+                        'allowed_types' => "gif|jpg|png|jpeg",
+                        'overwrite' => False,
+                        'max_size' => "20240000", // Peut être défini à une taille spécifique, ici c'est 2 Mo (2048 Kb)
+                        'max_height' => "800",
+                        'max_width' => "800"
+                    );
+    
+                    $this->load->library('Upload', $config);
+                    $this->upload->initialize($config);                
+                    if (!$this->upload->do_upload('image_url')) {
+                        echo $this->upload->display_errors();
+                    } else {
+                        $path = $this->upload->data();
+                        $img_url = $path['file_name'];
+                    }
+                }
+    
+                // Si img_url est vide, définir une image par défaut
+                if (empty($img_url)) {
+                    $img_url = 'Tel1001.jpg';
+                }
+    
                 $data = array(
-                   
                     'em_id' => $eid,
                     'des_id' => $deg,
                     'dep_id' => $dept,
                     'first_name' => $fname,
                     'last_name' => $lname,
-					'em_email' => $email,
-					'em_password'=>$password,
-					'em_role'=>$role,
-					'em_gender'=>$gender,
-                    'status'=>'ACTIF',
-                    'em_phone'=>$contact,
-                    'em_birthday'=>$dob,
-                    'em_joining_date'=>$joindate,
-                    'em_contact_end'=>$leavedate,
-                    'em_image'=>$img_url,
-                    'em_nid'=>$nid,
-                    'em_entree'=>$heure_entree,
-                    'contrat'=> $contrat
+                    'em_email' => $email,
+                    'em_password' => $password,
+                    'em_role' => $role,
+                    'em_gender' => $gender,
+                    'status' => 'ACTIF',
+                    'em_phone' => $contact,
+                    'em_birthday' => $dob,
+                    'em_joining_date' => $joindate,
+                    'em_contact_end' => $leavedate,
+                    'em_image' => $img_url,
+                    'em_nid' => $nid,
+                    'em_entree' => $heure_entree,
+                    'contrat' => $contrat
                 );
+    
                 if($id){
-            $success = $this->employee_model->Update($data,$id); 
-            #$this->session->set_flashdata('feedback','Enregistrement Réussi');
-            echo "Enregistrement Réussi";
+                    $success = $this->employee_model->Update($data, $id); 
+                    echo "Enregistrement Réussi";
                 } else {
-            $success = $this->employee_model->Add($data);
-            #$this->confirm_mail_send($email,$pass_hash);        
-            #$this->session->set_flashdata('feedback','Successfully Created');
-            echo "Enregistrement Réussi";                     
+                    $success = $this->employee_model->Add($data);
+                    echo "Enregistrement Réussi";                     
                 }
-			}
+    
+                // Ajout de em_id dans la table notif
+                $notif_data = array(
+                    'em_id' => $eid,
+                    'shift' => "DAY"
+
+                );
+                $this->db->insert('shift', $notif_data);
+    
+                // Ajout de em_id dans la table conge_mois
+                $conge_data = array(
+                    'em_id' => $eid
+                );
+                $this->db->insert('conge_mois', $conge_data);
+            }
         } else {
-                $data = array();
-                $data = array(
-                    
-                    'em_id' => $eid,
-                    'des_id' => $deg,
-                    'dep_id' => $dept,
-                    'first_name' => $fname,
-                    'last_name' => $lname,
-					'em_email' => $email,
-					'em_password'=>$password,
-					'em_role'=>$role,
-					'em_gender'=>$gender,
-                    'status'=>'ACTIF',
-                    'em_phone'=>$contact,
-                    'em_birthday'=>$dob,
-                    'em_joining_date'=>$joindate,
-                    'em_contact_end'=>$leavedate,
-                    'em_nid'=>$nid,
-                    'em_entree'=>$heure_entree,
-                    'contrat'=> $contrat
-                );
-                if($id){
-            $success = $this->employee_model->Update($data,$id); 
-            #$this->session->set_flashdata('feedback','Enregistrement Réussi');
-            echo "Enregistrement Réussi";        
-            #redirect('employee/Add_employee'); 
-                } else {
-            $success = $this->employee_model->Add($data);
-            #$this->confirm_mail_send($email,$pass_hash);        
-            echo "Enregistrement Réussi";
-            #redirect('employee/Add_employee');                     
-                }
-            }
-            }
-        }
-        }
-    else{
-		redirect(base_url() , 'refresh');
-	       }        
-		}
+            redirect(base_url() , 'refresh');
+        }        
+    }
+    
+
+
+
 	public function Update(){
     if($this->session->userdata('user_login_access') != False) {    
     $eid = $this->input->post('eid');    
@@ -1410,10 +1394,83 @@ public function getidPointage(){
 		 }			
 	}
     public function Inactive_Employee(){
-        $data['invalidem'] = $this->employee_model->getInvalidUser();
-        $this->load->view('backend/invalid_user',$data);
+       
+        $this->load->view('backend/invalid_user');
     }
-   
+
+    public function GetInactif() {
+        $invalidUsers = $this->employee_model->getInvalidUser();
+        
+        foreach ($invalidUsers as $value) {
+            ?>
+            <tr>
+                <td><?php echo $value->em_id; ?></td>
+                <td><?php echo $value->first_name . ' ' . $value->last_name; ?></td>
+                <td><?php echo $value->des_id; ?></td>
+                <td><?php echo $value->type; ?></td>
+                <td><?php echo $value->date; ?></td>
+                <td>
+                    <button class="btn btn-warning edit" data-id="<?php echo $value->id; ?>"><i class="fa fa-eye" aria-hidden="true"></i></button>
+                </td>
+            </tr>
+            <?php
+        }
+    }
+    
+    public function addInactif() {
+        // Obtenir les données du formulaire
+        $em_id = $this->input->post('emid');
+        $type = $this->input->post('type');
+        $date = $this->input->post('date');
+
+        // Validation basique des données
+        if (!empty($em_id) && !empty($type) && !empty($date)) {
+            // Ajouter l'employé dans la table inactif
+            $insertData = array(
+                'em_id' => $em_id,
+                'type' => $type,
+                'date' => $date
+            );
+            $inserted = $this->employee_model->insertInactif($insertData);
+
+            // Si l'insertion dans la table inactif est réussie, mettre à jour le statut de l'employé
+            if ($inserted) {
+                $updateStatus = $this->employee_model->updateEmployeeStatus($em_id);
+
+                // Répondre avec un succès ou une erreur
+                if ($updateStatus) {
+                    echo json_encode(array('status' => 'success', 'message' => 'Employé inactif ajouté et statut mis à jour.'));
+                } else {
+                    echo json_encode(array('status' => 'error', 'message' => 'Erreur lors de la mise à jour du statut.'));
+                }
+            } else {
+                echo json_encode(array('status' => 'error', 'message' => 'Erreur lors de l\'ajout à la table inactif.'));
+            }
+        } else {
+            echo json_encode(array('status' => 'error', 'message' => 'Données invalides.'));
+        }
+    }
+
+
+    public function addInactifd() {
+        // Obtenir les données du formulaire
+        $em_id = $this->input->post('emid');
+        $type = $this->input->post('type');
+        $date = $this->input->post('date');
+    
+        // Ajouter des messages de log pour vérifier les données reçues
+        log_message('debug', 'em_id: ' . $em_id);
+        log_message('debug', 'type: ' . $type);
+        log_message('debug', 'date: ' . $date);
+    
+        // Validation basique des données
+        if (!empty($em_id) && !empty($type) && !empty($date)) {
+            // Code pour l'insertion et la mise à jour...
+        } else {
+            echo json_encode(array('status' => 'error', 'message' => 'Données invalides.'));
+        }
+    }
+    
 
    
 }

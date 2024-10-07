@@ -23,6 +23,25 @@
                 <div class="row m-b-10"> 
                     <div class="col-12">
                         <button type="button" class="btn btn-info"><i class="fa fa-plus"></i><a data-toggle="modal" data-target="#noticemodel" data-whatever="@getbootstrap" class="text-white "><i class="" aria-hidden="true"></i> Import csv </a></button>
+                        <p>Assurez-vous d'importer deux fichiers CSV. Téléchargez les modèles 
+    <a href="javascript:void(0);" onclick="downloadCSVFiles()">ici</a>.
+</p>
+
+<script>
+    function downloadCSVFiles() {
+        // Créez des éléments d'ancrage pour déclencher le téléchargement des deux fichiers
+        var link1 = document.createElement('a');
+        link1.href = '<?php echo base_url('uploads/modely/Modèle_CSV_Entree.csv'); ?>';
+        link1.download = 'Modèle_CSV_Entree.csv';
+        link1.click();  // Télécharger le premier fichier
+
+        var link2 = document.createElement('a');
+        link2.href = '<?php echo base_url('uploads/modely/Modèle_CSV_Sortie.csv'); ?>';
+        link2.download = 'Modèle_CSV_Sortie.csv';
+        link2.click();  // Télécharger le deuxième fichier
+    }
+</script>
+
                     </div>
                 </div>
                 <?php } ?>
@@ -42,8 +61,9 @@
                 <button  class="btn btn-info" id="filterSup0"></button>
                 <?php if($this->session->userdata('user_type')== 'EMPLOYEE' || $this->session->userdata('user_type') == 'N+1'){ ?>
                 <?php } else { ?>
-                <button  class="btn btn-info"  id="" style="margin-left: 20px;"><a href="<?php echo base_url(); ?>employee/Absent"  class="text-white"> P. Absent</a></button>
-                <?php } ?>
+                <button  class="btn btn-info"  id="" style="margin-left: 20px;"><a href="<?php echo base_url(); ?>employee/Absent"  class="text-white"> <i class="fa fa-user-times" aria-hidden="true"></i> Absents</a></button>
+                <button class="btn btn-danger" id="deleteButton" style="margin-left: 20px;"><a class="text-white"><i class="fa fa-trash" aria-hidden="true"></i> / <i class="fa fa-calendar-o" aria-hidden="true"></i></a></button>
+<?php } ?>
                 </div>
                 
                    
@@ -52,7 +72,7 @@
                         <input type="text"  class="form-dt" id="startDate" name="startDate" placeholder="Date 1">
                         <label for="endDate"><i class="fa fa-calendar-o" aria-hidden="true"></i></label>
                         <input type="text"  class="form-dt" id="endDate" name="endDate" placeholder="Date 2">
-                        <button class="btn btn-info" id="resetDates"><i class="fa fa-refresh" aria-hidden="true"></i> Réinitialiser</button>
+                        <button class="btn btn-info" id="resetDates"><i class="fa fa-refresh" aria-hidden="true"></i> Vider date</button>
 
                     </div>
                  </div> 
@@ -64,14 +84,16 @@
     <thead>
         <tr>
             <th>N°</th>
-            <th>Poste</th>
             <th>Nom</th>
+            <th>Poste</th>
             <th>Date</th>
+            <th>Shift</th>
             <th>H.E Prévu</th>
             <th>H. d'entrée</th>
             <th>Retard</th>
             <th>H. de sortie</th>
             <th>Occupation</th>
+            <th>Dep</th>
             <th>Action</th>
         </tr>
     </thead>
@@ -87,6 +109,16 @@
                         </div>
                     </div>
                 </div>
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -119,53 +151,102 @@
 
 
               <!-- /.modalimport --> 
-
-
-                <div class="modal fade" id="noticemodel" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel1">
-                            <div class="modal-dialog" role="document">
-                                <div class="modal-content ">
-                                    <div class="modal-header">
-                                        <h4 class="modal-title" id="exampleModalLabel1">Importer un fichier CSV</h4>
-                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                                    </div>
-                                    
-                                    <form action="<?=base_url('Pointage/importOK')?>" enctype="multipart/form-data" method="post">
-                                    <div class="modal-body">
-                                            
-                                    
-                                        <input type="file" name="upload_excel" required />
-                                        <?php if($this->session->flashdata('success'))  { ?>
-                                            <p><?=$this->session->flashdata('success')?></p>
-                                        <?php  } ?>
-                                        <?php if($this->session->flashdata('error'))  { ?>
-                                            <p><?=$this->session->flashdata('error')?></p>
-                                        <?php  } ?>
-                                  
-                                    </div>
-                                    <div class="modal-footer">
-                                        <button type="button" class="btn btn-danger" data-dismiss="modal">Annuler</button>
-                                        <button type="submit" class="btn btn-success" id="importButton">
+<!-- /.modalimport --> 
+<div class="modal fade" id="noticemodel" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel1">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="exampleModalLabel1">Importer des fichiers CSV</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            
+            <form action="<?=base_url('Pointage/importCSV')?>" enctype="multipart/form-data" method="post" id="csvImportForm">
+                <div class="modal-body">
+                    <!-- Champ CSV Entrée -->
+                    <div class="form-group">
+                        <label for="file_entree">CSV Entrée:</label>
+                        <input type="file" class="form-control-file" name="file_entree" id="file_entree" accept=".csv" required>
+                        <small class="form-text text-muted">Format attendu: sName, Date, Time_in</small>
+                    </div>
+                    
+                    <!-- Champ CSV Sortie -->
+                    <div class="form-group">
+                        <label for="file_sortie">CSV Sortie:</label>
+                        <input type="file" class="form-control-file" name="file_sortie" id="file_sortie" accept=".csv" required>
+                        <small class="form-text text-muted">Format attendu: sName, Date, Time_out</small>
+                    </div>
+                    
+                    <!-- Messages de succès ou d'erreur -->
+                    <?php if($this->session->flashdata('success')) { ?>
+                        <div class="alert alert-success"><?=$this->session->flashdata('success')?></div>
+                    <?php } ?>
+                    
+                    <?php if($this->session->flashdata('error')) { ?>
+                        <div class="alert alert-danger"><?=$this->session->flashdata('error')?></div>
+                    <?php } ?>
+                </div>
+                
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Annuler</button>
+                    <button type="submit" class="btn btn-primary" id="importButton">
                         <span id="buttonText">Importer</span>
                         <span id="spinner" class="spinner-border spinner-border-sm" style="display: none;" role="status" aria-hidden="true"></span>
                     </button>
-                                    </div>
-                                    </form>
-                                </div>
-                            </div>
-                        </div>
-   
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
 
-                        <script>
-document.getElementById('importForm').addEventListener('submit', function() {
-    var button = document.getElementById('importButton');
-    var buttonText = document.getElementById('buttonText');
-    var spinner = document.getElementById('spinner');
+<script>
+    document.getElementById('csvImportForm').addEventListener('submit', function(event) {
+        var fileEntree = document.getElementById('file_entree');
+        var fileSortie = document.getElementById('file_sortie');
+        
+        if (fileEntree.files.length === 0 || fileSortie.files.length === 0) {
+            event.preventDefault();
+            alert('Veuillez sélectionner les deux fichiers CSV avant de soumettre.');
+            return;
+        }
 
-    buttonText.style.display = 'none';
-    spinner.style.display = 'inline-block';
-    button.disabled = true;
-});
+        // Désactiver le bouton et afficher le spinner
+        document.getElementById('importButton').disabled = true;
+        document.getElementById('buttonText').textContent = 'Importation...';
+        document.getElementById('spinner').style.display = 'inline-block';
+    });
 </script>
+
+
+ 
+<!-- Modal pour la suppression par date-->
+
+<div class="modal fade" id="deleteModal" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="deleteModalLabel">Supprimer par Date</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="deleteForm">
+                    <div class="form-group">
+                        <label for="deleteDate"><i class="fa fa-calendar-o" aria-hidden="true"></i></label>
+                     
+                        <input type="text"  class="form-dt" id="deleteDate" name="deleteDate" required placeholder="jj/mm/aaaa">
+                    </div>
+                    <button type="button" id="delDateButton" class="btn btn-danger">
+                        <i class="fa fa-trash" aria-hidden="true"></i> Supprimer
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
 
 
                        
@@ -314,7 +395,7 @@ document.getElementById('importForm').addEventListener('submit', function() {
             var table = initializeDataTable();
 
             // Initialisation des datepickers
-            $('#startDate, #endDate').datepicker({
+            $('#startDate, #endDate, #deleteDate').datepicker({
                 dateFormat: 'dd/mm/yy', // Format de la date
                 changeMonth: true,
                 changeYear: true,
@@ -347,7 +428,7 @@ document.getElementById('importForm').addEventListener('submit', function() {
             // Fonction pour appliquer le filtre de retard supérieur à 0
             function applyDelayFilter() {
     $.fn.dataTable.ext.search.push(function(settings, data, dataIndex) {
-        var delayStr = data[6]; // Supposons que la colonne des retards est la 7e colonne (index 6)
+        var delayStr = data[7]; // Supposons que la colonne des retards est la 8e colonne (index 7)
 
         // Convertir la chaîne HH:MM:SS en un objet Date JavaScript
         var delayParts = delayStr.split(":");
@@ -504,8 +585,47 @@ if (retardMinutes >= 0) {
 			}
 		});
 	});
+   
+    // Afficher le modal quand le bouton est cliqué
+    $('#deleteButton').on('click', function() {
+        $('#deleteModal').modal('show');
+    });
 
- 
+    //suppression par date de pointage
+    
+
+$('#delDateButton').click(function(){
+        var date = $('#deleteDate').val();
+        if(date) {
+            $.ajax({
+                type: 'POST',
+                url: '<?php echo base_url("employee/deletePointageByDate"); ?>',
+                data: {date: date},
+                dataType: 'json',
+                success: function(response){
+                    $('#deleteModal').modal('hide');
+                    if(response.success) {
+                        $('#reussimodal').modal('show');
+                        
+                        // Ajouter un délai de 2 secondes avant de fermer le modal
+                        setTimeout(function(){
+                            $('#reussimodal').modal('hide');
+                        }, 2000);
+                        showTable(); // Assurez-vous que cette fonction existe et rafraîchit votre tableau
+                    } else {
+                        alert("Aucun enregistrement trouvé pour cette date.");
+                    }
+                },
+                error: function() {
+                    alert("Une erreur s'est produite lors de la suppression.");
+                }
+            });
+        } else {
+            alert("Veuillez sélectionner une date.");
+        }
+    });
+
+
 
         });
     })(jQuery);

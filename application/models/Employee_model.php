@@ -119,8 +119,8 @@ public function get_entries()
   
   public function pointageselect() {
     $sql = "SELECT `pointage`.*,
-                   `employee`.`first_name`, `employee`.`last_name`, `employee`.`em_id`, `employee`.`des_id`,
-                   `pointage`.`heure_e` as `em_entree`
+                   `employee`.`first_name`, `employee`.`last_name`, `employee`.`em_id`, `employee`.`des_id`,`employee`.`dep`,
+                   `pointage`.`shift`,`pointage`.`heure_e` as `em_entree`
             FROM `pointage`
             LEFT JOIN `employee` ON `pointage`.`sName` = `employee`.`em_id`";
     $query = $this->db->query($sql);
@@ -151,6 +151,9 @@ public function getidPointage($id){
   $query = $this->db->query($sql, array($id));
   return $query->row_array();
 }
+
+
+
 
 
 
@@ -252,6 +255,14 @@ public function deleteP($id){
 
 
 
+
+//suppressions par date
+public function deletePByDate($date) {
+  $this->db->where('pointage.Date', $date);
+  $this->db->delete('pointage');
+  return $this->db->affected_rows();
+}
+
 /*
   public function pointageselect(){
     $sql = "SELECT  `sName`,`Date`,
@@ -289,7 +300,7 @@ public function emselectByCode($emid){
 	  $result = $query->row();
 	  return $result;
 	}
-public function getInvalidUser(){
+public function getInvalidUser1(){
     $sql = "SELECT * FROM `employee`
     WHERE `status`='INACTIF'";
     $query=$this->db->query($sql);
@@ -297,6 +308,111 @@ public function getInvalidUser(){
 		return $result;
 	}
 
+
+public function getInvalidUser(){
+    $sql = "SELECT e.*,i.* 
+            FROM `employee` e
+            INNER JOIN `inactif` i ON e.em_id = i.em_id
+            WHERE e.`status` = 'INACTIF'";
+    
+    $query = $this->db->query($sql);
+    $result = $query->result();
+    return $result;
+}
+
+
+// Insérer un employé dans la table inactif
+public function insertInactif($data) {
+  return $this->db->insert('inactif', $data);
+}
+
+// Mettre à jour le statut d'un employé dans la table employee
+public function updateEmployeeStatus($em_id) {
+  $this->db->set('status', 'INACTIF');
+  $this->db->where('em_id', $em_id);
+  return $this->db->update('employee');
+}
+
+//tranche d'age
+public function get_age_distribution() {
+        $this->db->select('em_birthday');
+        $query = $this->db->get('employee');
+        $result = $query->result();
+
+        $age_distribution = array(
+            '18-25' => 0,
+            '26-35' => 0,
+            '36-45' => 0,
+            '46-55' => 0,
+            '56+' => 0
+        );
+
+        foreach ($result as $row) {
+            $age = $this->calculate_age($row->em_birthday);
+
+            if ($age >= 18 && $age <= 25) {
+                $age_distribution['18-25']++;
+            } elseif ($age >= 26 && $age <= 35) {
+                $age_distribution['26-35']++;
+            } elseif ($age >= 36 && $age <= 45) {
+                $age_distribution['36-45']++;
+            } elseif ($age >= 46 && $age <= 55) {
+                $age_distribution['46-55']++;
+            } else {
+                $age_distribution['56+']++;
+            }
+        }
+
+        return $age_distribution;
+    }
+
+    private function calculate_age($em_birthday) {
+        $birthdate = new DateTime($em_birthday);
+        $today = new DateTime();
+        $age = $today->diff($birthdate)->y;
+        return $age;
+    }
+
+
+    public function get_age_distribution_by_department() {
+      // Sélectionne les anniversaires et le département
+      $this->db->select('em_birthday, dep_id');
+      $query = $this->db->get('employee');
+      $result = $query->result();
+  
+      $age_distribution = array();
+  
+      foreach ($result as $row) {
+          $age = $this->calculate_age($row->em_birthday);
+  
+          // Assurez-vous que le département existe dans le tableau, sinon l'ajouter
+          if (!isset($age_distribution[$row->dep_id])) {
+              $age_distribution[$row->dep_id] = array(
+                  '18-25' => 0,
+                  '26-35' => 0,
+                  '36-45' => 0,
+                  '46-55' => 0,
+                  '56+' => 0
+              );
+          }
+  
+          // Incrémentation en fonction de la tranche d'âge
+          if ($age >= 18 && $age <= 25) {
+              $age_distribution[$row->dep_id]['18-25']++;
+          } elseif ($age >= 26 && $age <= 35) {
+              $age_distribution[$row->dep_id]['26-35']++;
+          } elseif ($age >= 36 && $age <= 45) {
+              $age_distribution[$row->dep_id]['36-45']++;
+          } elseif ($age >= 46 && $age <= 55) {
+              $age_distribution[$row->dep_id]['46-55']++;
+          } else {
+              $age_distribution[$row->dep_id]['56+']++;
+          }
+      }
+  
+      return $age_distribution;
+  }
+  
 
 public function getPlanningid(){
     $sql = "SELECT `planning`.*,

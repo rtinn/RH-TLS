@@ -414,9 +414,169 @@ public function importOK() {
     }
 }
  
-*/
+*/public function importCSV() {
+    if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+        // Téléchargement des fichiers
+        $upload_status_entree = $this->uploadDoc('file_entree');
+        $upload_status_sortie = $this->uploadDoc('file_sortie');
 
-public function importOK() {
+        if ($upload_status_entree !== false && $upload_status_sortie !== false) {
+            $inputFileNameEntree = 'uploads/' . $upload_status_entree;
+            $inputFileNameSortie = 'uploads/' . $upload_status_sortie;
+
+            try {
+                // Lecture des fichiers CSV
+                $dataEntree = $this->readCSV($inputFileNameEntree, true);  // true pour les entrées
+                $dataSortie = $this->readCSV($inputFileNameSortie, false); // false pour les sorties
+
+                $dataToInsert = [];
+                $errors = [];
+
+                // Détection des dates minimales et maximales dans $dataSortie
+                $datesSortie = array_column($dataSortie, 'Date');
+                $minDate = min($datesSortie);
+                $maxDate = max($datesSortie);
+
+                // Préparer les données de sortie pour une recherche rapide
+                $dataSortieIndexed = [];
+                foreach ($dataSortie as $sortieData) {
+                    $dataSortieIndexed[$sortieData['sName'] . '-' . $sortieData['Date']] = $sortieData;
+                }
+
+                foreach ($dataEntree as $entreeData) {
+                    $sName = $entreeData['sName'];
+                    $Date = $entreeData['Date'];
+                    $timeIn = $entreeData['Time_in'];
+
+                    // Vérifier si l'enregistrement existe déjà
+                    $existingRecord = $this->db->get_where('pointage', ['Date' => $Date, 'sName' => $sName])->row();
+                    if ($existingRecord) {
+                        echo "Enregistrement existe déjà pour sName: {$sName}, Date: {$Date}<br>";
+                        continue;
+                    }
+
+                    // Correspondance avec $dataSortie (date minimale)
+                    $keyMinDate = $sName . '-' . $minDate;
+                    $keyMaxDate = $sName . '-' . $maxDate;
+
+                    if (isset($dataSortieIndexed[$keyMinDate])) {
+                        $sortieData = $dataSortieIndexed[$keyMinDate];
+                    } else if (isset($dataSortieIndexed[$keyMaxDate])) {
+                        $sortieData = $dataSortieIndexed[$keyMaxDate];
+                    } else {
+                        // Pas de correspondance dans $dataSortie
+                        $dataToInsert[] = [
+                            'sName' => $sName,
+                            'Date' => $Date,
+                            'Time_in' => $timeIn,
+                            'Time_out' => 'N/A',
+                            'Time_diff' => 'N/A', // Pas de différence de temps
+                            'shift' => '', // Pas de shift disponible
+                            'heure_e' => '', // Pas d'heure_e disponible
+                        ];
+                        continue;
+                    }
+
+                    $timeOut = isset($sortieData['Time_out']) ? $sortieData['Time_out'] : null;
+
+                    try {
+                        $timeInObj = new DateTime($timeIn);
+                        $timeOutObj = new DateTime($timeOut);
+
+                        // Si l'heure de sortie est avant l'heure d'entrée, ajouter un jour
+                        if ($timeOutObj < $timeInObj) {
+                            $timeOutObj->modify('+1 day');
+                        }
+                        $diff = $timeInObj->diff($timeOutObj);
+
+                        // Formater la différence en H:i:s
+                        $timeDiffFormatted = $diff->format('%H:%I:%S');
+                    } catch (Exception $e) {
+                        $errors[] = "Erreur de format de date pour sName: {$sName}, Date: {$Date}: " . $e->getMessage();
+                        continue;
+                    }
+
+                    // Récupération des données du shift et autres informations
+                    $employeeData = $this->db->query("SELECT shift, heure_e FROM shift WHERE em_id = ?", [$sName])->row_array();
+                    $shift = $employeeData ? $employeeData['shift'] : '';
+                    $heure_e = $employeeData ? $employeeData['heure_e'] : '';
+
+                    // Ajout des données à insérer
+                    $dataToInsert[] = [
+                        'sName' => $sName,
+                        'Date' => $Date,
+                        'Time_in' => $timeIn,
+                        'Time_out' => $timeOut,
+                        'Time_diff' => $timeDiffFormatted, // Différence de temps formatée
+                        'shift' => $shift,
+                        'heure_e' => $heure_e,
+                    ];
+                }
+
+                // Insertion des données dans la base de données
+                if (!empty($dataToInsert)) {
+                    $this->db->insert_batch('pointage', $dataToInsert);
+                }
+
+                // Gestion des erreurs
+                if (!empty($errors)) {
+                    $this->session->set_flashdata('error', implode('<br>', $errors));
+                }
+            } catch (Exception $e) {
+                $this->session->set_flashdata('error', 'Erreur lors du traitement des fichiers CSV: ' . $e->getMessage());
+            }
+        } else {
+            $this->session->set_flashdata('error', 'Erreur lors du téléchargement des fichiers.');
+        }
+
+        echo "Les fichiers CSV ont été importés avec succès.";
+    }
+}
+
+private function readCSV($fileName, $isEntree = true) {
+    $spreadsheet = \PhpOffice\PhpSpreadsheet\IOFactory::load($fileName);
+    $sheet = $spreadsheet->getSheet(0);
+    $data = [];
+
+    foreach ($sheet->getRowIterator() as $row) {
+        $cellIterator = $row->getCellIterator();
+        $cellIterator->setIterateOnlyExistingCells(false); // All cells in the row
+
+        $sName = str_replace(' ', '', trim($sheet->getCell('A' . $row->getRowIndex())->getValue()));
+        $Date = trim($sheet->getCell('B' . $row->getRowIndex())->getValue());
+        $Time = trim($sheet->getCell('C' . $row->getRowIndex())->getValue());
+
+        // Ignorer si sName est vide ou égal à 'NULL'
+        if (!empty($sName) && $sName !== 'NULL' && !empty($Date) && !empty($Time)) {
+            $key = $sName . '-' . $Date;
+
+            // Selon le type de fichier (entrée ou sortie), on stocke différemment le temps
+            if ($isEntree) {
+                $data[$key] = [
+                    'sName' => $sName,
+                    'Date' => $Date,
+                    'Time_in' => $Time,
+                ];
+            } else {
+                $data[$key] = [
+                    'sName' => $sName,
+                    'Date' => $Date,
+                    'Time_out' => $Time,
+                ];
+            }
+        }
+    }
+    return $data;
+}
+
+
+
+
+
+
+
+
+public function importOKle() {
     if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $upload_status = $this->uploadDoc();
         if ($upload_status !== false) {
@@ -431,7 +591,8 @@ public function importOK() {
             $shiftsData = [
                 'DAY' => [],
                 'PM' => [],
-                'NIGHT' => []
+                'NIGHT' => [],
+                'OFF' => []
             ];
             $idpRanges = [];
             $dataToInsert = [];
@@ -439,10 +600,10 @@ public function importOK() {
 
             // Parcourt chaque ligne de la feuille de calcul
             foreach ($sheet->getRowIterator() as $row) {
-                $sName = trim($spreadsheet->getActiveSheet()->getCell('A' . $row->getRowIndex())->getValue());
-                $Date = trim($spreadsheet->getActiveSheet()->getCell('B' . $row->getRowIndex())->getValue());
-                $Time = trim($spreadsheet->getActiveSheet()->getCell('C' . $row->getRowIndex())->getValue());
-                $Idp = (int)trim($spreadsheet->getActiveSheet()->getCell('D' . $row->getRowIndex())->getValue());
+                $sName = str_replace(' ', '', trim($spreadsheet->getActiveSheet()->getCell('A' . $row->getRowIndex())->getValue()));
+                $Date = str_replace(' ', '', trim($spreadsheet->getActiveSheet()->getCell('B' . $row->getRowIndex())->getValue()));
+                $Time = str_replace(' ', '', trim($spreadsheet->getActiveSheet()->getCell('C' . $row->getRowIndex())->getValue()));
+                $Idp = (int)str_replace(' ', '', trim($spreadsheet->getActiveSheet()->getCell('D' . $row->getRowIndex())->getValue()));
 
                 if ($sName !== null && $sName !== 'NULL') {
                     // Récupérer le shift et heure_e de l'employé
@@ -457,6 +618,7 @@ public function importOK() {
                             'Date' => $Date,
                             'Time' => $Time,
                             'Idp' => $Idp,
+                            'shift' => $shift,
                             'heure_e' => $heure_e
                         ];
                     }
@@ -496,6 +658,32 @@ public function importOK() {
                 $Time = $data['Time'];
                 $Idp = $data['Idp'];
 
+                if (!isset($idpRanges[$sName][$Date])) {
+                    $idpRanges[$sName][$Date] = [
+                        'minIdp' => $Idp,
+                        'maxIdp' => $Idp,
+                        'minTime' => $Time,
+                        'maxTime' => $Time,
+                    ];
+                } else {
+                    if ($Idp < $idpRanges[$sName][$Date]['minIdp']) {
+                        $idpRanges[$sName][$Date]['minIdp'] = $Idp;
+                        $idpRanges[$sName][$Date]['minTime'] = $Time;
+                    }
+                    if ($Idp > $idpRanges[$sName][$Date]['maxIdp']) {
+                        $idpRanges[$sName][$Date]['maxIdp'] = $Idp;
+                        $idpRanges[$sName][$Date]['maxTime'] = $Time;
+                    }
+                }
+            }
+
+            // Traiter les données pour le shift NIGHT
+            foreach ($shiftsData['NIGHT'] as $data) {
+                $sName = $data['sName'];
+                $Date = $data['Date'];
+                $Time = $data['Time'];
+                $Idp = $data['Idp'];
+
                 if (!isset($idpRanges[$sName])) {
                     $idpRanges[$sName] = [
                         'maxIdpMinDate' => $Idp,
@@ -519,54 +707,58 @@ public function importOK() {
                 }
             }
 
-            // Traiter les données pour le shift NIGHT
-            foreach ($shiftsData['NIGHT'] as $data) {
+            // Traiter les données pour le shift OFF
+            $offShiftData = [];
+            foreach ($shiftsData['OFF'] as $data) {
                 $sName = $data['sName'];
                 $Date = $data['Date'];
-                $Time = $data['Time'];
-                $Idp = $data['Idp'];
+                $shift = $data['shift'];
 
-                if (!isset($idpRanges[$sName])) {
-                    $idpRanges[$sName] = [
-                        'minIdp' => $Idp,
-                        'maxIdp' => $Idp,
+                if (!isset($offShiftData[$sName])) {
+                    $offShiftData[$sName] = [
+                        'minDate' => $Date,
                         'maxDate' => $Date,
-                        'minTime' => $Time,
-                        'maxTime' => $Time,
+                        'shift' => $shift,
                     ];
                 } else {
-                    if ($Date > $idpRanges[$sName]['maxDate']) {
-                        $idpRanges[$sName]['maxIdp'] = $Idp;
-                        $idpRanges[$sName]['maxDate'] = $Date;
-                        $idpRanges[$sName]['minTime'] = $Time;
-                        $idpRanges[$sName]['maxTime'] = $Time;
-                    } elseif ($Date == $idpRanges[$sName]['maxDate']) {
-                        if ($Idp < $idpRanges[$sName]['minIdp']) {
-                            $idpRanges[$sName]['minIdp'] = $Idp;
-                            $idpRanges[$sName]['minTime'] = $Time;
-                        }
-                        if ($Idp > $idpRanges[$sName]['maxIdp']) {
-                            $idpRanges[$sName]['maxIdp'] = $Idp;
-                            $idpRanges[$sName]['maxTime'] = $Time;
-                        }
+                    if ($Date < $offShiftData[$sName]['minDate']) {
+                        $offShiftData[$sName]['minDate'] = $Date;
+                    }
+                    if ($Date > $offShiftData[$sName]['maxDate']) {
+                        $offShiftData[$sName]['maxDate'] = $Date;
                     }
                 }
             }
 
+            // Ajouter les données du shift OFF à dataToInsert (seulement pour la date minimale)
+            foreach ($offShiftData as $sName => $data) {
+                // On n'ajoute que l'enregistrement correspondant à la date minimale
+                $dataToInsert[] = [
+                    'sName' => $sName,
+                    'Date' => $data['minDate'],
+                    'Time_in' => '',
+                    'Time_out' => '',
+                    'Time_diff' => '00:00:00',
+                    'shift' => $data['shift'],
+                    'heure_e' => '',  // heure_e vide pour le shift OFF
+                ];
+                // L'enregistrement correspondant à la date maximale est simplement ignoré
+            }
+
             // Parcourt les données collectées pour insertion dans la base de données
             foreach ($idpRanges as $sName => $data) {
-                $heure_e = $this->db->query("SELECT heure_e FROM shift WHERE em_id = ?", [$sName])->row()->heure_e;
+                // Récupérer le shift et heure_e de l'employé
+                $employeeData = $this->db->query("SELECT shift, heure_e FROM shift WHERE em_id = ?", [$sName])->row();
+                if ($employeeData) {
+                    $shift = $employeeData->shift;
+                    $heure_e = $employeeData->heure_e;
+                }
 
                 if (isset($data['minDate'])) {
                     // Pour shift = PM
                     $timeIn = $data['maxTimeMinDate'];
                     $timeOut = $data['minTimeMaxDate'];
                     $date = $data['minDate'];
-                } elseif (isset($data['maxDate'])) {
-                    // Pour shift = NIGHT
-                    $timeIn = $data['minTime'];
-                    $timeOut = $data['maxTime'];
-                    $date = $data['maxDate'];
                 } else {
                     // Pour shift = DAY
                     foreach ($data as $Date => $range) {
@@ -594,6 +786,7 @@ public function importOK() {
                     'Time_in' => $timeIn,
                     'Time_out' => $timeOut,
                     'Time_diff' => $diff->format('%H:%I:%S'), // Format de la différence de temps
+                    'shift' => $shift,
                     'heure_e' => $heure_e,
                 ];
             }
@@ -620,11 +813,10 @@ public function importOK() {
 
 
 
-
 public function importp()
 {
     if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-        $upload_status =  $this->uploadDoc();
+        $upload_status = $this->uploadDoc('upload_excel');
         if ($upload_status != false) {
             $inputFileName = 'uploads/' . $upload_status;
             $inputTileType = \PhpOffice\PhpSpreadsheet\IOFactory::identify($inputFileName);
@@ -693,11 +885,14 @@ public function importp()
 }
 
 
+
+
 public function importShift()
 {
     if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-        $upload_status =  $this->uploadDoc();
-        if ($upload_status != false) {
+        $upload_status = $this->uploadDoc('upload_excel');
+
+        if ($upload_status !== false) {
             $inputFileName = 'uploads/' . $upload_status;
             $inputTileType = \PhpOffice\PhpSpreadsheet\IOFactory::identify($inputFileName);
             $reader = \PhpOffice\PhpSpreadsheet\IOFactory::createReader($inputTileType);
@@ -707,9 +902,15 @@ public function importShift()
             $count_Updated = 0;
 
             foreach ($sheet->getRowIterator() as $row) {
-                $em_id = $spreadsheet->getActiveSheet()->getCell('A' . $row->getRowIndex())->getValue();
-                $shift = $spreadsheet->getActiveSheet()->getCell('B' . $row->getRowIndex())->getValue();
-                $heure_e = $spreadsheet->getActiveSheet()->getCell('C' . $row->getRowIndex())->getValue();
+                $rowIndex = $row->getRowIndex();
+
+                // Extraire les données de chaque cellule et supprimer les espaces insécables
+                $em_id = str_replace([' ', "\xc2\xa0"], '', trim($spreadsheet->getActiveSheet()->getCell('A' . $rowIndex)->getValue()));
+                $shift = str_replace([' ', "\xc2\xa0"], '', trim($spreadsheet->getActiveSheet()->getCell('B' . $rowIndex)->getValue()));
+                $heure_e = str_replace([' ', "\xc2\xa0"], '', trim($spreadsheet->getActiveSheet()->getCell('C' . $rowIndex)->getValue()));
+
+                // Debugging
+                echo "Importing: em_id={$em_id}, shift={$shift}, heure_e={$heure_e}<br>";
 
                 // Préparer les données pour l'insertion ou la mise à jour
                 $data = array(
@@ -753,7 +954,32 @@ public function importShift()
 
 
 
-	function uploadDoc()
+
+
+
+function uploadDoc($fieldName)
+{
+    $uploadPath = 'uploads/';
+    if (!is_dir($uploadPath)) {
+        mkdir($uploadPath, 0777, TRUE); // Crée le répertoire s'il n'existe pas
+    }
+
+    $config['upload_path'] = $uploadPath;
+    $config['allowed_types'] = 'csv|xlsx|xls';
+    $config['max_size'] = 1000000;
+    $this->load->library('upload', $config);
+    $this->upload->initialize($config);
+    if ($this->upload->do_upload($fieldName)) {
+        $fileData = $this->upload->data();
+        return $fileData['file_name'];
+    } else {
+        return false;
+    }
+}
+
+
+
+	function uploadDocANCIEN()
 	{
 		$uploadPath = 'uploads/';
 		if(!is_dir($uploadPath))
@@ -776,5 +1002,9 @@ public function importShift()
 			return false;
 		}
 	}
+
+
+
+
  
 }

@@ -212,6 +212,43 @@
 
         
         <?php } else { ?>
+
+
+        <div class="row">
+                <div class="col-lg-6 col-6">
+
+                    <div class="small-box bg-light">
+                        <div class="inner">
+                <h4>Graphique de répartition par tranche d'âge</h4>
+                <canvas id="ageChart" width="400" height="200"></canvas>
+                        </div>
+                    </div> 
+                </div>
+
+                <div class="col-lg-3 col-6">
+
+                    <div class="small-box bg-light">
+                        <div class="inner">
+                <h4>Graphique de répartition par tranche d'âge</h4>
+                <canvas id="ageChart1" width="400" height="200"></canvas>
+                        </div>
+                    </div> 
+                </div>
+                <div class="col-lg-3 col-6">
+
+                    <div class="small-box bg-light">
+                        <div class="inner">
+                <h4>Graphique de répartition par tranche d'âge</h4>
+                <canvas id="ageChartD" width="400" height="200"></canvas>
+                        </div>
+                    </div> 
+                </div>
+
+        </div>
+
+
+
+
         <div class="row">
         
 
@@ -344,9 +381,7 @@
             </div>
           </div>
         </div>
-
-
-
+        
         <?php } ?>
 
 
@@ -607,7 +642,188 @@
                     </div>
                                           -->
                 </div> 
+
+
+                <script>
+        $(document).ready(function() {
+            var url = '<?php echo base_url(); ?>';
+            // Appel AJAX pour récupérer les données de l'API age_distribution
+            $.ajax({
+                url: url + 'dashboard/age_distribution',
+                method: 'GET',
+                dataType: 'json',
+                success: function(data) {
+                    // Créer le graphique avec les données renvoyées par AJAX
+                    var ctx = document.getElementById('ageChart').getContext('2d');
+                    var ageChart = new Chart(ctx, {
+                        type: 'bar',
+                        data: {
+                            labels: ['18-25', '26-35', '36-45', '46-55', '56+'],
+                            datasets: [{
+                                label: 'Nombre d\'employés par tranche d\'âge',
+                                data: [
+                                    data['18-25'],
+                                    data['26-35'],
+                                    data['36-45'],
+                                    data['46-55'],
+                                    data['56+']
+                                ],
+                                backgroundColor: [
+                                    '#1976D2',
+                                    '#FFFF00',
+                                    '#800000',
+                                    'rgba(153, 102, 255, 0.2)',
+                                    'rgba(255, 159, 64, 0.2)'
+                                ],
+                                borderColor: [
+                                    'rgba(75, 192, 192, 1)',
+                                    'rgba(54, 162, 235, 1)',
+                                    'rgba(255, 206, 86, 1)',
+                                    'rgba(153, 102, 255, 1)',
+                                    'rgba(255, 159, 64, 1)'
+                                ],
+                                borderWidth: 1
+                            }]
+                        },
+                        options: {
+                            scales: {
+                                y: {
+                                    beginAtZero: true
+                                }
+                            }
+                        }
+                    });
+                },
+                error: function(xhr, status, error) {
+                    console.error("Erreur lors de la récupération des données: ", error);
+                }
+            });
+
+
+            // Appel AJAX pour récupérer les données de l'API age_distribution
+            $.ajax({
+                url: url + 'dashboard/age_distribution',
+                method: 'GET',
+                dataType: 'json',
+                success: function(data) {
+                    // Créer le Donut Chart avec les données renvoyées par AJAX
+                    var ctx = document.getElementById('ageChart1').getContext('2d');
+                    var ageChart = new Chart(ctx, {
+                        type: 'doughnut', // Type de graphique: Donut (doughnut)
+                        data: {
+                            labels: ['18-25', '26-35', '36-45', '46-55', '56+'],
+                            datasets: [{
+                                label: 'Nombre d\'employés par tranche d\'âge',
+                                data: [
+                                    data['18-25'],
+                                    data['26-35'],
+                                    data['36-45'],
+                                    data['46-55'],
+                                    data['56+']
+                                ],
+                                backgroundColor: [
+                                    '#1976D2',
+                                    '#FFFF00',
+                                    'rgba(255, 206, 86, 0.2)',
+                                    'rgba(153, 102, 255, 0.2)',
+                                    'rgba(255, 159, 64, 0.2)'
+                                ],
+                                borderColor: [
+                                    'rgba(75, 192, 192, 1)',
+                                    'rgba(54, 162, 235, 1)',
+                                    'rgba(255, 206, 86, 1)',
+                                    'rgba(153, 102, 255, 1)',
+                                    'rgba(255, 159, 64, 1)'
+                                ],
+                                borderWidth: 1
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            plugins: {
+                                legend: {
+                                    position: 'top',  // Positionnement de la légende
+                                },
+                                tooltip: {
+                                    enabled: true  // Active les infobulles
+                                }
+                            }
+                        }
+                    });
+                },
+                error: function(xhr, status, error) {
+                    console.error("Erreur lors de la récupération des données: ", error);
+                }
+            });
+
+            $.ajax({
+    url: url + 'dashboard/age_distributionD',
+    method: 'GET',
+    dataType: 'json',
+    success: function(data) {
+        // Parcourir chaque département
+        for (var dep_id in data) {
+            if (data.hasOwnProperty(dep_id)) {
+                var ctx = document.getElementById('ageChartD' + dep_id).getContext('2d');
+                var ageChart = new Chart(ctx, {
+                    type: 'doughnut', // Type de graphique: Donut (doughnut)
+                    data: {
+                        labels: ['18-25', '26-35', '36-45', '46-55', '56+'],
+                        datasets: [{
+                            label: 'Nombre d\'employés par tranche d\'âge',
+                            data: [
+                                data[dep_id]['18-25'],
+                                data[dep_id]['26-35'],
+                                data[dep_id]['36-45'],
+                                data[dep_id]['46-55'],
+                                data[dep_id]['56+']
+                            ],
+                            backgroundColor: [
+                                '#1976D2',
+                                '#FFFF00',
+                                'rgba(255, 206, 86, 0.2)',
+                                'rgba(153, 102, 255, 0.2)',
+                                'rgba(255, 159, 64, 0.2)'
+                            ],
+                            borderColor: [
+                                'rgba(75, 192, 192, 1)',
+                                'rgba(54, 162, 235, 1)',
+                                'rgba(255, 206, 86, 1)',
+                                'rgba(153, 102, 255, 1)',
+                                'rgba(255, 159, 64, 1)'
+                            ],
+                            borderWidth: 1
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        plugins: {
+                            legend: {
+                                position: 'top',  // Positionnement de la légende
+                            },
+                            tooltip: {
+                                enabled: true  // Active les infobulles
+                            }
+                        }
+                    }
+                });
+            }
+        }
+    },
+    error: function(xhr, status, error) {
+        console.error("Erreur lors de la récupération des données: ", error);
+    }
+});
+
+
+        });
+    </script>
+
+
+
+
 <script>
+
   $(".to-do").on("click", function(){
       //console.log($(this).attr('data-value'));
       $.ajax({

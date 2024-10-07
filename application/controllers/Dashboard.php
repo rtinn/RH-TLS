@@ -28,11 +28,32 @@ class Dashboard extends CI_Controller {
     function Dashboard(){
         if($this->session->userdata('user_login_access') != False) {
         $this->load->view('backend/dashboard');
+        
         }
     else{
 		redirect(base_url() , 'refresh');
 	}            
     }
+
+
+    public function age_distribution() {
+        $this->load->model('Employee_model');
+        $age_distribution = $this->employee_model->get_age_distribution();
+
+        // Envoyer les données sous format JSON pour AJAX
+        echo json_encode($age_distribution);
+    }
+
+
+    public function age_distributionD() {
+        $this->load->model('Employee_model');
+        $age_distribution_by_department = $this->Employee_model->get_age_distribution_by_department();
+    
+        // Envoyer les données sous format JSON pour AJAX
+        echo json_encode($age_distribution_by_department);
+    }
+    
+
     public function add_todo(){
         $userid = $this->input->post('userid');
         $tododata = $this->input->post('todo_data');

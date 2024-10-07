@@ -181,37 +181,30 @@
     <div class="modal-dialog dialog1 modal-dialog-scrollable">
       <div class="modal-content">
       
-        <!-- Modal Header -->
-        <div class="modal-header">
-        
-          <h3 class="modal-title" id="titremodal"></h3>
-          <button type="button" class="close" data-dismiss="modal">×</button>
-        </div>
+                <!-- Modal Header -->
+                <div class="modal-header">
+                
+                    <h3 class="modal-title" id="titremodal"></h3>
+                    <button type="button" class="close" data-dismiss="modal">×</button>
+                </div>
         
         <!-- Modal body -->
         <div class="modal-body">
-        <div class="modal-body">
-        <table id="personnelTable" class="display nowrap table table-hover table-striped table-bordered" cellspacing="0" width="100%">
-                                     
-                            <thead>
-                                <tr>
-                                    <th>Matricule</th>
-                                    <th>Nom</th>
-                                    <th>Poste</th>
-                                    <th>Action</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <!-- Les données seront ajoutées ici par jQuery -->
-                            </tbody>
-        </table>
+                   <table id="personnelTable" class="display nowrap table table-hover table-striped table-bordered" cellspacing="0" width="100%">
+                                                
+                        <thead>
+                            <tr>
+                                <th>Matricule</th>
+                                <th>Nom</th>
+                                <th>Poste</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                                <tbody>
+                                    <!-- Les données seront ajoutées ici par jQuery -->
+                                </tbody>
+                    </table>
 
-</table>
-
-
-
-
-                    </div>
         </div>
         
         <!-- Modal footer -->

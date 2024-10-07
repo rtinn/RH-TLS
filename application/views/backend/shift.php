@@ -6,12 +6,12 @@
             <!-- ============================================================== -->
             <div class="row page-titles">
                 <div class="col-md-5 align-self-center">
-                    <h3 class="text-themecolor"><i class="fa fa-qrcode" aria-hidden="true"></i> Timing</h3>
+                    <h3 class="text-themecolor"><i class="fa fa-qrcode" aria-hidden="true"></i> Shift</h3>
                 </div>
                 <div class="col-md-7 align-self-center">
                     <ol class="breadcrumb">
                         <li class="breadcrumb-item"><a href="javascript:void(0)">Accuiel</a></li>
-                        <li class="breadcrumb-item active">Timing</li>
+                        <li class="breadcrumb-item active">Shift</li>
                     </ol>
                 </div>
             </div>
@@ -37,15 +37,17 @@
                     <div class="col-12">
                         <div class="card card-outline-info">
                             <div class="card-header">
-                                <h4 class="m-b-0 text-white"><i class="fa fa-user-o" aria-hidden="true"></i> Liste des temps de travail</h4>
+                                <h4 class="m-b-0 text-white"><i class="fa fa-user-o" aria-hidden="true"></i> Planning shift</h4>
                             </div>
                             
                         <div class="card-body">
                             
                             <div >     
-                            <button type="button" id="monBoutonD" class="btn btn-danger" data-shift="DAY"><i class="fa fa-sun-o" aria-hidden="true"></i> DAY SHIFT</button>
+                            <button type="button" id="monBoutonT" class="btn btn-danger" data-shift="TOUS"><i class="fa fa-sun-o" aria-hidden="true"></i> TOUS</button>
+                            <button type="button" id="monBoutonD" class="btn btn-info" data-shift="DAY"><i class="fa fa-sun-o" aria-hidden="true"></i> DAY SHIFT</button>
                             <button type="button" id="monBoutonP" class="btn btn-info" data-shift="PM"><i class="fa fa-star-o" aria-hidden="true"></i> PM SHIFT</button>
                             <button type="button" id="monBoutonN" class="btn btn-info" data-shift="NIGHT"><i class="fa fa-star" aria-hidden="true"></i> NIGHT SHIFT</button>
+                            <button type="button" id="monBoutonN" class="btn btn-info" data-shift="OFF"><i class="fa fa-star" aria-hidden="true"></i> OFF</button>
   
                                 
                             </div> 
@@ -136,6 +138,7 @@
                             <option value="DAY">DAY</option>
                             <option value="PM">PM</option>
                             <option value="NIGHT">NIGHT</option>
+                            <option value="OFF">OFF</option>
                         </select>
                     </div>
                     <div class="form-group">
@@ -188,7 +191,9 @@
                         $('#employees123 tbody').html(response);
                         table = initializeDataTable();
                         // Appliquer le filtre initial pour DAY SHIFT
-                        table.column(2).search('DAY').draw();
+                        //table.column(2).search('DAY').draw();
+                        // Appliquer le filtre initial pour afficher tous les shifts (DAY, PM, NIGHT, OFF)
+                        table.column(2).search('DAY|PM|NIGHT|OFF', true, false).draw();
                     }
                 });
             }
@@ -197,14 +202,22 @@
             showTable();
 
             // Filtrer la table en fonction des boutons
-            $('button[id^="monBouton"]').on('click', function() {
-                var shift = $(this).data('shift');
-                table.column(2).search(shift).draw();
+$('button[id^="monBouton"]').on('click', function() {
+    var shift = $(this).data('shift');
 
-                // Mettre à jour la classe des boutons
-                $('button[id^="monBouton"]').removeClass('btn-danger').addClass('btn-info');
-                $(this).removeClass('btn-info').addClass('btn-danger');
-            });
+    if (shift === "TOUS") {
+        // Utiliser une expression régulière pour rechercher DAY, PM, NIGHT, OFF
+        table.column(2).search('DAY|PM|NIGHT|OFF', true, false).draw();  
+    } else {
+        // Appliquer le filtre en fonction du shift sélectionné
+        table.column(2).search(shift).draw();
+    }
+
+    // Mettre à jour la classe des boutons
+    $('button[id^="monBouton"]').removeClass('btn-danger').addClass('btn-info');
+    $(this).removeClass('btn-info').addClass('btn-danger');
+});
+
 
             // Fonction pour éditer un shift
             window.editShift = function(em_id) {

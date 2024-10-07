@@ -58,3 +58,5 @@ $route['chronometer/stop'] = 'chronometer/stop';
 $route['chronometer/status'] = 'chronometer/status';
 // application/config/routes.php
 $route['export'] = 'Settings/export';
+$route['employee/DeleteByDate'] = 'employee/deletePointageByDate';
+
