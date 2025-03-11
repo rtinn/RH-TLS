@@ -147,6 +147,7 @@ $('form').each(function() {
 });
 });
 
+
     </script> 
         
 <!-- Avant la fermeture de </body> -->
