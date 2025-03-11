@@ -8,7 +8,7 @@ class Pointage_model extends CI_Model{
     	
     	}
   
-  
+	
     
           
 }

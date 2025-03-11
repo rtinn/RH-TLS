@@ -301,6 +301,44 @@
             
         }
 
+
+        public function get_conges_approuves($dep_id = null, $date_filter = null) {
+            $this->db->select('emp_leave.*, employee.dep_id,employee.first_name,employee.last_name');
+            $this->db->from('emp_leave');
+            $this->db->join('employee', 'employee.em_id = emp_leave.em_id');
+            
+            // Filtrer par département si spécifié
+            if ($dep_id) {
+                $this->db->where('employee.dep_id', $dep_id);
+            }
+    
+            // Appliquer le filtre de date
+            if ($date_filter) {
+                switch ($date_filter['type']) {
+                    case 'daily':
+                        $this->db->where('apply_date', $date_filter['date']);
+                        break;
+                    case 'weekly':
+                        $this->db->where('YEARWEEK(apply_date, 1) =', date('oW', strtotime($date_filter['date'])));
+                        break;
+                    case 'monthly':
+                        $this->db->where('YEAR(apply_date)', date('Y', strtotime($date_filter['date'])));
+                        $this->db->where('MONTH(apply_date)', date('m', strtotime($date_filter['date'])));
+                        break;
+                }
+            }
+            
+            $query = $this->db->get();
+            return $query->result_array();
+        }
+
+
+
+
+      
+
+
+
        //NOMBRE DE NOTIFICATIONS POUR EMPLOYEE
         public function GetnbnotifE2($id) {
             $sql = "SELECT COUNT(*) as nb_notif FROM `notif`

@@ -1,12 +1,18 @@
 
-
-                     <div class="">
+<?php $this->load->view('backend/header'); ?>
+<?php $this->load->view('backend/sidebar'); ?>
+                     <div class="page-wrapper">
                      <div class="message"></div>
             <div class="row page-titles">
                 <div class="col-md-5 align-self-center">
                     <h3 class="text-themecolor"><i class="fa fa-users" style="color:#1976d2"></i> <?php echo $basic->first_name .' '.$basic->last_name; ?></h3>
                 </div>
-                
+                <div class="col-md-7 align-self-center">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="javascript:void(0)">Home</a></li>
+                        <li class="breadcrumb-item active">Profile</li>
+                    </ol>
+                </div>
             </div>
                 <?php $degvalue = $this->employee_model->getdesignation(); ?>
                 <?php $depvalue = $this->employee_model->getdepartment(); ?>
@@ -69,8 +75,8 @@
                                                 </div>
 
                                                 <div class="col-md-9">
-				                                
-                                                <form class="row" id="employeeUpdateForm" method="post" enctype="multipart/form-data">  
+				                                <form class="row" action="Update" method="post" enctype="multipart/form-data">
+				                                    
                                                 <div class="tin">
 				                                    <div class="form-group col-md-2 m-t-10">
 				                                        <label>N° Matricule</label>
@@ -159,7 +165,7 @@
                                                             <input type="text" class="form-control form-control-line"  name="dob" value="<?php echo $basic->em_birthday; ?>" <?php if($this->session->userdata('user_type')== 'EMPLOYEE' || $this->session->userdata('user_type') == 'N+1'){ ?> readonly <?php } ?> minlength="3" > 
 				                                    
                                                             <?php } else { ?> 
-                                                                <input type="text" id="naisss" name="dob" class="form-control" placeholder="jj/dd/aaaa" value="<?php echo $basic->em_birthday; ?>" > 
+                                                                <input type="date" id="example-email2" name="dob" class="form-control" placeholder="" value="<?php echo $basic->em_birthday; ?>" > 
                                                             <?php } ?>
 
 				                                        
@@ -293,28 +299,25 @@
                                                                 </select>
                                                             <?php } ?>
                                                         </div>
-
-                                                        
-                                                        <!-- Votre formulaire -->
-                                                <div class="form-group col-md-2 m-t-10">
+				                                    <div class="form-group col-md-2 m-t-10">
                                                             <label>Début de contrat</label>
-                                                            <input type="text" 
+                                                            <input type="date" 
                                                                 id="joindate" 
                                                                 name="joindate" 
-                                                                class=" form-control" 
+                                                                class="form-control" 
                                                                 value="<?php echo $basic->em_joining_date; ?>" 
                                                                 <?php if($this->session->userdata('user_type') == 'EMPLOYEE' || $this->session->userdata('user_type') == 'N+1') { ?> readonly <?php } ?>>
-                                                </div>
+                                                        </div>
 
-                                                <div class="form-group col-md-2 m-t-10">
+                                                        <div class="form-group col-md-2 m-t-10">
                                                         <label>Fin de contrat</label>
-                                                        <input type="text" 
+                                                        <input type="date" 
                                                             id="leavedate" 
                                                             name="leavedate" 
                                                             class="form-control" 
-                                                            value="<?php echo $basic->em_contact_end; ?>" placeholder="jj/dd/aaaa" 
+                                                            value="<?php echo $basic->em_contact_end; ?>" 
                                                             <?php if($this->session->userdata('user_type') == 'EMPLOYEE' || $this->session->userdata('user_type') == 'N+1') { ?> readonly <?php } ?>>
-                                                </div>
+                                                    </div>
 
 
 
@@ -447,7 +450,7 @@
                                                     
 				                                    <div class="form-actions col-md-12">
                                                         <input type="hidden" name="emid" value="<?php echo $basic->em_id; ?>">
-                                                        <button type="submit" id="bt1" class="btn btn-success"> <i class="fa fa-check"></i> Enregistrer</button>
+				                                        <button type="submit" id="bt1" class="btn btn-success"> <i class="fa fa-check"></i> Enregistrer</button>
                                                         <a class="btn btn-danger" href="<?php echo base_url(); ?>employee/Employees">  <i class="fa fa-times" aria-hidden="true"></i> Annuler </a>
 				                                        
 				                                    </div>
@@ -858,16 +861,6 @@
         });
     });
 </script>
-<script>
-     // Initialisation des datepickers
-     $('#joindate, #leavedate, #naisss').datepicker({
-                dateFormat: 'dd/mm/yy', // Format de la date
-                changeMonth: true,
-                changeYear: true,
-            });
-</script>
-
-
 
 			                                      
 			                                    </div>
@@ -1052,69 +1045,7 @@
           </script>
 <?php $this->load->view('backend/em_modal'); ?>                
 <script type="text/javascript">
-$(document).ready(function () {
-    var url = '<?php echo base_url(); ?>';
-
-
-
-
-
-
-
-    
-    $('#employeeUpdateForm').submit(function (e) {
-        e.preventDefault();
-
-        var formData = new FormData(this);
-
-        $.ajax({
-            type: 'POST',
-            url: url + 'employee/Update',
-            data: formData,
-            dataType: 'json',
-            contentType: false,
-            processData: false,
-            success: function (response) {
-                if (response.status === 'success') {
-                    Swal.fire({
-                        position: "top-end",
-                        icon: "success",
-                        title: 'Succès!',
-                        text: response.message,
-                        showConfirmButton: false,
-                        timer: 4500
-                    }).then(() => {
-                       // $('#modalEmployee').modal('hide');
-                        showTable();
-                    });
-                } else {
-                    Swal.fire({
-                        title: 'Erreur!',
-                        text: response.message,
-                        icon: 'error',
-                        confirmButtonText: 'OK'
-                    });
-                }
-            },
-            error: function (xhr, status, error) {
-                console.error('Erreur Ajax:', xhr.responseText);
-                Swal.fire({
-                    title: 'Erreur!',
-                    text: 'Une erreur s\'est produite lors de la mise à jour.',
-                    icon: 'error',
-                    confirmButtonText: 'OK'
-                });
-            }
-        });
-    
-    });
-
-
-
-
-
-
-
+                                        $(document).ready(function () {
                                             $(".education").click(function (e) {
                                                 e.preventDefault(e);
                                                 // Get the record's ID via attribute  
@@ -1203,3 +1134,5 @@ $(document).ready(function () {
                                             });
                                         });
 </script>                
+
+<?php $this->load->view('backend/footer'); ?>

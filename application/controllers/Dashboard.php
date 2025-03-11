@@ -13,7 +13,8 @@ class Dashboard extends CI_Controller {
         $this->load->model('settings_model');    
         $this->load->model('notice_model');    
         $this->load->model('project_model');    
-        $this->load->model('leave_model');    
+        $this->load->model('leave_model'); 
+        $this->load->model('Pointage_model');   
     }
     
 	public function index()
@@ -52,7 +53,62 @@ class Dashboard extends CI_Controller {
         // Envoyer les données sous format JSON pour AJAX
         echo json_encode($age_distribution_by_department);
     }
+
+    public function presence_rate() {
+        $presenceRates = $this->employee_model->getPresenceRates();
+        
+        // Préparer les données pour le graphique
+        $data = [];
+        foreach ($presenceRates as $rate) {
+            $data[$rate->Date] = $rate->total;
+        }
+        
+        // Envoyer les données sous forme de JSON
+        echo json_encode($data);
+    }
+
+
+ // Méthode pour retourner les données de présence et d'absence en JSON
+ public function get_data() {
+    $dates = $this->employee_model->get_all_dates();
+    $data = [];
+
+    foreach ($dates as $dateRow) {
+        $date = $dateRow['Date'];
+        $presenceCount = $this->employee_model->get_presence_count($date);
+        $absenceCount = $this->employee_model->get_absence_count($date);
+
+        $data[] = [
+            'date' => $date,
+            'presence' => $presenceCount,
+            'absence' => $absenceCount
+        ];
+    }
+
+    echo json_encode($data);  // Retourne les données en format JSON
+}
+
+
+public function employeedepartement() {
+    $employee_counts = $this->employee_model->getEmployeeCountByDepartment();
+    echo json_encode($employee_counts); // Retourne les données en JSON
+}
+
     
+
+
+//STATISTIQUE PAR GENRE PAR DEPATEMENTS
+public function gender_statistics() {
+    $data = $this->employee_model->get_gender_statistics();
+    echo json_encode($data); // Retourne les données en JSON
+}
+//STATISTIQUE PAR CONTRAT  PAR DEPATEMENTS
+public function contract_statistics() {
+    $data = $this->employee_model->get_contract_statistics();
+    echo json_encode($data); // Retourne les données en JSON
+}
+
+
 
     public function add_todo(){
         $userid = $this->input->post('userid');

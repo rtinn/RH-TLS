@@ -37,15 +37,22 @@
 <link href="<?php echo base_url(); ?>assets/plugins/multiselect/css/multi-select.css" rel="stylesheet" type="text/css" />
 <link href="<?php echo base_url(); ?>assets/plugins/calendar/dist/fullcalendar.css" rel="stylesheet" type="text/css" />
 <link href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+
+
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
 
 <link href="https://cdn.datatables.net/datetime/1.1.2/css/dataTables.dateTime.min.css"> 
 <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+
 <script src="https://ajax.aspnetcdn.com/ajax/jquery.validate/1.9/jquery.validate.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-zoom/1.7.21/jquery.zoom.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.4.0/jspdf.umd.min.js"></script>
-   
+<!-- SweetAlert2 -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11.0.18/dist/sweetalert2.min.css">
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.0.18/dist/sweetalert2.all.min.js"></script>
 </head>
 
 <body class="fix-header fix-sidebar card-no-border">
@@ -261,25 +268,47 @@ $(document).ready(function() {
                         }
                     <?php } else if($this->session->userdata('user_type')== 'N+1') { ?>
                         if (notification.st_emp === '0') {
-                            notificationsHtml += '<a href="javascript:updateStEmp(' + notification.id_conge + ')">' +
-                                '<div class="btn btn-danger btn-circle"><i class="fa fa-share-square-o" aria-hidden="true"></i></div>' +
-                                '<div class="mail-contnet">' +
-                                '<span class="name">' + notification.first_name + ' </span>' +
-                                '<span class="mail-desc">A demandé un congé ' + notification.typeid + '</span>' +
-                                '<span class="time">' + notification.apply_date + '</span>' +
-                                '</div>' +
-                                '</a>';
+                            if (notification.typeid === 'P. de Sortir') {
+                                notificationsHtml += '<a href="javascript:updateStEmp(' + notification.id_conge + ')">' +
+                                    '<div class="btn btn-danger btn-circle"><i class="fa fa-share-square-o" aria-hidden="true"></i></div>' +
+                                    '<div class="mail-contnet">' +
+                                    '<span class="name">' + notification.first_name + ' </span>' +
+                                    '<span class="mail-desc">a demandé une permission de sortir</span>' + 
+                                    '<span class="time">' + notification.apply_date + '</span>' +
+                                    '</div>' +
+                                    '</a>';
+                            } else {
+                                notificationsHtml += '<a href="javascript:updateStEmp(' + notification.id_conge + ')">' +
+                                    '<div class="btn btn-danger btn-circle"><i class="fa fa-share-square-o" aria-hidden="true"></i></div>' +
+                                    '<div class="mail-contnet">' +
+                                    '<span class="name">' + notification.first_name + ' </span>' +
+                                    '<span class="mail-desc">A demandé un congé ' + notification.typeid + '</span>' +
+                                    '<span class="time">' + notification.apply_date + '</span>' +
+                                    '</div>' +
+                                    '</a>';
+                            }
                         }
                     <?php } else { ?>
                         if (notification.st_n === '1') {
-                            notificationsHtml += '<a href="javascript:updateStEmp(' + notification.id_conge + ')">' +
-                                '<div class="btn btn-danger btn-circle"><i class="fa fa-share-square-o" aria-hidden="true"></i></div>' +
-                                '<div class="mail-contnet">' +
-                                '<span class="name">' + notification.first_name + ' </span>' +
-                                '<span class="mail-desc">A demandé un congé ' + notification.typeid + '</span>' +
-                                '<span class="time">' + notification.apply_date + '</span>' +
-                                '</div>' +
-                                '</a>';
+                            if (notification.typeid === 'P. de Sortir') {
+                                notificationsHtml += '<a href="javascript:updateStEmp(' + notification.id_conge + ')">' +
+                                    '<div class="btn btn-danger btn-circle"><i class="fa fa-share-square-o" aria-hidden="true"></i></div>' +
+                                    '<div class="mail-contnet">' +
+                                    '<span class="name">' + notification.first_name + ' </span>' +
+                                    '<span class="mail-desc">A demandé une permission de sortir</span>' + 
+                                    '<span class="time">' + notification.apply_date + '</span>' +
+                                    '</div>' +
+                                    '</a>';
+                            } else {
+                                notificationsHtml += '<a href="javascript:updateStEmp(' + notification.id_conge + ')">' +
+                                    '<div class="btn btn-danger btn-circle"><i class="fa fa-share-square-o" aria-hidden="true"></i></div>' +
+                                    '<div class="mail-contnet">' +
+                                    '<span class="name">' + notification.first_name + ' </span>' +
+                                    '<span class="mail-desc">A demandé un congé ' + notification.typeid + '</span>' +
+                                    '<span class="time">' + notification.apply_date + '</span>' +
+                                    '</div>' +
+                                    '</a>';
+                            }
                         }
                     <?php } ?>
                 });

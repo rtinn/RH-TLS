@@ -164,8 +164,36 @@ class Leave extends CI_Controller
         }
     }
 
-
+    public function Rapport()
+    {
+        if ($this->session->userdata('user_login_access') != False) {
+            $emid = $this->session->userdata('user_login_id');
+          
+            $this->load->view('backend/rapport');
+        } else {
+            redirect(base_url(), 'refresh');
+        }
+    }
   
+
+
+
+    public function liste_conges() {
+        $dep_id = $this->input->post('dep_id');
+        $date_filter_type = $this->input->post('date_filter_type');
+        $date = $this->input->post('date');
+
+        $date_filter = [
+            'type' => $date_filter_type,
+            'date' => $date,
+        ];
+
+       
+        $conges = $this->leave_model->get_conges_approuves($dep_id, $date_filter);
+
+        // Renvoyer les données en JSON pour l'utilisation par AJAX
+        echo json_encode($conges);
+    }
    
 
     public function LeaveAppbyid()
@@ -214,6 +242,8 @@ class Leave extends CI_Controller
                 }
                 ?>
                 </td>
+                <td><?php echo $value->start_time; ?></td>
+                <td><?php echo $value->end_time; ?></td>
                 <td><?php echo $value->leave_duration; ?></td>
                 <?php 
                     if ($value->leave_status == "En attente" && $value->leave_status_rh == "En attente") {
@@ -348,6 +378,8 @@ public function UpdateLeaveMaladie($ids, $retenu) {
                 }
                 ?>
                 </td>
+                <td><?php echo $value->start_time; ?></td>
+                <td><?php echo $value->end_time; ?></td>
                 <td><?php echo $value->leave_duration; ?></td>
                
 
@@ -397,6 +429,8 @@ public function UpdateLeaveMaladie($ids, $retenu) {
                 }
                 ?>
                 </td>
+                <td><?php echo $value->start_time; ?></td>
+                <td><?php echo $value->end_time; ?></td>
                 <td><?php echo $value->leave_duration; ?></td>
                 <?php 
                     if ($value->leave_status == "En attente" && $value->leave_status_rh == "En attente") {
@@ -501,20 +535,36 @@ public function UpdateLeaveMaladie($ids, $retenu) {
 public function Add_Applications() {
     if ($this->session->userdata('user_login_access') != False) {
         $id           = $this->input->post('id');
-            $emid         = $this->input->post('emid');
-            $typeid       = $this->input->post('typeid');
-            $applydate    = date('d/m/Y');
-            $appstartdate = $this->input->post('startdate');
-            $hourAmount   = $this->input->post('hourAmount');
-            $reason       = $this->input->post('reason');
-            $type         = $this->input->post('type');
-        // Supposez que $emid soit une chaîne de caractères
-            // Supposez que $emid soit une chaîne de caractères
-            $lastFourDigits = substr($emid, -4);
-            $id_conge = str_replace('/', '', $applydate) . $lastFourDigits . rand(1, 9);
+        $emid = $this->input->post('emid');
+        $typeid = $this->input->post('typeid');
+        $start_time = $this->input->post('start_time');
+        $end_time = $this->input->post('end_time');
+        $applydate = date('d/m/Y');
+        $appstartdate = $this->input->post('startdate');
+        $hourAmount = $this->input->post('hourAmount');
+        $reason = $this->input->post('reason');
+        $type = $this->input->post('type');
+        
+        $dayAndYear = date('d/y');
 
+        // Obtenir les quatre derniers chiffres de l'identifiant de l'employé
+        $lastFourDigits = substr($emid, -4);
+        
+        // Obtenir l'heure actuelle au format H:i:s (Heure:Minute:Seconde)
+        $currentTime = date('His');
+        
+        // Générer l'identifiant unique pour la demande de congé
+        $id_conge = str_replace('/', '', $dayAndYear) . $lastFourDigits . $currentTime;
 
-
+        if ($typeid == 'P. de Sortir') {
+            // Calculer la durée en fonction de start_time et end_time si typeid est P.de Sortie
+            $startDateTime = new DateTime($start_time);
+            $endDateTime = new DateTime($end_time);
+            $timeInterval = $startDateTime->diff($endDateTime);
+            $duration = $timeInterval->format('%h heures %i minutes');
+            $appenddate = $appstartdate; // Conserver la date de début comme appenddate
+        } else {
+            // Gestion en fonction du type pour les autres cas
             if ($type == 'Half Day') {
                 $appenddate = $appstartdate;
                 $duration = "demi-journée";
@@ -530,6 +580,7 @@ public function Add_Applications() {
                 $interval = $formattedStart->diff($formattedEnd);
                 $duration = $interval->format('%a') . ' jours';
             }
+        }
 
            $this->load->library('form_validation');
         $this->form_validation->set_error_delimiters();
@@ -582,6 +633,8 @@ public function Add_Applications() {
             'em_id' => $emid,
             'typeid' => $typeid,
             'apply_date' => $applydate,
+            'start_time' => $start_time,
+            'end_time' => $end_time,
             'start_date' => $newStartDate,
             'end_date' => $newEndDate,
             'reason' => $reason,

@@ -4,6 +4,7 @@ if ( function_exists( 'date_default_timezone_set' ) ) {
     date_default_timezone_set('Asia/Dhaka');
 }
 
+
 /**
  * CodeIgniter
  *
@@ -238,7 +239,8 @@ switch (ENVIRONMENT)
 
 	// Path to the front controller (this file) directory
 	define('FCPATH', dirname(__FILE__).DIRECTORY_SEPARATOR);
-
+// Ajoutez ceci juste après define('FCPATH', ...):
+require_once FCPATH . 'vendor/autoload.php';
 	// Name of the "system" directory
 	define('SYSDIR', basename(BASEPATH));
 
@@ -320,3 +322,4 @@ switch (ENVIRONMENT)
  * And away we go...
  */
 require_once BASEPATH.'core/CodeIgniter.php';
+

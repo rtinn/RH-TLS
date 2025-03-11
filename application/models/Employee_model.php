@@ -8,7 +8,27 @@
 	
 	}
 
+// Insertion dans employee
+public function insert_employee($data) {
+  try {
+      $this->db->insert('employee', $data);
+      return $this->db->affected_rows() > 0;
+  } catch (Exception $e) {
+      log_message('error', 'Erreur lors de l\'insertion dans employee : ' . $e->getMessage());
+      return false;
+  }
+}
 
+// Insertion dans conge_mois
+public function insert_employee_conge($data) {
+  try {
+      $this->db->insert('conge_mois', $data);
+      return $this->db->affected_rows() > 0;
+  } catch (Exception $e) {
+      log_message('error', 'Erreur lors de l\'insertion dans conge_mois : ' . $e->getMessage());
+      return false;
+  }
+}
 
 
 	public function getdesignation(){
@@ -30,6 +50,105 @@
 						->get();
 		return $query->result_array();
 	}
+
+
+
+
+
+
+
+
+
+
+
+
+// Pour un seul employé (non utilisé ici, mais conservé pour compatibilité)
+public function import_employee($data) {
+  try {
+      return $this->db->insert('employee', $data);
+  } catch (Exception $e) {
+      log_message('error', 'Erreur lors de l\'insertion : ' . $e->getMessage());
+      return false;
+  }
+}
+// Pour plusieurs employés (insertion en masse avec vérification de duplicata sur em_id)
+public function import_batch_employee($data) {
+  if (empty($data)) return 0;
+  
+  try {
+      $inserted_count = 0;
+      $existing_em_ids = $this->get_existing_em_ids();
+
+      foreach ($data as $employee_data) {
+          if (!empty($employee_data['em_id']) && !in_array($employee_data['em_id'], $existing_em_ids)) {
+              $this->db->insert('employee', $employee_data);
+              if ($this->db->affected_rows() > 0) {
+                  $inserted_count++;
+                  $existing_em_ids[] = $employee_data['em_id'];
+              }
+          }
+      }
+
+      log_message('debug', 'Requête SQL finale (employee) : ' . $this->db->last_query());
+      log_message('debug', 'Nombre de lignes insérées dans employee : ' . $inserted_count);
+      return $inserted_count;
+  } catch (Exception $e) {
+      log_message('error', 'Erreur lors de l\'insertion en masse dans employee : ' . $e->getMessage());
+      return 0;
+  }
+}
+
+// Méthode pour récupérer tous les em_id existants dans employee (maintenant publique)
+public function get_existing_em_ids() {
+  $query = $this->db->select('em_id')->get('employee');
+  return array_column($query->result_array(), 'em_id');
+}
+
+// Méthode pour récupérer tous les em_id existants dans conge_mois (maintenant publique)
+public function get_existing_conge_mois_em_ids() {
+  $query = $this->db->select('em_id')->get('conge_mois');
+  return array_column($query->result_array(), 'em_id');
+}
+
+// Pour plusieurs employés dans conge_mois (insertion en masse avec vérification de duplicata sur em_id)
+public function import_batch_conge_mois($data) {
+  if (empty($data)) return 0;
+
+  try {
+      $inserted_count = 0;
+      $existing_em_ids = $this->get_existing_conge_mois_em_ids();
+
+      foreach ($data as $conge_mois_data) {
+          if (!empty($conge_mois_data['em_id']) && !in_array($conge_mois_data['em_id'], $existing_em_ids)) {
+              $this->db->insert('conge_mois', $conge_mois_data);
+              if ($this->db->affected_rows() > 0) {
+                  $inserted_count++;
+                  $existing_em_ids[] = $conge_mois_data['em_id'];
+              }
+          }
+      }
+
+      log_message('debug', 'Requête SQL finale (conge_mois) : ' . $this->db->last_query());
+      log_message('debug', 'Nombre de lignes insérées dans conge_mois : ' . $inserted_count);
+      return $inserted_count;
+  } catch (Exception $e) {
+      log_message('error', 'Erreur lors de l\'insertion en masse dans conge_mois : ' . $e->getMessage());
+      return 0;
+  }
+}
+
+
+public function get_all_employees() {
+  $sql = "SELECT *
+          FROM `employee`
+          WHERE `status` = 'ACTIF' AND `em_id` != 'T0000'
+          ORDER BY `em_id` ASC";
+  
+  $query = $this->db->query($sql);
+  $result = $query->result();
+  return $result;
+}
+
 
 
   public function emselect(){
@@ -89,31 +208,44 @@ public function get_entries()
        
     }
 
-    public function getEmployeesWithoutPointageForAllDates() {
-      // Obtenir toutes les dates uniques de la table "pointage"
-     // $sqlDates = "SELECT DISTINCT Date FROM pointage";
-     $sqlDates = "SELECT DISTINCT Date FROM pointage WHERE DAYOFWEEK(STR_TO_DATE(Date, '%d/%m/%Y')) NOT IN (1, 7)";
-   
-      $queryDates = $this->db->query($sqlDates);
-      $dates = $queryDates->result();
+    public function get_absences_by_date() {
+      // Étape 1 : Récupérer toutes les dates uniques dans la table pointage
+      $this->db->select('Date');
+      $this->db->distinct();
+      $dates = $this->db->get('pointage')->result_array();
   
-      // Créer un tableau pour stocker les employés absents pour chaque date
-      $absentEmployees = array();
+      // Étape 2 : Récupérer tous les employés actifs avec em_id différent de 'T0000'
+      $this->db->select('em_id, des_id, first_name, last_name');
+      $this->db->from('employee');
+      $this->db->where('em_id !=', 'T0000');
+      $this->db->where('status', 'ACTIF');
+      $all_employees = $this->db->get()->result();
   
-      // Pour chaque date, obtenir la liste des employés absents
-      foreach ($dates as $date) {
-        $sqlAbsent = "SELECT p.id, p.em_id, p.first_name, p.last_name, p.des_id, ? AS 'Date'
-        FROM employee p
-        WHERE p.em_id != 'T0000' AND p.`status` = 'ACTIF' AND p.em_id NOT IN (SELECT DISTINCT sName FROM pointage WHERE Date = ?)";
-    $queryAbsent = $this->db->query($sqlAbsent, array($date->Date, $date->Date));
-    $absentList = $queryAbsent->result();
-    
+      $absences_by_date = [];
   
-          // Ajouter la liste des employés absents pour cette date au tableau
-          $absentEmployees[$date->Date] = $absentList;
+      // Étape 3 : Pour chaque date, trouver les employés absents
+      foreach ($dates as $date_row) {
+          $date = $date_row['Date'];
+  
+          // Récupérer les sName des employés présents à cette date
+          $this->db->select('sName');
+          $this->db->from('pointage');
+          $this->db->where('Date', $date);
+          $present_employees = $this->db->get()->result_array();
+  
+          // Extraire les sName des employés présents
+          $present_ids = array_column($present_employees, 'sName');
+  
+          // Filtrer les employés absents pour cette date
+          $absent_employees = array_filter($all_employees, function($employee) use ($present_ids) {
+              return !in_array($employee->em_id, $present_ids);
+          });
+  
+          // Ajouter la liste des absents pour cette date dans le tableau
+          $absences_by_date[$date] = $absent_employees;
       }
   
-      return $absentEmployees;
+      return $absences_by_date;
   }
   
   
@@ -131,7 +263,7 @@ public function get_entries()
 
 public function GetPointageEm($id){
   $sql = "SELECT `pointage`.*,
-  `employee`.`first_name`, `employee`.`last_name`, `employee`.`em_id`, `employee`.`des_id`,`employee`.`em_id`,
+  `employee`.`first_name`, `employee`.`last_name`, `employee`.`em_id`, `employee`.`des_id`,`employee`.`em_id`,`employee`.`dep`,
    `pointage`.`heure_e` as `em_entree`
    FROM `pointage`
    LEFT JOIN `employee` ON `pointage`.`sName` = `employee`.`em_id`
@@ -152,7 +284,97 @@ public function getidPointage($id){
   return $query->row_array();
 }
 
+public function getPresenceRates() {
+  $this->db->select('Date, COUNT(id) as total');
+  $this->db->from('pointage');
+  $this->db->group_by('Date');
+  $this->db->order_by('Date', 'ASC');
+  $query = $this->db->get();
+  
+  return $query->result();
+}
 
+
+
+ // Obtenir toutes les dates de pointage sans les week-ends
+ public function get_all_dates() {
+  $sql = "SELECT DISTINCT Date FROM pointage WHERE Date";
+  $query = $this->db->query($sql);
+  return $query->result_array();
+}
+
+// Obtenir le nombre de présences pour une date spécifique
+public function get_presence_count($date) {
+  $sql = "SELECT COUNT(DISTINCT sName) as presence_count FROM pointage WHERE Date = ?";
+  $query = $this->db->query($sql, array($date));
+  return $query->row()->presence_count;
+}
+
+// Obtenir le nombre d'absences pour une date spécifique
+public function get_absence_count($date) {
+  $sql = "
+      SELECT COUNT(*) as absence_count FROM employee 
+      WHERE em_id != 'T0000' 
+      AND status = 'ACTIF' 
+      AND em_id NOT IN (SELECT DISTINCT sName FROM pointage WHERE Date = ?)
+  ";
+  $query = $this->db->query($sql, array($date));
+  return $query->row()->absence_count;
+}
+
+//STATISTIQUE PAR CONTRAT PAR DEPARTEMENTS
+public function get_contract_statistics() {
+  $this->db->select('dep_id, contrat, COUNT(*) as count');
+  $this->db->from('employee');
+  $this->db->where('em_id !=', 'T0000');
+  $this->db->where('status', 'ACTIF');
+  $this->db->group_by(['dep_id', 'contrat']);
+  $query = $this->db->get();
+
+  // Structure les données par département et type de contrat
+  $data = [];
+  foreach ($query->result() as $row) {
+      $department = $row->dep_id;
+      $contract_type = $row->contrat;
+      
+      if (!isset($data[$department])) {
+          $data[$department] = [];
+      }
+      $data[$department][$contract_type] = (int)$row->count;
+  }
+  return $data;
+}
+
+
+
+//STATISTIQUE PAR GENRE PAR DEPARTEMENTS
+public function get_gender_statistics() {
+  // Requête pour obtenir le nombre d'hommes et de femmes par département
+  $this->db->select('dep_id, em_gender, COUNT(*) as total');
+  $this->db->where('em_id !=', 'T0000');
+  $this->db->where('status', 'ACTIF');
+  $this->db->group_by(['dep_id', 'em_gender']);
+  $query = $this->db->get('employee');
+  
+  $data = [];
+  foreach ($query->result() as $row) {
+      $data[$row->dep_id][$row->em_gender] = $row->total;
+  }
+  return $data;
+}
+
+
+
+
+
+public function getEmployeeCountByDepartment() {
+  $this->db->select('dep_id, COUNT(id) as count');
+  $this->db->where('em_id !=', 'T0000');
+  $this->db->where('status', 'ACTIF');
+  $this->db->group_by('dep_id');
+  $query = $this->db->get('employee');
+  return $query->result_array();
+}
 
 
 
@@ -554,10 +776,14 @@ public function getPlanningid(){
 		$result = $query->row();
 		return $result;        
     }
-    public function Update($data,$id){
-		$this->db->where('em_id', $id);
-		$this->db->update('employee',$data);        
-    }
+    public function Update($data, $id) {
+      $this->db->where('em_id', $id);
+      $this->db->update('employee', $data); // Remplacez nom_de_votre_table
+      return $this->db->affected_rows();
+  }
+    
+
+
     public function Update_Education($id,$data){
 		$this->db->where('id', $id);
 		$this->db->update('education',$data);        

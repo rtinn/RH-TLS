@@ -37,7 +37,7 @@
 
                             
                    
-                    <li><a href="<?php echo base_url(); ?>employee/view?I=<?php echo base64_encode($basicinfo->em_id); ?>"><i class="fa fa-user" aria-hidden="true"></i> Mon Profil</a></li>
+                    <li><a href="<?php echo base_url(); ?>employee/sview?I=<?php echo base64_encode($basicinfo->em_id); ?>"><i class="fa fa-user" aria-hidden="true"></i> Mon Profil</a></li>
                         <li><a href="<?php echo base_url(); ?>employee/Pointage"> <i class="fa fa-qrcode" aria-hidden="true"></i> Pointage</a></li>
                         <li><a href="<?php echo base_url(); ?>employee/timing"> <i class="fa fa-clock-o" aria-hidden="true"></i> Timing</a></li>
                         <li><a href="<?php echo base_url(); ?>leave/Application"> <i class="mdi mdi-rocket" aria-hidden="true"></i> Conge</a></li>
@@ -110,6 +110,7 @@
                              <!--     <li><a href="<?php echo base_url(); ?>leave/Holidays"> Holiday </a></li>
                                 <li><a href="<?php echo base_url(); ?>leave/leavetypes"> Type de congé</a></li>-->
                                 <li><a href="<?php echo base_url(); ?>leave/Application"> Demande Congé </a></li>
+                                <li><a href="<?php echo base_url(); ?>leave/Rapport"> Rapport Congé </a></li>
 <!-- 
                                 <li><a href="<?php echo base_url(); ?>leave/Earnedleave"> Congé gagné </a></li>
                                 <li><a href="<?php echo base_url(); ?>leave/Leave_report"> Report </a></li>-->

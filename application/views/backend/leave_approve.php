@@ -63,11 +63,13 @@
                                 <thead>
                                     <tr>
                                     <th>N°</th>
-                                        <th>Nom et Prenoms</th>
+                                        <th>Nom</th>
                                         <th>Type</th>
                                         <th>Date demande</th>
                                         <th>Date de depart</th>
                                         <th>Date de retour</th>
+                                        <th>H de depart</th>
+                                        <th>H de retour</th>
                                         <th>Duration</th>
                                         <th>Status</th>
                                         <th>Action</th>
@@ -210,6 +212,7 @@
                                     <label>Type de congé</label>
                                     <select class="form-control custom-select assignleave fetchLeaveTotal"  tabindex="1" name="typeid" id="leavetype" required>
                                         <option value="">Selectinner type de congé</option>
+                                        <option value="P. de Sortir">Permission de sortir</option>
                                         <option value="Avec solde">Avec solde</option>
                                         <option value="Sans solde">Sans solde</option>
                                         <option value="Maladie">Maladie</option>
@@ -222,15 +225,18 @@
                                     <label>P. J</label>
                                     <input type="file" class="form-control-file" name="file_url" id="file_url" >
                                 </div>
+                               
 
-                                <div class="form-group">
+                                <div class="form-group" id="dureee" style="display:none">
                                     <label class="control-label">Durée du congé</label><br>
                                     <input name="type" type="radio" id="radio_1" data-value="Half" class="duration" value="Half Day" checked="">
                                     <label for="radio_1">Demi-journée</label>
+                                    <!-- 
                                     <input name="type" type="radio" id="radio_2" data-value="Full" class="type" value="Full Day">
                                     <label for="radio_2">Journée complète</label>
+                                    -->
                                     <input name="type" type="radio" class="with-gap duration" id="radio_3" data-value="More" value="More than One day">
-                                    <label for="radio_3">Au dessus d'un jour</label>
+                                    <label for="radio_3">Pour un jour de plus</label>
                                 </div>
                                 <div class="form-group">
                                         <label class="control-label" id="hourlyFix">Date de départ</label>
@@ -242,6 +248,12 @@
                                         <input type="date" name="enddate" class="form-control" id="recipient-name2">
                                         <span style="color:red" id="different"></span>
                                     </div>
+                                    <div class="form-group"id="sort" style="">
+                                    <label class="control-label">Heure de depart</label>
+                                    <input type="time" class="form-control"  name="start_time" >
+                                    <label class="control-label">Heure de retour</label>
+                                    <input type="time" class="form-control" name="end_time" >
+                                </div>
 
 
                             <script>
@@ -337,6 +349,12 @@ endDateInput.addEventListener('change', updateDateDifference);
                                                     $('#pj').show(); // Afficher le champ d'importation d'image
                                                 } else {
                                                     $('#pj').hide(); // Masquer le champ d'importation d'image
+                                                }if (selectedType === 'P. de Sortir') {
+                                                    //$('#sort').show(); // Afficher le champ d'importation d'image
+                                                    $('#dureee').hide();
+                                                } else {
+                                                   // $('#sort').hide(); // Masquer le champ d'importation d'image
+                                                    $('#dureee').show();
                                                 }
                                             });
 
@@ -480,6 +498,22 @@ endDateInput.addEventListener('change', updateDateDifference);
 						<input type="text" class="form-control" name="date_fin" id="date_fin" readonly>
 					</div>
 				</div>
+                <div class="row">
+					<div class="col-sm-3">
+						<label class="control-label" style="position:relative; top:7px;">Heure de depart:</label>
+					</div>
+					<div class="col-sm-3">
+						<input type="text" class="form-control" name="start_time" id="start_time" readonly>
+					</div>
+                    <div class="col-sm-3" id="">
+						<label class="control-label " style="position:relative; top:7px;">Heure de retour:</label>
+					</div>
+					
+                    <div class="col-sm-3" id="">
+                        <input type="text" class="form-control " name="end_time" id="end_time" readonly>
+					</div>
+                    
+				</div>
               
 				<div class="row">
 					<div class="col-sm-3">
@@ -525,7 +559,7 @@ endDateInput.addEventListener('change', updateDateDifference);
                     <?php if($this->session->userdata('user_type')=='EMPLOYEE'){ ?>
                         <div class="row">
                             <div class="col-sm-3">
-                                <label class="control-label" style="position:relative; top:7px;">Validation N+1:</label>
+                                <label class="control-label" style="position:relative; top:7px;">Sup. Hiérarchique:</label>
                                 <!--<input type="text" class="form-control" name="status_n" id="status_n" readonly>
                             -->
                             </div>
@@ -585,7 +619,7 @@ endDateInput.addEventListener('change', updateDateDifference);
                         
                         <div class="row">
                             <div class="col-sm-3">
-                                <label class="control-label" style="position:relative; top:7px;">Validation N+1:</label>
+                                <label class="control-label" style="position:relative; top:7px;">Sup. Hiérarchique:</label>
                                 <!--<input type="text" class="form-control" name="status_n" id="status_n" readonly>
                             -->
                             </div>
@@ -622,7 +656,7 @@ endDateInput.addEventListener('change', updateDateDifference);
                        
                         <div class="row">
                             <div class="col-sm-3">
-                                <label class="control-label" style="position:relative; top:7px;">Validation N+1:</label>
+                                <label class="control-label" style="position:relative; top:7px;">Sup. Hiérarchique:</label>
                                 <!--<input type="text" class="form-control" name="status_n" id="status_n" readonly>
                             -->
                             </div>
@@ -775,7 +809,7 @@ function initializeDataTable() {
 
                         // Initialize DataTable after loading data
                         var dataTable = initializeDataTable();
-                        table.column(7).search('enT').draw();
+                        table.column(9).search('enT').draw();
                         
                     $('#texte_titre').text('dd');
                     $('#monBoutonA').addClass('btn-danger');
@@ -792,15 +826,15 @@ function initializeDataTable() {
 
 // Gérez le filtrage en dehors de la DataTable
             $('#monBoutonA').click(function() {
-                table.column(7).search('enT').draw();
-            $('#texte_titre').text('Liste des dmande congé');
+                table.column(9).search('enT').draw();
+            $('#texte_titre').text('Liste des demande congé');
             $('#monBoutonA').addClass('btn-danger');
             $('#monBoutonV').removeClass('btn-danger');
             $('#monBoutonR').removeClass('btn-danger');
         });
 
         $('#monBoutonV').click(function() {
-            table.column(7).search('Vr').draw();
+            table.column(9).search('Vr').draw();
             $('#texte_titre').text('Liste des congé Validé');
             $('#monBoutonA').removeClass('btn-danger');
             $('#monBoutonV').addClass('btn-danger');
@@ -808,7 +842,7 @@ function initializeDataTable() {
         });
 
         $('#monBoutonR').click(function() {
-            table.column(7).search('rj').draw();
+            table.column(9).search('rj').draw();
             $('#texte_titre').text('Liste des congé Rejeté');
             $('#monBoutonA').removeClass('btn-danger');
             $('#monBoutonV').removeClass('btn-danger');
@@ -832,7 +866,7 @@ function initializeDataTable() {
 
                         // Initialize DataTable after loading data
                         var dataTable = initializeDataTable();
-                        table.column(7).search('enT').draw();
+                        table.column(9).search('enT').draw();
                     $('#texte_titre').text('');
                     $('#monBoutonA').addClass('btn-danger');
                     $('#monBoutonV').removeClass('btn-danger');
@@ -848,7 +882,7 @@ function initializeDataTable() {
 
 // Gérez le filtrage en dehors de la DataTable
             $('#monBoutonA').click(function() {
-            table.column(7).search('enT').draw();
+            table.column(9).search('enT').draw();
             $('#texte_titre').text('Liste desl demande congé');
             $('#monBoutonA').addClass('btn-danger');
             $('#monBoutonV').removeClass('btn-danger');
@@ -856,7 +890,7 @@ function initializeDataTable() {
         });
 
         $('#monBoutonV').click(function() {
-            table.column(7).search('Vr').draw();
+            table.column(9).search('Vr').draw();
             $('#texte_titre').text('Liste desh congé Validé');
             $('#monBoutonA').removeClass('btn-danger');
             $('#monBoutonV').addClass('btn-danger');
@@ -864,7 +898,7 @@ function initializeDataTable() {
         });
 
         $('#monBoutonR').click(function() {
-            table.column(7).search('rj').draw();
+            table.column(9).search('rj').draw();
             $('#texte_titre').text('Liste desh congé Rejeté');
             $('#monBoutonA').removeClass('btn-danger');
             $('#monBoutonV').removeClass('btn-danger');
@@ -887,7 +921,7 @@ function initializeDataTable() {
                         // Initialize DataTable after loading data
                         var dataTable = initializeDataTable();
 
-                        table.column(7).search('enT').draw();
+                        table.column(9).search('enT').draw();
                    
                     $('#texte_titre').text('');
                     $('#monBoutonA').addClass('btn-danger');
@@ -904,7 +938,7 @@ function initializeDataTable() {
 
 // Gérez le filtrage en dehors de la DataTable
             $('#monBoutonA').click(function() {
-            table.column(7).search('enT').draw();
+            table.column(9).search('enT').draw();
             $('#texte_titre').text('Liste des demande congé');
             $('#monBoutonA').addClass('btn-danger');
             $('#monBoutonV').removeClass('btn-danger');
@@ -912,7 +946,7 @@ function initializeDataTable() {
         });
 
         $('#monBoutonV').click(function() {
-            table.column(7).search('Vr').draw();
+            table.column(9).search('Vr').draw();
             $('#texte_titre').text('Liste des congé Validé');
             $('#monBoutonA').removeClass('btn-danger');
             $('#monBoutonV').addClass('btn-danger');
@@ -920,7 +954,7 @@ function initializeDataTable() {
         });
 
         $('#monBoutonR').click(function() {
-            table.column(7).search('rj').draw();
+            table.column(9).search('rj').draw();
             $('#texte_titre').text('Liste des congé Rejeté');
             $('#monBoutonA').removeClass('btn-danger');
             $('#monBoutonV').removeClass('btn-danger');
@@ -979,6 +1013,8 @@ function initializeDataTable() {
                 $('#status_rh').val(response.leave_status_rh);
                 $('#id_nplus').val("Par " + response.id_nplus);
                 $('#id_conge').val(response.id_conge);
+                $('#start_time').val(response.start_time);
+                $('#end_time').val(response.end_time);
                
 
             // Récupérer le nom du fichier image et son emplacement
@@ -1099,6 +1135,11 @@ if (imageFileName === "") {
                     $('#nouveau_solde1').show();
                    
                 } else if (response.typeid === "Sans solde") {
+                    $('#solde_container').hide();  // Hide solde_container if type is "Sans solde"
+                    $('#solde_container1').hide();
+                    $('#nouveau_solde').hide();
+                    $('#nouveau_solde1').hide();
+                }else if (response.typeid === "P. de Sortir") {
                     $('#solde_container').hide();  // Hide solde_container if type is "Sans solde"
                     $('#solde_container1').hide();
                     $('#nouveau_solde').hide();
@@ -1275,10 +1316,12 @@ dateInput.addEventListener('change', function () {
     var dayDiff = Math.ceil(timeDiff / (1000 * 3600 * 24));
 
     // Vérifiez si la durée est 'Half' ou 'Full' et si dayDiff est inférieur à 3
+    /*
     if ((durationRadioHalf.checked || durationRadioFull.checked) && dayDiff < 3) {
         alert("Vous devez envoyer la demande au moins 3 jours à l'avance.");
         dateInput.value = ''; // Vide le champ de date
     }
+    */
 });
 
 

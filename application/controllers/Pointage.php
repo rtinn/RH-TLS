@@ -414,7 +414,8 @@ public function importOK() {
     }
 }
  
-*/public function importCSV() {
+*/
+public function importCSV() {
     if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         // Téléchargement des fichiers
         $upload_status_entree = $this->uploadDoc('file_entree');
@@ -455,14 +456,15 @@ public function importOK() {
                         continue;
                     }
 
-                    // Correspondance avec $dataSortie (date minimale)
+                    // Clés pour les correspondances de date minimale et maximale
                     $keyMinDate = $sName . '-' . $minDate;
                     $keyMaxDate = $sName . '-' . $maxDate;
 
-                    if (isset($dataSortieIndexed[$keyMinDate])) {
-                        $sortieData = $dataSortieIndexed[$keyMinDate];
-                    } else if (isset($dataSortieIndexed[$keyMaxDate])) {
+                    // Vérifie s'il existe une correspondance de sortie pour la date maximale en priorité
+                    if (isset($dataSortieIndexed[$keyMaxDate])) {
                         $sortieData = $dataSortieIndexed[$keyMaxDate];
+                    } else if (isset($dataSortieIndexed[$keyMinDate])) {
+                        $sortieData = $dataSortieIndexed[$keyMinDate];
                     } else {
                         // Pas de correspondance dans $dataSortie
                         $dataToInsert[] = [
@@ -470,9 +472,9 @@ public function importOK() {
                             'Date' => $Date,
                             'Time_in' => $timeIn,
                             'Time_out' => 'N/A',
-                            'Time_diff' => 'N/A', // Pas de différence de temps
-                            'shift' => '', // Pas de shift disponible
-                            'heure_e' => '', // Pas d'heure_e disponible
+                            'Time_diff' => 'N/A',
+                            'shift' => '',
+                            'heure_e' => '',
                         ];
                         continue;
                     }
@@ -507,7 +509,7 @@ public function importOK() {
                         'Date' => $Date,
                         'Time_in' => $timeIn,
                         'Time_out' => $timeOut,
-                        'Time_diff' => $timeDiffFormatted, // Différence de temps formatée
+                        'Time_diff' => $timeDiffFormatted,
                         'shift' => $shift,
                         'heure_e' => $heure_e,
                     ];
@@ -532,6 +534,7 @@ public function importOK() {
         echo "Les fichiers CSV ont été importés avec succès.";
     }
 }
+
 
 private function readCSV($fileName, $isEntree = true) {
     $spreadsheet = \PhpOffice\PhpSpreadsheet\IOFactory::load($fileName);

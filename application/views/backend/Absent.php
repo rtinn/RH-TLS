@@ -299,41 +299,45 @@
 
 
             function showTable() {
-                $.ajax({
-                    type: 'POST',  
-                    url: url + 'employee/GetAbsent',
-                    dataType: 'json', // Définir le type de données attendu
-                    success: function(response) {
-                        // Détruire et recréer la DataTable avec les nouvelles données
-                        if ($.fn.DataTable.isDataTable('#employees123')) {
-                            table.destroy();
-                        }
-                        
-                        // Ajouter les données au tableau
-                        var tbody = $('#employees123 tbody');
-                        tbody.empty(); // Effacer le contenu précédent
-
-                        $.each(response.absentEmployees, function(date, employees) {
-                            $.each(employees, function(index, employee) {
-                                var row = '<tr>' +
-                                    '<td>' + employee.em_id + '</td>' +
-                                    '<td>' + employee.des_id + '</td>' +
-                                    '<td>' + employee.first_name + ' ' + employee.last_name +'</td>' +
-                                   
-                                    '<td>' + date + '</td>' +
-                                    '<td>Actions</td>' + // Ajoutez les actions nécessaires ici
-                                    '</tr>';
-                                tbody.append(row);
-                            });
-                        });
-
-                        table = initializeDataTable(); // Réinitialiser la DataTable
-                    }
-                });
+    $.ajax({
+        type: 'POST',  
+        url: url + 'employee/GetAbsent',
+        dataType: 'json', // Définir le type de données attendu
+        success: function(response) {
+            // Vérifiez si la table existe, puis détruisez-la
+            if ($.fn.DataTable.isDataTable('#employees123')) {
+                table.destroy();
             }
+            
+            // Ajouter les données au tableau
+            var tbody = $('#employees123 tbody');
+            tbody.empty(); // Effacer le contenu précédent
 
-            // Appelez showTable au chargement de la page
-            showTable();
+            $.each(response.absentEmployees, function(date, employees) {
+                $.each(employees, function(index, employee) {
+                    var row = '<tr>' +
+                        '<td>' + employee.em_id + '</td>' +
+                        '<td>' + employee.des_id + '</td>' +
+                        '<td>' + employee.first_name + ' ' + employee.last_name + '</td>' +
+                        '<td>' + date + '</td>' +
+                        '<td>Actions</td>' + // Ajouter les actions nécessaires ici
+                        '</tr>';
+                    tbody.append(row);
+                });
+            });
+
+            // Réinitialisez la DataTable après ajout des nouvelles lignes
+            table = initializeDataTable();
+        },
+        error: function() {
+            console.error("Erreur lors du chargement des données d'absence.");
+        }
+    });
+}
+
+// Appelez showTable au chargement de la page
+showTable();
+
 
               // Réinitialisation des champs de date et actualisation du tableau
               $('#resetDates').on('click', function() {

@@ -104,17 +104,7 @@
             });
         });
     });
-    $(function () {
-  $("#datepicker").datepicker({ 
-        autoclose: true, 
-        todayHighlight: true
-  }).datepicker('update', new Date());
-});
-    jQuery('.mydatepicker, #datepicker').datepicker();
-    jQuery('#datepicker-autoclose').datepicker({
-        autoclose: true,
-        todayHighlight: true
-    });        
+         
     
    
 
@@ -157,8 +147,10 @@ $('form').each(function() {
 });
 });
 
-    </script>     
-
+    </script> 
+        
+<!-- Avant la fermeture de </body> -->
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
     <script src="<?php echo base_url(); ?>assets/plugins/styleswitcher/jQuery.style.switcher.js"></script>
 </body>
 
