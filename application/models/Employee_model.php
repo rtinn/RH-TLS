@@ -557,83 +557,105 @@ public function updateEmployeeStatus($em_id) {
 
 //tranche d'age
 public function get_age_distribution() {
-        $this->db->select('em_birthday');
-        $query = $this->db->get('employee');
-        $result = $query->result();
+    $this->db->select('em_birthday');
+    $query = $this->db->get('employee');
+    $result = $query->result();
 
-        $age_distribution = array(
-            '18-25' => 0,
-            '26-35' => 0,
-            '36-45' => 0,
-            '46-55' => 0,
-            '56+' => 0
-        );
+    $age_distribution = array(
+        '18-25' => 0,
+        '26-35' => 0,
+        '36-45' => 0,
+        '46-55' => 0,
+        '56+' => 0
+    );
 
-        foreach ($result as $row) {
-            $age = $this->calculate_age($row->em_birthday);
+    foreach ($result as $row) {
+        $age = $this->calculate_age($row->em_birthday);
 
-            if ($age >= 18 && $age <= 25) {
-                $age_distribution['18-25']++;
-            } elseif ($age >= 26 && $age <= 35) {
-                $age_distribution['26-35']++;
-            } elseif ($age >= 36 && $age <= 45) {
-                $age_distribution['36-45']++;
-            } elseif ($age >= 46 && $age <= 55) {
-                $age_distribution['46-55']++;
-            } else {
-                $age_distribution['56+']++;
-            }
+        // Ignorer les âges invalides (par exemple, si la date est mal formatée)
+        if ($age === 0) {
+            continue;
         }
 
-        return $age_distribution;
+        if ($age >= 18 && $age <= 25) {
+            $age_distribution['18-25']++;
+        } elseif ($age >= 26 && $age <= 35) {
+            $age_distribution['26-35']++;
+        } elseif ($age >= 36 && $age <= 45) {
+            $age_distribution['36-45']++;
+        } elseif ($age >= 46 && $age <= 55) {
+            $age_distribution['46-55']++;
+        } else {
+            $age_distribution['56+']++;
+        }
     }
 
-    private function calculate_age($em_birthday) {
-        $birthdate = new DateTime($em_birthday);
+    return $age_distribution;
+}
+
+private function calculate_age($em_birthday) {
+    try {
+        // Créer un objet DateTime en spécifiant le format d'entrée 'd/m/Y'
+        $birthdate = DateTime::createFromFormat('d/m/Y', $em_birthday);
+        
+        // Vérifier si la date est valide
+        if ($birthdate === false) {
+            // Retourner 0 pour les dates invalides
+            return 0;
+        }
+        
         $today = new DateTime();
         $age = $today->diff($birthdate)->y;
         return $age;
+    } catch (Exception $e) {
+        // Retourner 0 en cas d'erreur (par exemple, date mal formatée)
+        return 0;
+    }
+}
+
+public function get_age_distribution_by_department() {
+    // Sélectionne les anniversaires et le département
+    $this->db->select('em_birthday, dep_id');
+    $query = $this->db->get('employee');
+    $result = $query->result();
+
+    $age_distribution = array();
+
+    foreach ($result as $row) {
+        $age = $this->calculate_age($row->em_birthday);
+
+        // Ignorer les âges invalides
+        if ($age === 0) {
+            continue;
+        }
+
+        // Assurez-vous que le département existe dans le tableau, sinon l'ajouter
+        if (!isset($age_distribution[$row->dep_id])) {
+            $age_distribution[$row->dep_id] = array(
+                '18-25' => 0,
+                '26-35' => 0,
+                '36-45' => 0,
+                '46-55' => 0,
+                '56+' => 0
+            );
+        }
+
+        // Incrémentation en fonction de la tranche d'âge
+        if ($age >= 18 && $age <= 25) {
+            $age_distribution[$row->dep_id]['18-25']++;
+        } elseif ($age >= 26 && $age <= 35) {
+            $age_distribution[$row->dep_id]['26-35']++;
+        } elseif ($age >= 36 && $age <= 45) {
+            $age_distribution[$row->dep_id]['36-45']++;
+        } elseif ($age >= 46 && $age <= 55) {
+            $age_distribution[$row->dep_id]['46-55']++;
+        } else {
+            $age_distribution[$row->dep_id]['56+']++;
+        }
     }
 
-
-    public function get_age_distribution_by_department() {
-      // Sélectionne les anniversaires et le département
-      $this->db->select('em_birthday, dep_id');
-      $query = $this->db->get('employee');
-      $result = $query->result();
-  
-      $age_distribution = array();
-  
-      foreach ($result as $row) {
-          $age = $this->calculate_age($row->em_birthday);
-  
-          // Assurez-vous que le département existe dans le tableau, sinon l'ajouter
-          if (!isset($age_distribution[$row->dep_id])) {
-              $age_distribution[$row->dep_id] = array(
-                  '18-25' => 0,
-                  '26-35' => 0,
-                  '36-45' => 0,
-                  '46-55' => 0,
-                  '56+' => 0
-              );
-          }
-  
-          // Incrémentation en fonction de la tranche d'âge
-          if ($age >= 18 && $age <= 25) {
-              $age_distribution[$row->dep_id]['18-25']++;
-          } elseif ($age >= 26 && $age <= 35) {
-              $age_distribution[$row->dep_id]['26-35']++;
-          } elseif ($age >= 36 && $age <= 45) {
-              $age_distribution[$row->dep_id]['36-45']++;
-          } elseif ($age >= 46 && $age <= 55) {
-              $age_distribution[$row->dep_id]['46-55']++;
-          } else {
-              $age_distribution[$row->dep_id]['56+']++;
-          }
-      }
-  
-      return $age_distribution;
-  }
+    return $age_distribution;
+}
   
 
 public function getPlanningid(){

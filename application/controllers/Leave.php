@@ -379,7 +379,7 @@ public function UpdateLeaveMaladie($ids, $retenu) {
                 ?>
                 </td>
                 <td><?php echo $value->start_time; ?></td>
-                <td><?php echo $value->end_time; ?></td>
+               <td><?php echo $value->end_time; ?></td>
                 <td><?php echo $value->leave_duration; ?></td>
                
 

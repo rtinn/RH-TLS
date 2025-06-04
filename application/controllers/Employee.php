@@ -72,6 +72,10 @@ class Employee extends CI_Controller {
         echo json_encode(array('data' => $output));
     }
     
+
+
+
+   
     public function export_excel() {
         // Charger le modèle
         $this->load->model('Employee_model');
@@ -90,28 +94,29 @@ class Employee extends CI_Controller {
         $sheet->setCellValue('F1', 'Sexe');
         $sheet->setCellValue('G1', 'Date d embauche');
         $sheet->setCellValue('H1', 'Ancienneté');
-        $sheet->setCellValue('I1', 'Adresse');
-        $sheet->setCellValue('J1', 'Telephone');
-        $sheet->setCellValue('K1', 'Nationalité');
-        $sheet->setCellValue('L1', 'Categorie');
-        $sheet->setCellValue('M1', 'Type de contrat');
-        $sheet->setCellValue('N1', 'Groupe');
-        $sheet->setCellValue('O1', 'Date de naissance');
-        $sheet->setCellValue('P1', 'Lieu de naissance');
-        $sheet->setCellValue('Q1', 'Age');
-        $sheet->setCellValue('R1', 'CIN');
-        $sheet->setCellValue('S1', 'Date CIN');
-        $sheet->setCellValue('T1', 'Lieu CIN');
-        $sheet->setCellValue('U1', 'N° CNAPS');
-        $sheet->setCellValue('V1', 'Handycap');
-        $sheet->setCellValue('W1', 'Nom et prénom');
-        $sheet->setCellValue('X1', 'Contact');
-        $sheet->setCellValue('Y1', 'Adresse');
-        $sheet->setCellValue('Z1', 'Nom du père');
-        $sheet->setCellValue('AA1', 'Nom du mère');
-        $sheet->setCellValue('AB1', 'Situation');
-        $sheet->setCellValue('AC1', 'Nom et prenom(s)s conjoint(e)');
-        $sheet->setCellValue('AD1', 'Nb enfant(s)');
+        $sheet->setCellValue('I1', 'Ancien poste');
+        $sheet->setCellValue('J1', 'Adresse');
+        $sheet->setCellValue('K1', 'Telephone');
+        $sheet->setCellValue('L1', 'Nationalité');
+        $sheet->setCellValue('M1', 'Categorie');
+        $sheet->setCellValue('N1', 'Type de contrat');
+        $sheet->setCellValue('O1', 'Groupe');
+        $sheet->setCellValue('P1', 'Date de naissance');
+        $sheet->setCellValue('Q1', 'Lieu de naissance');
+        $sheet->setCellValue('R1', 'Age');
+        $sheet->setCellValue('S1', 'CIN');
+        $sheet->setCellValue('T1', 'Date CIN');
+        $sheet->setCellValue('U1', 'Lieu CIN');
+        $sheet->setCellValue('V1', 'N° CNAPS');
+        $sheet->setCellValue('W1', 'Handycap');
+        $sheet->setCellValue('X1', 'Nom et prénom');
+        $sheet->setCellValue('Y1', 'Contact');
+        $sheet->setCellValue('Z1', 'Adresse');
+        $sheet->setCellValue('AA1', 'Nom du père');
+        $sheet->setCellValue('AB1', 'Nom du mère');
+        $sheet->setCellValue('AC1', 'Situation');
+        $sheet->setCellValue('AD1', 'Nom et prenom(s)s conjoint(e)');
+        $sheet->setCellValue('AE1', 'Nb enfant(s)');
         // Remplir les données
         $row = 2;
         foreach ($employees as $employee) {
@@ -146,16 +151,17 @@ class Employee extends CI_Controller {
                         $seniority = "Erreur date";
                     }
 
-            $sheet->setCellValue('H' . $row, $seniority); // Ajouter l'ancienneté dans la colonne G
-            $sheet->setCellValue('I' . $row, $employee->em_address);
-            $sheet->setCellValue('J' . $row, $employee->em_phone);
-            $sheet->setCellValue('K' . $row, $employee->nation);
-            $sheet->setCellValue('L' . $row, $employee->categorie);
-            $sheet->setCellValue('M' . $row, $employee->contrat);
-            $sheet->setCellValue('N' . $row, $employee->groupe);
-            $sheet->setCellValue('O' . $row, $employee->em_birthday);
-            $sheet->setCellValue('P' . $row, $employee->lieu_naiss);
-
+                    $sheet->setCellValue('H' . $row, $seniority); // Ancienneté dans la colonne H
+                    $sheet->setCellValue('I' . $row, $employee->a_poste); // Poste dans la colonne I
+                    $sheet->setCellValue('J' . $row, $employee->em_address); // Adresse dans la colonne J
+                    $sheet->setCellValue('K' . $row, $employee->em_phone); // Téléphone dans la colonne K
+                    $sheet->setCellValue('L' . $row, $employee->nation); // Nationalité dans la colonne L
+                    $sheet->setCellValue('M' . $row, $employee->categorie); // Catégorie dans la colonne M
+                    $sheet->setCellValue('N' . $row, $employee->contrat); // Contrat dans la colonne N
+                    $sheet->setCellValue('O' . $row, $employee->groupe); // Groupe dans la colonne O
+                    $sheet->setCellValue('P' . $row, $employee->em_birthday); // Date de naissance dans la colonne P
+                    $sheet->setCellValue('Q' . $row, $employee->lieu_naiss); // Lieu de naissance dans la colonne Q
+                    
                     // Calcul de l'âge
                     try {
                         $birthDate = DateTime::createFromFormat('d/m/Y', $employee->em_birthday);
@@ -168,21 +174,21 @@ class Employee extends CI_Controller {
                     } catch (Exception $e) {
                         $age = "Erreur date";
                     }
-            $sheet->setCellValue('Q' . $row, $age); // Ajouter l'âge dans la colonne Q
-            $sheet->setCellValue('R' . $row, $employee->em_nid);
-            $sheet->setCellValue('S' . $row, $employee->date_cin);
-            $sheet->setCellValue('T' . $row, $employee->lieu_cin);
-            $sheet->setCellValue('U' . $row, $employee->n_cnaps);
-            $sheet->setCellValue('V' . $row, $employee->handycap);
-            $sheet->setCellValue('W' . $row, $employee->nom_ur);
-            $sheet->setCellValue('X' . $row, $employee->contact_ur);
-            $sheet->setCellValue('Y' . $row, $employee->adresse_ur);
-            $sheet->setCellValue('Z' . $row, $employee->pere);
-            $sheet->setCellValue('AA' . $row, $employee->mere);
-            $sheet->setCellValue('AB' . $row, $employee->situation);
-            $sheet->setCellValue('AC' . $row, $employee->conjoint);
-            $sheet->setCellValue('AD' . $row, $employee->nb_enfant);
-            $row++;
+                    $sheet->setCellValue('R' . $row, $age); // Âge dans la colonne R
+                    $sheet->setCellValue('S' . $row, $employee->em_nid); // NID dans la colonne S
+                    $sheet->setCellValue('T' . $row, $employee->date_cin); // Date CIN dans la colonne T
+                    $sheet->setCellValue('U' . $row, $employee->lieu_cin); // Lieu CIN dans la colonne U
+                    $sheet->setCellValue('V' . $row, $employee->n_cnaps); // CNAPS dans la colonne V
+                    $sheet->setCellValue('W' . $row, $employee->handycap); // Handicap dans la colonne W
+                    $sheet->setCellValue('X' . $row, $employee->nom_ur); // Nom urgence dans la colonne X
+                    $sheet->setCellValue('Y' . $row, $employee->contact_ur); // Contact urgence dans la colonne Y
+                    $sheet->setCellValue('Z' . $row, $employee->adresse_ur); // Adresse urgence dans la colonne Z
+                    $sheet->setCellValue('AA' . $row, $employee->pere); // Père dans la colonne AA
+                    $sheet->setCellValue('AB' . $row, $employee->mere); // Mère dans la colonne AB
+                    $sheet->setCellValue('AC' . $row, $employee->situation); // Situation dans la colonne AC
+                    $sheet->setCellValue('AD' . $row, $employee->conjoint); // Conjoint dans la colonne AD
+                    $sheet->setCellValue('AE' . $row, $employee->nb_enfant); // Nombre d'enfants dans la colonne AE
+                    $row++;
         }
 
         // Nettoyer le tampon de sortie pour éviter toute corruption
@@ -636,8 +642,6 @@ public function deletePointageByDate() {
         }
     }
 
-    
-
     public function importExcel() {
         if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             if (!empty($_FILES['excel_file']['name'])) {
@@ -651,38 +655,48 @@ public function deletePointageByDate() {
                     echo json_encode($response);
                     exit;
                 }
-    
+
                 try {
                     $inputFileType = IOFactory::identify($inputFileName);
                     $reader = IOFactory::createReader($inputFileType);
                     $spreadsheet = $reader->load($inputFileName);
                     $sheet = $spreadsheet->getSheet(0);
                     $sheetData = $sheet->toArray();
-                    unset($sheetData[0]);
-    
+                    unset($sheetData[0]); // Supprimer l'en-tête
+
                     $success_count = 0;
-                    $dataToInsertEmployee = []; // Pour employee
-                    $dataToInsertCongeMois = []; // Pour conge_mois
-    
+                    $dataToInsertEmployee = [];
+                    $dataToInsertCongeMois = [];
+                    $dateErrors = []; // Tableau pour stocker les erreurs de date
+
                     foreach ($sheetData as $row) {
+                        // Récupérer em_id pour l'utiliser dans les messages d'erreur
+                        $em_id = isset($row[0]) ? $row[0] : 'inconnu';
+
+                        // Appeler format_date pour chaque champ de date et capturer les erreurs
+                        $joining_date = $this->format_date($row[7] ?? null, $em_id, 'em_joining_date', $dateErrors);
+                        $birthday = $this->format_date($row[17] ?? null, $em_id, 'em_birthday', $dateErrors);
+                        $date_cin = $this->format_date($row[21] ?? null, $em_id, 'date_cin', $dateErrors);
+
                         $employee_data = array(
-                            'em_id' => isset($row[0]) ? $row[0] : null,
+                            'em_id' => $em_id,
                             'first_name' => isset($row[1]) ? $row[1] : null,
                             'last_name' => isset($row[2]) ? $row[2] : null,
                             'des_id' => isset($row[3]) ? $row[3] : null,
                             'dep_id' => isset($row[4]) ? $row[4] : null,
                             'em_gender' => isset($row[5]) ? $this->format_gender($row[5]) : null,
-                            'em_joining_date' => isset($row[7]) ? $this->format_date($row[7]) : null,
+                            'em_joining_date' => $joining_date,
+                            'a_poste' => isset($row[10]) ? $row[10] : null,
                             'em_address' => isset($row[11]) ? $row[11] : null,
                             'em_phone' => isset($row[12]) ? $row[12] : null,
                             'nation' => isset($row[13]) ? $row[13] : null,
                             'categorie' => isset($row[14]) ? $row[14] : null,
                             'contrat' => isset($row[15]) ? $row[15] : null,
                             'groupe' => isset($row[16]) ? $row[16] : null,
-                            'em_birthday' => isset($row[17]) ? $this->format_date($row[17]) : null,
+                            'em_birthday' => $birthday,
                             'lieu_naiss' => isset($row[18]) ? $row[18] : null,
                             'em_nid' => isset($row[20]) ? $row[20] : null,
-                            'date_cin' => isset($row[21]) ? $this->format_date($row[21]) : null,
+                            'date_cin' => $date_cin,
                             'lieu_cin' => isset($row[22]) ? $row[22] : null,
                             'n_cnaps' => isset($row[23]) ? $row[23] : null,
                             'handycap' => isset($row[24]) ? $row[24] : null,
@@ -697,33 +711,42 @@ public function deletePointageByDate() {
                             'em_password' => 'f7c3bc1d808e04732adf679965ccc34ca7ae3441',
                             'em_image' => 'Tel1001.jpg'
                         );
-    
-                        // Préparer les données pour conge_mois
+
                         $conge_mois_data = array(
-                            'em_id' => isset($row[0]) ? $row[0] : null
-                            // Ajoutez d'autres champs si nécessaire
+                            'em_id' => $em_id
                         );
-    
+
                         if (!empty(array_filter($employee_data))) {
                             $dataToInsertEmployee[] = $employee_data;
                             $dataToInsertCongeMois[] = $conge_mois_data;
                         }
                     }
-    
+
+                    // Si des erreurs de date sont détectées, retourner un message d'erreur
+                    if (!empty($dateErrors)) {
+                        $errorMessage = implode("\n", $dateErrors);
+                        $response = array(
+                            'status' => 'error',
+                            'message' => $errorMessage
+                        );
+                        echo json_encode($response);
+                        exit;
+                    }
+
+                    // Si aucune erreur, procéder à l'insertion
                     if (!empty($dataToInsertEmployee)) {
                         log_message('debug', 'Nombre d\'enregistrements à insérer dans employee : ' . count($dataToInsertEmployee));
                         log_message('debug', 'Données à insérer dans employee : ' . print_r($dataToInsertEmployee, true));
                         $success_count = $this->employee_model->import_batch_employee($dataToInsertEmployee);
-    
-                        // Insérer dans conge_mois
+
                         log_message('debug', 'Nombre d\'enregistrements à insérer dans conge_mois : ' . count($dataToInsertCongeMois));
                         log_message('debug', 'Données à insérer dans conge_mois : ' . print_r($dataToInsertCongeMois, true));
                         $this->employee_model->import_batch_conge_mois($dataToInsertCongeMois);
                     }
-    
+
                     $response = array(
                         'status' => 'success',
-                        'message' => "$success_count employés importés avec succès" // Message simplifié
+                        'message' => "$success_count employés importés avec succès"
                     );
                 } catch (Exception $e) {
                     $response = array(
@@ -737,7 +760,7 @@ public function deletePointageByDate() {
         } else {
             $response = array('status' => 'error', 'message' => 'Méthode non autorisée');
         }
-    
+
         echo json_encode($response);
         exit;
     }
@@ -762,17 +785,32 @@ public function deletePointageByDate() {
         return $gender ?: null;
     }
 
-    private function format_date($date) {
+    private function format_date($date, $em_id = 'inconnu', $field_name = 'date', &$errors = []) {
+        // Mapper les noms techniques des champs à des labels conviviaux
+        $field_labels = [
+            'em_birthday' => 'Date de naissance',
+            'date_cin' => 'Date de CIN',
+            'em_joining_date' => 'Date d\'embauche',
+        ];
+        $display_field_name = isset($field_labels[$field_name]) ? $field_labels[$field_name] : $field_name;
+
         if (empty($date)) return null;
 
         // Si la date est numérique (format Excel)
         if (is_numeric($date)) {
-            return date('d/m/Y', PhpOffice\PhpSpreadsheet\Shared\Date::excelToTimestamp($date));
+            $timestamp = PhpOffice\PhpSpreadsheet\Shared\Date::excelToTimestamp($date);
+            $formatted_date = date('d/m/Y', $timestamp);
+            // Vérifier si l'année est raisonnable (par exemple, entre 1900 et 2100)
+            $year = (int) date('Y', $timestamp);
+            if ($year < 1900 || $year > 2100) {
+                $errors[] = "Format date invalide '$date' pour matricule '$em_id' (champ $display_field_name), veuillez vérifier le format et réimporter votre fichier";
+                return null;
+            }
+            return $formatted_date;
         }
 
         // Convertir la chaîne en date (gère d-m-Y ou d/m/Y)
         $date_str = trim($date);
-        // Essayer différents formats
         $formats = [
             'd-m-Y', // Exemple : 15-06-2017
             'd/m/Y'  // Exemple : 15/06/2017
@@ -781,22 +819,30 @@ public function deletePointageByDate() {
         foreach ($formats as $format) {
             $d = DateTime::createFromFormat($format, $date_str);
             if ($d && $d->format($format) === $date_str) {
-                return $d->format('d/m/Y'); // Retourne au format d-m-Y
+                $year = (int) $d->format('Y');
+                if ($year < 1900 || $year > 2100) {
+                    $errors[] = "-!-Format date invalide '$date_str' pour matricule '$em_id' (champ $display_field_name), veuillez vérifier le format et réimporter votre fichier";
+                    return null;
+                }
+                return $d->format('d/m/Y');
             }
         }
 
-        // Si la date n'est pas reconnue, essayer strtotime comme fallback
+        // Essayer strtotime comme fallback
         $timestamp = strtotime($date_str);
         if ($timestamp !== false) {
+            $year = (int) date('Y', $timestamp);
+            if ($year < 1900 || $year > 2100) {
+                $errors[] = "-!-Format date invalide '$date_str' pour matricule '$em_id' (champ $display_field_name), veuillez vérifier le format et réimporter votre fichier";
+                return null;
+            }
             return date('d/m/Y', $timestamp);
         }
 
-        // Si tout échoue, retourner null ou loguer une erreur
-        log_message('warning', 'Date invalide trouvée : ' . $date_str);
+        // Si tout échoue, ajouter une erreur
+        $errors[] = "-!-Format date invalide '$date_str' pour matricule '$em_id' (champ $display_field_name), veuillez vérifier le format et réimporter votre fichier";
         return null;
     }
-
-
 
 
 

@@ -56,7 +56,19 @@
                         <!-- Bouton pour ouvrir le modal -->
                     <button type="button" class="btn btn-info"><i class="fa fa-plus"></i><a data-toggle="modal" data-target="#addEmployeeModal" data-whatever="@getbootstrap" class="text-white "><i class="" aria-hidden="true"></i> Ajouter un Employer </a></button>
                     <button type="button" class="btn btn-success" data-toggle="modal" data-target="#importModal"><i class="fa fa-file-excel-o" aria-hidden="true"></i><i class="" aria-hidden="true"></i> Importer Excel</button>
-  
+                    <p>Téléchargez les modèles de fichier excel à importer 
+    <a href="javascript:void(0);" onclick="downloadCSVFiles()">ici</a>.
+</p>
+<script>
+    function downloadCSVFiles() {
+        // Créez des éléments d'ancrage pour déclencher le téléchargement des deux fichiers
+        var link1 = document.createElement('a');
+        link1.href = '<?php echo base_url('uploads/modely/Modele_base_à_importer.xlsx'); ?>';
+        link1.download = 'Modele_base_à_importer.xlsx';
+        link1.click();  // Télécharger le premier fichier
+
+    }
+</script>
                    
                     <!--
                     <button type="button" class="btn btn-primary"><i class="fa fa-bars"></i><a href="<?php echo base_url(); ?>employee/Disciplinary" class="text-white"><i class="" aria-hidden="true"></i>  Disciplinary List</a></button>

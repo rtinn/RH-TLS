@@ -220,7 +220,7 @@
         <div class="col-lg-6 col-6">
             <div class="small-box bg-light">
                 <div class="inner">
-                    <h4>Effectifs par departements</h4>
+                    <h4>Répartition des employés par département</h4>
                         <ul class="nav nav-tabs" role="tablist">
                             <li class="nav-item">
                                 <a class="nav-link active" data-toggle="tab" href="#b">Barres</a>
@@ -256,7 +256,7 @@
 
                     <div class="small-box bg-light">
                         <div class="inner">
-                    <h4>Graphique de répartition par tranche d'âge</h4>
+                    <h4>Répartition des employés par tranche d'âge</h4>
 
 
                 <ul class="nav nav-tabs" role="tablist">
@@ -293,7 +293,7 @@
     <div class="col-lg-12 col-6">
         <div class="small-box bg-light">
             <div class="inner">
-               <h4>Etat des Présences et Absences par Date</h4>
+               <h4>Évaluation des présences et absences par date.</h4>
                <canvas id="attendanceChart" width="400" height="200"></canvas>
                 <div id="pagination" style="text-align: center; margin-top: 20px;">
                     <button class="btn btn-info"id="prevPage1">Précédent</button>
@@ -477,7 +477,7 @@
         <!-- small box -->
         <div class="small-box bg-light">
             <div class="inner">
-                <h4>Statistiques de Genre par Département</h4>
+                <h4>Répartition des genres par département</h4>
                 <canvas id="genderChart" width="400" height="200"></canvas>
             </div>
         </div>
@@ -489,7 +489,7 @@
         <!-- small box -->
         <div class="small-box bg-light">
             <div class="inner">
-                <h4>Statistiques de Genre par Département</h4>
+                <h4>Répartition des contrats selon les types par département</h4>
                 <canvas id="contractChart" width="400" height="200"></canvas>
             </div>
         </div>
