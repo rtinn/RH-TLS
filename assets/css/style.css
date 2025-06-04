@@ -28,6 +28,7 @@
     box-shadow: 0px 5px 20px rgba(0, 0, 0, 0.05);
 }
 
+
 .input-group {
     position: relative;
     display: flex;
@@ -278,6 +279,22 @@ align-items: center;
 
 * {
     outline: none
+}
+
+.login_f {
+display: flex;
+
+}
+.icon_login{
+    background: #979393;
+    padding: 10px;
+    color: white;
+    min-width: 42px;
+    text-align: center;
+
+}
+.f_login{
+    padding-left: 10px !important;
 }
 
 body {
@@ -6389,7 +6406,9 @@ a.mytooltip {
 
 .login-box {
     width: 423px;
-    margin: 0 auto
+    margin: 0 auto;
+    border: 0 !important;
+    border-radius: 0 !important;
 }
 
 .login-box .footer {

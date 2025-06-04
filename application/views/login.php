@@ -51,15 +51,19 @@
 							}
 							?>                                          
                 <form class="form-horizontal form-material" method="post" id="loginform" action="login/Login_Auth">
-                    <a href="javascript:void(0)" class="text-center db"><br/><img src="<?php echo base_url(); ?>assets/images/logo-1.png" width="175px" alt="Home" /></a>
+                    <a href="javascript:void(0)" class="text-center db"><br/><img src="<?php echo base_url(); ?>assets/images/logo.png" width="175px" alt="Home" /></a>
                     <div class="form-group m-t-40">
-                        <div class="col-xs-12">
-                            <input class="form-control" name="email_or_em_id" value="<?php if(isset($_COOKIE['email_or_em_id'])) { echo $_COOKIE['email_or_em_id']; } ?>" type="text" required placeholder="N° Matricule ou e-mail">
+
+
+                        <div class="col-xs-12 login_f"> 
+                            <i class="fa fa-user icon_login"></i>
+                            <input class="form-control f_login" name="email_or_em_id" value="<?php if(isset($_COOKIE['email_or_em_id'])) { echo $_COOKIE['email_or_em_id']; } ?>" type="text" required placeholder="N° Matricule ou e-mail">
                         </div>
                     </div>
                     <div class="form-group">
-                        <div class="col-xs-12">
-                            <input class="form-control" name="password" value="<?php if(isset($_COOKIE['password'])) { echo $_COOKIE['password']; } ?>" type="password" required placeholder="Mot de passe">
+                        <div class="col-xs-12 login_f">
+                            <i class="fa fa-key icon_login"></i>
+                            <input class="form-control f_login" name="password" value="<?php if(isset($_COOKIE['password'])) { echo $_COOKIE['password']; } ?>" type="password" required placeholder="Mot de passe">
                         </div>
                     </div>
                  <div class="form-check">

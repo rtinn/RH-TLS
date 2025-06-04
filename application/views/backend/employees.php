@@ -55,7 +55,7 @@
                     <div class="col-12">
                         <!-- Bouton pour ouvrir le modal -->
                     <button type="button" class="btn btn-info"><i class="fa fa-plus"></i><a data-toggle="modal" data-target="#addEmployeeModal" data-whatever="@getbootstrap" class="text-white "><i class="" aria-hidden="true"></i> Ajouter un Employer </a></button>
-                    <button type="button" class="btn btn-success" data-toggle="modal" data-target="#importModal"><i class="fa fa-file-excel-o" aria-hidden="true"></i><i class="" aria-hidden="true"></i> Importer Excel</button>
+                    <button type="button" class="btn btn-success" data-toggle="modal" data-target="#importModal"><i class="fa fa-file-excel-o" aria-hidden="true"></i> Importer Excel</button>
                     <p>Téléchargez les modèles de fichier excel à importer 
     <a href="javascript:void(0);" onclick="downloadCSVFiles()">ici</a>.
 </p>
@@ -83,7 +83,7 @@
                             </div>
                             <div class="card-body">
                                 
-                            <a href="<?php echo base_url('employee/export_excel'); ?>" class="btn btn-success">Exporter en Excel</a>
+                            <a href="<?php echo base_url('employee/export_excel'); ?>" class="btn btn-success "><i class="fa fa-file-excel-o" aria-hidden="true"></i> Exporter en Excel</a>
 
 <!-- Tableau des employés (à placer à l'endroit approprié dans votre application) -->
 <div class="table-responsive">
@@ -568,8 +568,7 @@ $('#submitBtn').on('click', function(e) {
                         ordering: true,
                         info: true,
                         aaSorting: [[1, 'asc']],
-                        dom: 'Bfrtip',
-                        buttons: ['copy', 'csv', 'excel', 'pdf', 'print']
+                        dom: 'frtip'
                     });
                 }
             },
