@@ -3,10 +3,13 @@
 <?php 
     $id = $this->session->userdata('user_login_id');
     $nbjour = $this->dashboard_model->Getidconge($id); 
-   
+      $basicinfo = $this->employee_model->GetBasic($id); 
    
                        
 ?> 
+
+
+
       <div class="page-wrapper">
             <div class="message"></div>
             <div class="row page-titles">
@@ -757,6 +760,24 @@
                     </div>
                                           -->
                 </div> 
+
+
+
+
+<?php if ($show_alert): ?>
+        <script>
+              Swal.fire({
+                icon: "info",
+                text: "Pour assurer la sécurité de vos informations, il est essentiel de mettre à jour votre mot de passe.",
+                footer: '<a href="<?php echo base_url(); ?>employee/sview?I=<?php echo base64_encode($basicinfo->em_id); ?>">Cliquez ici pour mettre à jour</a>',
+                showConfirmButton: false // Ajoute cette ligne pour supprimer le bouton OK
+                });
+        </script>
+    <?php endif; ?>
+
+
+
+
 
 
                 <script>

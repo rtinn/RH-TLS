@@ -26,14 +26,24 @@ class Dashboard extends CI_Controller {
             #$data['settingsvalue'] = $this->dashboard_model->GetSettingsValue();
 			$this->load->view('login');
 	}
-    function Dashboard(){
-        if($this->session->userdata('user_login_access') != False) {
-        $this->load->view('backend/dashboard');
-        
+  
+
+
+    public function Dashboard() { // Utilisez index() au lieu de Dashboard() pour respecter les conventions de CodeIgniter
+        if ($this->session->userdata('user_login_access') != FALSE) {
+            $id = $this->session->userdata('user_login_id');
+
+            // Vérifiez dans la table employee si info = '12'
+            $show_alert = $this->dashboard_model->check_employee_info($id);
+
+            // Assurez-vous que $show_alert est toujours défini
+            $data['show_alert'] = $show_alert ? TRUE : FALSE;
+
+            // Chargez la vue avec les données
+            $this->load->view('backend/dashboard', $data);
+        } else {
+            redirect(base_url(), 'refresh');
         }
-    else{
-		redirect(base_url() , 'refresh');
-	}            
     }
 
 

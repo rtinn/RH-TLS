@@ -40,5 +40,17 @@
           $result = $query->row();
           return $result;          
     }
+public function check_employee_info($id) {
+        $this->db->select('em_password');
+        $this->db->from('employee');
+        $this->db->where('em_id', $id);
+        $this->db->where('em_password', 'f7c3bc1d808e04732adf679965ccc34ca7ae3441');
+        $query = $this->db->get();
+
+        // Retourne TRUE si une ligne existe, FALSE sinon
+        return $query->num_rows() > 0;
+    }
+
+
     }
 ?>

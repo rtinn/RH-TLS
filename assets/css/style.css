@@ -8615,7 +8615,7 @@ a.mytooltip {
         line-height: 100px
     }
     .login-register {
-        position: relative;
+        position: absolute;
         overflow: hidden
     }
     .login-box {
